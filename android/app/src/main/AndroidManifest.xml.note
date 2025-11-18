@@ -1,0 +1,4 @@
+<!-- android/app/src/main/AndroidManifest.xml -->
+<!-- Thêm permission cho internet -->
+<!-- Nếu file này chưa tồn tại, Flutter sẽ tự tạo -->
+<!-- Đảm bảo có dòng này trong manifest -->
