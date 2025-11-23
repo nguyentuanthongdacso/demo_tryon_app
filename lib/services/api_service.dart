@@ -7,7 +7,7 @@ import '../constants/api_constants.dart';
 import '../utils/logger.dart';
 
 class ApiService {
-  static const String baseUrl = ApiConstants.baseUrl;
+  static String get baseUrl => ApiConstants.baseUrl;
   static const String searchEndpoint = ApiConstants.searchEndpoint;
   static const String tryOnEndpoint = ApiConstants.tryOnEndpoint;
 
@@ -83,8 +83,9 @@ class ApiService {
       AppLogger.apiRequest('POST', '$baseUrl$tryOnEndpoint', body: {'imageUrl': imageUrl});
       
       final request = TryOnRequest(imageUrl: imageUrl);
+      final tryOnUrl = Uri.parse('${ApiConstants.tryOnBaseUrl}$tryOnEndpoint');
       final response = await http.post(
-        Uri.parse('$baseUrl$tryOnEndpoint'),
+        tryOnUrl,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -96,7 +97,7 @@ class ApiService {
         },
       );
 
-      AppLogger.apiResponse('$baseUrl$tryOnEndpoint', response.statusCode, body: response.body);
+      AppLogger.apiResponse('${ApiConstants.tryOnBaseUrl}$tryOnEndpoint', response.statusCode, body: response.body);
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);

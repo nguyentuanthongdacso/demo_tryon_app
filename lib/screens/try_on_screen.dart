@@ -5,7 +5,7 @@ import '../providers/search_provider.dart';
 class TryOnScreen extends StatefulWidget {
   final String? imageUrl;
 
-  const TryOnScreen({Key? key, this.imageUrl}) : super(key: key);
+  const TryOnScreen({super.key, this.imageUrl});
 
   @override
   State<TryOnScreen> createState() => _TryOnScreenState();
@@ -47,7 +47,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withAlpha(26),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
