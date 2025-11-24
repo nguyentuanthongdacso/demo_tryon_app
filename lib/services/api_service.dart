@@ -34,21 +34,19 @@ class ApiService {
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         
-        // Parse từ response format của server
-        // Response: {"results": {"image_urls": [[0, "url1"], [1, "url2"], ...]}}
+        // Parse từ response format mới của server
+        // Response: {"status":"success","results":{"image_urls":["url1","url2",...]}}
         final results = jsonResponse['results'] as Map<String, dynamic>?;
+        final images = <ImageItem>[];
         
         if (results != null && results['image_urls'] != null) {
           final imageUrlsList = results['image_urls'] as List?;
-          final images = <ImageItem>[];
           
           if (imageUrlsList != null) {
-            for (var item in imageUrlsList) {
-              if (item is List && item.length >= 2) {
-                final id = item[0].toString();
-                final url = item[1].toString();
-                images.add(ImageItem(url: url, id: id));
-              }
+            for (int i = 0; i < imageUrlsList.length; i++) {
+              final url = imageUrlsList[i].toString();
+              // Sử dụng index làm ID
+              images.add(ImageItem(url: url, id: i.toString()));
             }
           }
           
