@@ -12,12 +12,19 @@ class ApiConstants {
     return 'http://127.0.0.1';
   }
 
+  // WebSocket base URL (ws:// instead of http://)
+  static String get wsBaseHost {
+    if (Platform.isAndroid) return 'ws://10.0.2.2';
+    return 'ws://127.0.0.1';
+  }
+
   // Default ports for each service (can be changed if your servers use other ports)
   static const int searchPort = 8001;
   static const int tryonPort = 8005;
   static const int uploadPort = 8002; // default upload endpoint lives on same try-on server
 
   static String get baseUrl => '$baseHost:$searchPort';
+  static String get wsBaseUrl => '$wsBaseHost:$searchPort';
   
   // Cho Device thực (thay <IP> bằng IP máy tính)
   // static const String baseUrl = 'http://<YOUR_COMPUTER_IP>:8001';
