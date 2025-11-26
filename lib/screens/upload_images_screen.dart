@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/tryon_provider.dart';
 import '../services/cloudinary_service.dart';
+import 'tryon_result_screen.dart';
 
 class UploadImagesScreen extends StatefulWidget {
   const UploadImagesScreen({super.key});
@@ -98,7 +99,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
     }
   }
 
-  void _sendTryon() {
+  Future<void> _sendTryon() async {
     // Kiểm tra xem cả 2 ảnh đã được chọn chưa
     if (_initLocalPath == null || _clothLocalPath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -134,8 +135,37 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
     }
 
     // Gửi Cloudinary URLs tới API
-    Provider.of<TryonProvider>(context, listen: false)
-        .tryon(_initPublicUrl!, _clothPublicUrl!, _clothType);
+    final tryonProvider = Provider.of<TryonProvider>(context, listen: false);
+    await tryonProvider.tryon(_initPublicUrl!, _clothPublicUrl!, _clothType);
+    
+    // Kiểm tra kết quả và navigate đến màn hình mới
+    if (!mounted) return;
+    
+    if (tryonProvider.error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lỗi: ${tryonProvider.error}'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+    
+    if (tryonProvider.response != null && 
+        tryonProvider.response!.outputImages.isNotEmpty) {
+      // Navigate đến màn hình kết quả
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TryonResultScreen(
+            futureLinks: tryonProvider.response!.outputImages,
+            initImageUrl: _initPublicUrl!,
+            clothImageUrl: _clothPublicUrl!,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -194,22 +224,6 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
                     : const Text('Try-on'),
               ),
-              const SizedBox(height: 24),
-              if (provider.response != null && provider.response!.outputImages.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Kết quả:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Image.network(
-                      provider.response!.outputImages.first,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
-                  ],
-                ),
-              if (provider.error != null)
-                Text('Lỗi: ${provider.error}', style: const TextStyle(color: Colors.red)),
             ],
           ),
         );
