@@ -7,13 +7,27 @@ import 'screens/try_on_screen.dart';
 import 'screens/upload_images_screen.dart';
 import 'screens/suggest_idea_screen.dart';
 import 'screens/update_profile_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  bool _isLoggedIn = false;
+
+  void _handleLoginSuccess() {
+    setState(() {
+      _isLoggedIn = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +45,9 @@ class MainApp extends StatelessWidget {
             elevation: 2,
           ),
         ),
-        home: const MainTabBar(),
+        home: _isLoggedIn
+            ? const MainTabBar()
+            : LoginScreen(onLoginSuccess: _handleLoginSuccess),
         routes: {
           '/search': (context) => const SearchScreen(),
           '/try-on': (context) => const TryOnScreen(),
