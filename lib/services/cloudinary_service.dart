@@ -37,7 +37,7 @@ class CloudinaryService {
   }
 
   /// Upload file to Cloudinary using SIGNED upload
-  /// Ảnh sẽ được resize về 512x512 với padding (không cắt, không mất ảnh gốc)
+  /// Upload ảnh GỐC không có bất kỳ transformation nào
   /// Sử dụng hash để tránh upload trùng lặp
   Future<String> uploadImage(File file) async {
     try {
@@ -53,7 +53,7 @@ class CloudinaryService {
       final url = Uri.parse(CloudinaryConstants.uploadUrl);
       final request = http.MultipartRequest('POST', url);
 
-      print('🔵 Uploading to Cloudinary (signed)...');
+      print('🔵 Uploading to Cloudinary (signed, no transformation)...');
       print('📁 File: ${file.path}');
       print('🔑 File Hash: $fileHash');
 
@@ -63,15 +63,11 @@ class CloudinaryService {
       // Public ID dựa trên hash
       final publicId = 'tryon_$fileHash';
       
-      // Transformation: resize về 512x512 với padding
-      const transformation = 'c_pad,w_512,h_512,b_white';
-      
-      // Params cần sign (KHÔNG bao gồm file, api_key, signature)
+      // Params cần sign - CHỈ có timestamp, public_id, overwrite (KHÔNG có transformation)
       final paramsToSign = {
         'timestamp': timestamp,
         'public_id': publicId,
         'overwrite': 'true',
-        'transformation': transformation,
       };
       
       // Tạo signature
@@ -84,12 +80,11 @@ class CloudinaryService {
       );
       request.files.add(multipartFile);
 
-      // Add all fields
+      // Add all fields - KHÔNG có transformation
       request.fields['api_key'] = CloudinaryConstants.apiKey;
       request.fields['timestamp'] = timestamp;
       request.fields['public_id'] = publicId;
       request.fields['overwrite'] = 'true';
-      request.fields['transformation'] = transformation;
       request.fields['signature'] = signature;
       
       // Send request
@@ -100,6 +95,7 @@ class CloudinaryService {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
+        // Lấy URL ảnh gốc (không có transformation trong URL)
         final secureUrl = jsonResponse['secure_url'] as String;
         
         // Lưu vào cache

@@ -351,13 +351,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     children: [
                       CircularProgressIndicator(),
                       SizedBox(width: 16),
-                      Text('Đang dọn dẹp phiên làm việc...'),
+                      Text('Đang xóa dữ liệu ảnh trong phiên làm việc...'),
                     ],
                   ),
                 ),
               );
               
-              // Xóa tất cả ảnh đã upload trong session
+              // Xóa tất cả ảnh đã upload trong session trên Cloudinary
               final sessionManager = SessionUploadManager();
               final result = await sessionManager.clearSessionUploads();
               
@@ -367,7 +367,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               }
               
               // Log kết quả
-              print('🧹 Session cleanup: ${result['deleted']}/${result['total']} ảnh đã xóa');
+              print('🧹 Session cleanup: ${result['deleted']}/${result['total']} ảnh đã xóa trên Cloudinary');
               
               // Clear all provider data khi logout
               if (context.mounted) {
