@@ -179,6 +179,41 @@ class AuthService {
       return SubtractTokenResponse(success: false, message: e.toString());
     }
   }
+
+  /// Thay doi anh mau cua user
+  Future<ChangeImageResponse> changeImage(String newImageUrl) async {
+    if (_jwtToken == null || userKey == null) {
+      return ChangeImageResponse(success: false, message: 'Not logged in');
+    }
+
+    try {
+      final url = Uri.parse('$_gatewayUrl/change-img');
+      final response = await http.post(
+        url,
+        headers: getAuthHeaders(),
+        body: jsonEncode({
+          'type': 'change_img',
+          'user_key': userKey,
+          'image': newImageUrl,
+        }),
+      ).timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        final result = ChangeImageResponse.fromJson(jsonDecode(response.body));
+        // Cap nhat local user data
+        if (result.success && _currentUser != null) {
+          _currentUser!['image'] = result.image;
+        }
+        return result;
+      } else if (response.statusCode == 401) {
+        logout();
+        return ChangeImageResponse(success: false, message: 'Token expired');
+      }
+      throw Exception('Server error: ${response.statusCode}');
+    } catch (e) {
+      return ChangeImageResponse(success: false, message: e.toString());
+    }
+  }
 }
 
 
@@ -254,6 +289,27 @@ class SubtractTokenResponse {
       message: json['message'] ?? '',
       tokenFreeRemaining: json['token_free_remaining'],
       tokenVipRemaining: json['token_vip_remaining'],
+    );
+  }
+}
+
+
+class ChangeImageResponse {
+  final bool success;
+  final String message;
+  final String? image;
+
+  ChangeImageResponse({
+    required this.success,
+    required this.message,
+    this.image,
+  });
+
+  factory ChangeImageResponse.fromJson(Map<String, dynamic> json) {
+    return ChangeImageResponse(
+      success: json['success'] ?? false,
+      message: json['message'] ?? '',
+      image: json['image'],
     );
   }
 }

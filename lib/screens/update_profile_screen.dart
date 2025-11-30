@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../services/session_upload_manager.dart';
 import '../providers/search_provider.dart';
 import '../providers/tryon_provider.dart';
+import 'edit_model_image_screen.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   final VoidCallback? onLogout;
@@ -74,11 +75,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               ),
               const SizedBox(height: 12),
 
-              // Chỉnh sửa hồ sơ
+              // Chinh sua anh mau
               _buildMenuItem(
-                icon: Icons.edit,
-                title: 'Chỉnh sửa hồ sơ',
-                onTap: () => _showComingSoon('Chỉnh sửa hồ sơ'),
+                icon: Icons.photo_camera,
+                title: 'Chinh sua anh mau cua ban',
+                onTap: () => _navigateToEditModelImage(),
               ),
               const SizedBox(height: 12),
 
@@ -325,6 +326,20 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  void _navigateToEditModelImage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const EditModelImageScreen(),
+      ),
+    );
+    
+    // Neu cap nhat thanh cong, rebuild UI
+    if (result == true && mounted) {
+      setState(() {});
+    }
   }
 
   void _handleLogout() {
