@@ -26,6 +26,10 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
   String? _initPublicUrl;
   String? _clothPublicUrl;
   
+  // Store file hashes to detect duplicate images
+  String? _initFileHash;
+  String? _clothFileHash;
+  
   // Uploading state
   bool _initUploading = false;
   bool _clothUploading = false;
@@ -49,27 +53,56 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
         final originalFile = File(picked.path);
         await originalFile.copy(savedPath);
         
+        // Tính hash của file mới để kiểm tra có giống file cũ không
+        final newFile = File(savedPath);
+        final newHash = await _cloudinaryService.getFileHash(newFile);
+        
         if (!mounted) return;
-        setState(() {
-          if (isInit) {
-            _initLocalPath = savedPath;
-            _initPublicUrl = null;
-          } else {
-            _clothLocalPath = savedPath;
-            _clothPublicUrl = null;
-          }
-        });
+        
+        // Kiểm tra xem ảnh mới có giống ảnh cũ không (cùng hash)
+        final oldHash = isInit ? _initFileHash : _clothFileHash;
+        final oldUrl = isInit ? _initPublicUrl : _clothPublicUrl;
+        
+        if (newHash == oldHash && oldUrl != null) {
+          // Ảnh giống nhau - giữ URL cũ, chỉ update local path
+          debugPrint('♻️ Same image detected (hash: $newHash), keeping existing URL');
+          setState(() {
+            if (isInit) {
+              _initLocalPath = savedPath;
+              // Giữ _initPublicUrl và _initFileHash
+            } else {
+              _clothLocalPath = savedPath;
+              // Giữ _clothPublicUrl và _clothFileHash
+            }
+          });
+        } else {
+          // Ảnh khác - reset URL để upload lại
+          debugPrint('🆕 New image detected (hash: $newHash)');
+          setState(() {
+            if (isInit) {
+              _initLocalPath = savedPath;
+              _initPublicUrl = null;
+              _initFileHash = newHash;
+            } else {
+              _clothLocalPath = savedPath;
+              _clothPublicUrl = null;
+              _clothFileHash = newHash;
+            }
+          });
+        }
       } catch (e) {
-        debugPrint('Error copying file: $e');
-        // Fallback: dùng path gốc nếu copy thất bại
+        debugPrint('Error processing file: $e');
+        // Fallback: dùng path gốc nếu copy/hash thất bại
         if (!mounted) return;
         setState(() {
           if (isInit) {
             _initLocalPath = picked.path;
             _initPublicUrl = null;
+            _initFileHash = null;
           } else {
             _clothLocalPath = picked.path;
             _clothPublicUrl = null;
+            _clothFileHash = null;
           }
         });
       }
@@ -125,6 +158,14 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
   }
 
   Future<void> _sendTryon() async {
+    final tryonProvider = Provider.of<TryonProvider>(context, listen: false);
+    
+    // Kiểm tra nếu đang loading thì không cho bấm nữa
+    if (tryonProvider.isLoading) {
+      debugPrint('⚠️ Already loading, ignoring tap');
+      return;
+    }
+    
     // Kiểm tra xem cả 2 ảnh đã được chọn chưa
     if (_initLocalPath == null || _clothLocalPath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -147,15 +188,19 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
       return;
     }
 
+    debugPrint('🚀 Starting Try-on process...');
+
     // Upload cả 2 ảnh lên Cloudinary nếu chưa upload
     try {
       // Upload init image nếu chưa có URL
       if (_initPublicUrl == null) {
+        debugPrint('📤 Uploading init image...');
         await _uploadImage(true);
       }
       
       // Upload cloth image nếu chưa có URL
       if (_clothPublicUrl == null) {
+        debugPrint('📤 Uploading cloth image...');
         await _uploadImage(false);
       }
       
@@ -171,6 +216,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
         return;
       }
     } catch (e) {
+      debugPrint('❌ Upload error: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -182,7 +228,11 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
     }
 
     // Gửi Cloudinary URLs tới API
-    final tryonProvider = Provider.of<TryonProvider>(context, listen: false);
+    debugPrint('📤 Sending to try-on server...');
+    debugPrint('   init_image: $_initPublicUrl');
+    debugPrint('   cloth_image: $_clothPublicUrl');
+    debugPrint('   cloth_type: $_clothType');
+    
     await tryonProvider.tryon(_initPublicUrl!, _clothPublicUrl!, _clothType);
     
     // Kiểm tra kết quả và navigate đến màn hình mới
@@ -267,10 +317,29 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: provider.isLoading ? null : _sendTryon,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
                 child: provider.isLoading
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                          SizedBox(width: 12),
+                          Text('Đang xử lý... (có thể mất 30-60 giây)'),
+                        ],
+                      )
                     : const Text('Try-on'),
               ),
+              if (provider.isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    '⏳ Đang gửi ảnh đến server AI...\nVui lòng đợi, quá trình này có thể mất 30-60 giây.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ),
             ],
           ),
         );

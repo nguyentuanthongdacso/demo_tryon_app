@@ -9,7 +9,8 @@ class CloudinaryService {
   final Map<String, String> _uploadCache = {};
 
   /// Tạo hash MD5 từ nội dung file để làm unique ID
-  Future<String> _getFileHash(File file) async {
+  /// Public method để có thể dùng từ bên ngoài
+  Future<String> getFileHash(File file) async {
     final bytes = await file.readAsBytes();
     final digest = md5.convert(bytes);
     return digest.toString();
@@ -37,7 +38,7 @@ class CloudinaryService {
   Future<String> uploadImage(File file) async {
     try {
       // Tạo hash từ file để kiểm tra trùng lặp
-      final fileHash = await _getFileHash(file);
+      final fileHash = await getFileHash(file);
       
       // Kiểm tra cache - nếu đã upload trong session này thì trả về URL cũ
       if (_uploadCache.containsKey(fileHash)) {
