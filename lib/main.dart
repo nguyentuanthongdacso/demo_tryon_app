@@ -3,12 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'providers/search_provider.dart';
 import 'providers/tryon_provider.dart';
+import 'providers/language_provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/search_screen.dart';
 import 'screens/try_on_screen.dart';
 import 'screens/upload_images_screen.dart';
 import 'screens/suggest_idea_screen.dart';
 import 'screens/update_profile_screen.dart';
 import 'screens/login_screen.dart';
+import 'l10n/app_localizations.dart';
 import 'services/session_upload_manager.dart';
 
 void main() async {
@@ -84,24 +87,47 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       providers: [
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => TryonProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
-      child: MaterialApp(
-        title: 'Try-On App',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-          appBarTheme: const AppBarTheme(
-            elevation: 2,
-          ),
-        ),
-        home: _isLoggedIn
-            ? MainTabBar(onLogout: _handleLogout)
-            : LoginScreen(onLoginSuccess: _handleLoginSuccess),
-        routes: {
-          '/search': (context) => const SearchScreen(),
-          '/try-on': (context) => const TryOnScreen(),
+      child: Consumer<LanguageProvider>(
+        builder: (context, languageProvider, child) {
+          // Ensure language is loaded once we have a valid provider/context
+          if (!languageProvider.isLoaded) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              languageProvider.loadLanguage();
+            });
+          }
+
+          return MaterialApp(
+            // Avoid calling AppLocalizations.of(context) here because
+            // Localizations are not yet available above MaterialApp.
+            title: 'Try-On App',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+              useMaterial3: true,
+              appBarTheme: const AppBarTheme(
+                elevation: 2,
+              ),
+            ),
+            // Localization
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              const AppLocalizationsDelegate(),
+            ],
+            supportedLocales: LanguageProvider.supportedLanguages.map((l) => l.locale).toList(),
+            locale: languageProvider.currentLocale,
+            home: _isLoggedIn
+                ? MainTabBar(onLogout: _handleLogout)
+                : LoginScreen(onLoginSuccess: _handleLoginSuccess),
+            routes: {
+              '/search': (context) => const SearchScreen(),
+              '/try-on': (context) => const TryOnScreen(),
+            },
+            debugShowCheckedModeBanner: false,
+          );
         },
-        debugShowCheckedModeBanner: false,
       ),
     );
   }
@@ -126,24 +152,7 @@ class _MainTabBarState extends State<MainTabBar> {
     UpdateProfileScreen(onLogout: widget.onLogout),
   ];
 
-  static final List<BottomNavigationBarItem> _items = [
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.search),
-      label: 'Search',
-    ),
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.cloud_upload),
-      label: 'Upload Images',
-    ),
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.lightbulb),
-      label: 'Suggest Idea',
-    ),
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.person),
-      label: 'Profile',
-    ),
-  ];
+  // icons kept inline when building the items
 
   void _onItemTapped(int index) {
     setState(() {
@@ -155,14 +164,26 @@ class _MainTabBarState extends State<MainTabBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: _items,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
+      bottomNavigationBar: Builder(
+        builder: (context) {
+          final loc = AppLocalizations.of(context);
+          final items = <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: const Icon(Icons.search), label: loc.translate('bottom_search')),
+            BottomNavigationBarItem(icon: const Icon(Icons.cloud_upload), label: loc.translate('bottom_upload')),
+            BottomNavigationBarItem(icon: const Icon(Icons.lightbulb), label: loc.translate('bottom_idea')),
+            BottomNavigationBarItem(icon: const Icon(Icons.person), label: loc.translate('bottom_profile')),
+          ];
+
+          return BottomNavigationBar(
+            items: items,
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: Colors.blue,
+            unselectedItemColor: Colors.grey,
+            showUnselectedLabels: true,
+          );
+        },
       ),
     );
   }

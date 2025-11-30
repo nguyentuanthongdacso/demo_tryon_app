@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/search_provider.dart';
+import '../l10n/app_localizations.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -24,7 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final url = _urlController.text.trim();
     if (url.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng nhập URL')),
+        SnackBar(content: Text(AppLocalizations.of(context).translate('please_enter_url'))),
       );
       return;
     }
@@ -35,7 +36,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tìm Kiếm Ảnh'),
+        title: Text(AppLocalizations.of(context).translate('app_title')), // generic title
         centerTitle: true,
         elevation: 2,
       ),
@@ -56,8 +57,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     controller: _urlController,
                     focusNode: _focusNode,
                     decoration: InputDecoration(
-                      hintText: 'Nhập URL ảnh',
-                      labelText: 'URL Ảnh',
+                      hintText: AppLocalizations.of(context).translate('enter_image_url_hint'),
+                      labelText: AppLocalizations.of(context).translate('url_label'),
                       prefixIcon: const Icon(Icons.link),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -75,7 +76,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: ElevatedButton.icon(
                       onPressed: _handleSearch,
                       icon: const Icon(Icons.search),
-                      label: const Text('Tìm Kiếm'),
+                      label: Text(AppLocalizations.of(context).translate('search_button')),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -122,31 +123,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       }
 
                       if (provider.images.isEmpty) {
-                        return Padding(
-                          padding: const EdgeInsets.all(32.0),
-                          child: Column(
-                            children: [
-                              Icon(Icons.image_search,
-                                  size: 64, color: Colors.grey[400]),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Nhập URL và tìm kiếm để xem kết quả',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
+                        return const SizedBox.shrink();
                       }
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Kết quả (${provider.images.length} ảnh)',
+                            '${AppLocalizations.of(context).translate('results_label')} (${provider.images.length} ${AppLocalizations.of(context).translate('photos')})',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

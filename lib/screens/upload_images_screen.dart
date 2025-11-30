@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../providers/tryon_provider.dart';
 import '../services/cloudinary_service.dart';
 import 'tryon_result_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class UploadImagesScreen extends StatefulWidget {
   const UploadImagesScreen({super.key});
@@ -160,7 +161,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Upload thất bại: $e'),
+          content: Text('${AppLocalizations.of(context).translate('upload_failed')}: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -179,8 +180,8 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
     // Kiểm tra xem cả 2 ảnh đã được chọn chưa
     if (_initLocalPath == null || _clothLocalPath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Bạn phải chọn 2 ảnh trước'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).translate('must_select_two_images')),
           backgroundColor: Colors.orange,
         ),
       );
@@ -190,8 +191,8 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
     // Kiểm tra xem đang upload không
     if (_initUploading || _clothUploading) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng chờ upload hoàn tất'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).translate('wait_for_upload_complete')),
           backgroundColor: Colors.orange,
         ),
       );
@@ -218,8 +219,8 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
       if (_initPublicUrl == null || _clothPublicUrl == null) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Upload ảnh thất bại, vui lòng thử lại'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).translate('upload_failed_try_again')),
             backgroundColor: Colors.red,
           ),
         );
@@ -230,7 +231,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Lỗi upload: $e'),
+          content: Text('${AppLocalizations.of(context).translate('upload_failed')}: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -251,7 +252,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
     if (tryonProvider.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Lỗi: ${tryonProvider.error}'),
+          content: Text('${AppLocalizations.of(context).translate('error_prefix')}: ${tryonProvider.error}'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
@@ -284,7 +285,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text('Reference Image', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context).translate('bottom_upload'), style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: () => _pickImage(true),
@@ -292,11 +293,11 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                   localPath: _initLocalPath,
                   publicUrl: _initPublicUrl,
                   uploading: _initUploading,
-                  placeholderText: 'Chọn ảnh người mẫu',
+                  placeholderText: AppLocalizations.of(context).translate('select_model_image'),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('Cloth Image', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context).translate('bottom_upload'), style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: () => _pickImage(false),
@@ -304,7 +305,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                   localPath: _clothLocalPath,
                   publicUrl: _clothPublicUrl,
                   uploading: _clothUploading,
-                  placeholderText: 'Chọn ảnh quần áo',
+                  placeholderText: AppLocalizations.of(context).translate('select_cloth_image'),
                 ),
               ),
               const SizedBox(height: 16),
@@ -319,9 +320,9 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                 onChanged: (val) {
                   if (val != null) setState(() => _clothType = val);
                 },
-                decoration: const InputDecoration(
-                  labelText: 'Loại quần áo',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).translate('type_of_cloth'),
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 24),
@@ -331,23 +332,23 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: provider.isLoading
-                    ? const Row(
+                    ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-                          SizedBox(width: 12),
-                          Text('Đang xử lý... (có thể mất 30-60 giây)'),
+                          const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                          const SizedBox(width: 12),
+                          Text(AppLocalizations.of(context).translate('processing_info')),
                         ],
                       )
-                    : const Text('Try-on'),
+                    : Text(AppLocalizations.of(context).translate('try_on')),
               ),
               if (provider.isLoading)
-                const Padding(
-                  padding: EdgeInsets.only(top: 16),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
                   child: Text(
-                    '⏳ Đang gửi ảnh đến server AI...\nVui lòng đợi, quá trình này có thể mất 30-60 giây.',
+                    AppLocalizations.of(context).translate('sending_to_ai'),
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ),
             ],
@@ -378,6 +379,8 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
               Icon(Icons.add_photo_alternate, size: 48, color: Colors.grey[400]),
               const SizedBox(height: 8),
               Text(placeholderText, style: TextStyle(color: Colors.grey[600])),
+              const SizedBox(height: 6),
+              // Removed 'Coming soon' text
             ],
           ),
         ),
@@ -398,9 +401,12 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
               Icon(Icons.check_circle, size: 16, color: Colors.green),
               const SizedBox(width: 4),
               Expanded(
-                child: Text(
-                  'Đã upload',
-                  style: const TextStyle(fontSize: 12, color: Colors.green),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(AppLocalizations.of(context).translate('uploaded'), style: const TextStyle(fontSize: 14, color: Colors.green)),
+                    // Removed 'Coming soon' text from upload success notification
+                  ],
                 ),
               ),
             ],
@@ -426,15 +432,15 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                     color: Colors.black.withAlpha(128),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CircularProgressIndicator(color: Colors.white),
-                        SizedBox(height: 8),
+                        const CircularProgressIndicator(color: Colors.white),
+                        const SizedBox(height: 8),
                         Text(
-                          'Đang upload...',
-                          style: TextStyle(color: Colors.white),
+                          AppLocalizations.of(context).translate('uploading'),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ],
                     ),

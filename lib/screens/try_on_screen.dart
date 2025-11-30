@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/tryon_provider.dart';
 import '../services/auth_service.dart';
 import 'tryon_result_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class TryOnScreen extends StatefulWidget {
   final String? imageUrl;
@@ -30,10 +31,10 @@ class _TryOnScreenState extends State<TryOnScreen> {
 
     if (initImageUrl == null || initImageUrl.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Bạn chưa cài đặt ảnh người dùng. Vui lòng cập nhật trong Profile.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).translate('no_model_image_set')),
           backgroundColor: Colors.orange,
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       );
       return;
@@ -51,7 +52,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
     if (tryonProvider.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Loi: ${tryonProvider.error}'),
+          content: Text('${AppLocalizations.of(context).translate('error_prefix')}: ${tryonProvider.error}'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
@@ -82,7 +83,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Try-On'),
+        title: Text(AppLocalizations.of(context).translate('app_title')),
         centerTitle: true,
         elevation: 2,
         leading: IconButton(
@@ -96,9 +97,9 @@ class _TryOnScreenState extends State<TryOnScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Ảnh của bạn:',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).translate('app_title'),
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -106,9 +107,9 @@ class _TryOnScreenState extends State<TryOnScreen> {
               const SizedBox(height: 12),
               _buildInitImageSection(initImageUrl),
               const SizedBox(height: 24),
-              const Text(
-                'Quần áo được chọn:',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).translate('edit_model_image'),
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -116,9 +117,9 @@ class _TryOnScreenState extends State<TryOnScreen> {
               const SizedBox(height: 12),
               _buildClothImageSection(clothImageUrl),
               const SizedBox(height: 24),
-              const Text(
-                'Loại quần áo:',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).translate('language'),
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -153,12 +154,12 @@ class _TryOnScreenState extends State<TryOnScreen> {
             errorBuilder: (context, error, stackTrace) {
               return Container(
                 color: Colors.grey[300],
-                child: const Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                    SizedBox(height: 8),
-                    Text('Không thể tải ảnh', style: TextStyle(color: Colors.grey)),
+                    const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                    const SizedBox(height: 8),
+                    Text(AppLocalizations.of(context).translate('cannot_load_image'), style: const TextStyle(color: Colors.grey)),
                   ],
                 ),
               );
@@ -233,15 +234,15 @@ class _TryOnScreenState extends State<TryOnScreen> {
             errorBuilder: (context, error, stackTrace) {
               return Container(
                 color: Colors.grey[300],
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.broken_image, size: 64, color: Colors.grey),
-                    SizedBox(height: 12),
-                    Text('Không thể tải ảnh',
-                        style: TextStyle(color: Colors.grey, fontSize: 16)),
-                  ],
-                ),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.broken_image, size: 64, color: Colors.grey),
+                      const SizedBox(height: 12),
+                      Text(AppLocalizations.of(context).translate('cannot_load_image'),
+                          style: const TextStyle(color: Colors.grey, fontSize: 16)),
+                    ],
+                  ),
               );
             },
             loadingBuilder: (context, child, loadingProgress) {
@@ -266,10 +267,10 @@ class _TryOnScreenState extends State<TryOnScreen> {
         border: Border.all(color: Colors.grey[300]!),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Center(
+      child: Center(
         child: Text(
-          'Không có ảnh được chọn',
-          style: TextStyle(color: Colors.grey, fontSize: 16),
+          AppLocalizations.of(context).translate('no_image_selected'),
+          style: const TextStyle(color: Colors.grey, fontSize: 16),
         ),
       ),
     );
@@ -277,17 +278,17 @@ class _TryOnScreenState extends State<TryOnScreen> {
 
   Widget _buildClothTypeSelector() {
     return Row(
-      children: [
+        children: [
         Expanded(
-          child: _buildClothTypeButton('upper', 'Áo', Icons.checkroom),
+          child: _buildClothTypeButton('upper', AppLocalizations.of(context).translate('cloth_upper'), Icons.checkroom),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _buildClothTypeButton('lower', 'Quần', Icons.straighten),
+          child: _buildClothTypeButton('lower', AppLocalizations.of(context).translate('cloth_lower'), Icons.straighten),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _buildClothTypeButton('full', 'Cả bộ', Icons.accessibility),
+          child: _buildClothTypeButton('full', AppLocalizations.of(context).translate('cloth_full'), Icons.accessibility),
         ),
       ],
     );
@@ -362,9 +363,9 @@ class _TryOnScreenState extends State<TryOnScreen> {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : const Text(
-                    'Bat dau Try-On',
-                    style: TextStyle(
+                : Text(
+                    AppLocalizations.of(context).translate('start_tryon'),
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,

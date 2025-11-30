@@ -5,6 +5,8 @@ import '../services/session_upload_manager.dart';
 import '../providers/search_provider.dart';
 import '../providers/tryon_provider.dart';
 import 'edit_model_image_screen.dart';
+import 'language_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   final VoidCallback? onLogout;
@@ -29,6 +31,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     // Lấy ảnh: ưu tiên profile_image từ Google, sau đó là image từ server
     final userImage = user?['profile_image'] ?? user?['image'];
 
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFF87CEEB), // Sky blue background
       body: SafeArea(
@@ -43,7 +47,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               // Settings & Privacy Section (expandable)
               _buildExpandableSection(
                 icon: Icons.settings,
-                title: 'Cài đặt và quyền riêng tư',
+                title: loc.translate('settings_privacy'),
                 isExpanded: _isSettingsExpanded,
                 onTap: () {
                   setState(() {
@@ -53,23 +57,30 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 children: [
                   _buildMenuItem(
                     icon: Icons.person_outline,
-                    title: 'Thông tin cá nhân',
-                    onTap: () => _showComingSoon('Thông tin cá nhân'),
+                    title: loc.translate('personal_info'),
+                    onTap: () => _showComingSoon(loc.translate('personal_info')),
                   ),
                   _buildMenuItem(
                     icon: Icons.lock_outline,
-                    title: 'Mật khẩu và bảo mật',
-                    onTap: () => _showComingSoon('Mật khẩu và bảo mật'),
+                    title: loc.translate('password_security'),
+                    onTap: () => _showComingSoon(loc.translate('password_security')),
                   ),
                   _buildMenuItem(
                     icon: Icons.link,
-                    title: 'Liên kết tài khoản',
-                    onTap: () => _showComingSoon('Liên kết tài khoản'),
+                    title: loc.translate('link_accounts'),
+                    onTap: () => _showComingSoon(loc.translate('link_accounts')),
                   ),
                   _buildMenuItem(
                     icon: Icons.language,
-                    title: 'Ngôn ngữ và khu vực',
-                    onTap: () => _showComingSoon('Ngôn ngữ và khu vực'),
+                    title: loc.translate('language'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LanguageScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -78,7 +89,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               // Chinh sua anh mau
               _buildMenuItem(
                 icon: Icons.photo_camera,
-                title: 'Chỉnh sửa ảnh mẫu của bạn',
+                title: loc.translate('edit_model_image'),
                 onTap: () => _navigateToEditModelImage(),
               ),
               const SizedBox(height: 12),
@@ -86,31 +97,31 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               // Trung tâm hỗ trợ
               _buildMenuItem(
                 icon: Icons.help_outline,
-                title: 'Trung tâm hỗ trợ',
-                onTap: () => _showComingSoon('Trung tâm hỗ trợ'),
+                title: loc.translate('support_center'),
+                onTap: () => _showComingSoon(loc.translate('support_center')),
               ),
               const SizedBox(height: 12),
 
               // Yêu cầu trợ giúp
               _buildMenuItem(
                 icon: Icons.chat_bubble_outline,
-                title: 'Yêu cầu trợ giúp',
-                onTap: () => _showComingSoon('Yêu cầu trợ giúp'),
+                title: loc.translate('request_help'),
+                onTap: () => _showComingSoon(loc.translate('request_help')),
               ),
               const SizedBox(height: 12),
 
               // Nâng cấp tài khoản
               _buildMenuItem(
                 icon: Icons.attach_money,
-                title: 'Nâng cấp tài khoản',
-                onTap: () => _showComingSoon('Nâng cấp tài khoản'),
+                title: loc.translate('upgrade_account'),
+                onTap: () => _showComingSoon(loc.translate('upgrade_account')),
               ),
               const SizedBox(height: 12),
 
               // Log out
               _buildMenuItem(
                 icon: Icons.logout,
-                title: 'Log out',
+                title: loc.translate('logout'),
                 titleColor: Colors.red,
                 onTap: _handleLogout,
               ),
@@ -198,7 +209,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         // Notification bell
         IconButton(
           icon: const Icon(Icons.notifications_outlined, color: Colors.black87),
-          onPressed: () => _showComingSoon('Thông báo'),
+          onPressed: () => _showComingSoon(AppLocalizations.of(context).translate('notifications')),
         ),
       ],
     );
@@ -291,38 +302,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     );
   }
 
-  Widget _buildHighlightedButton({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E88E5), // Blue color
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: Colors.white),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        onTap: onTap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-      ),
-    );
-  }
+  // removed unused helper
 
   void _showComingSoon(String feature) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$feature - Coming soon!'),
+        content: Text('$feature - ${AppLocalizations.of(context).translate('coming_soon')}'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -346,12 +331,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Đăng xuất'),
-        content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
+      title: Text(AppLocalizations.of(context).translate('logout_confirm_title')),
+      content: Text(AppLocalizations.of(context).translate('logout_confirm_content')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Hủy'),
+            child: Text(AppLocalizations.of(context).translate('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -361,12 +346,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (ctx) => const AlertDialog(
+                builder: (ctx) => AlertDialog(
                   content: Row(
                     children: [
-                      CircularProgressIndicator(),
-                      SizedBox(width: 16),
-                      Text('Đang xóa dữ liệu ảnh trong phiên làm việc...'),
+                      const CircularProgressIndicator(),
+                      const SizedBox(width: 16),
+                      Flexible(child: Text(AppLocalizations.of(context).translate('clearing_session_data'))),
                     ],
                   ),
                 ),
@@ -396,7 +381,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 widget.onLogout!();
               }
             },
-            child: const Text('Đăng xuất', style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.of(context).translate('logout'), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),

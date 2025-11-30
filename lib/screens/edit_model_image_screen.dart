@@ -10,6 +10,7 @@ import '../constants/cloudinary_constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import '../l10n/app_localizations.dart';
 
 class EditModelImageScreen extends StatefulWidget {
   const EditModelImageScreen({super.key});
@@ -56,7 +57,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
         } catch (e) {
           if (mounted) {
             setState(() {
-              _errorMessage = 'Lỗi khi chọn ảnh: $e';
+              _errorMessage = '${AppLocalizations.of(context).translate('error_prefix')}: $e';
             });
           }
         }
@@ -143,7 +144,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
   Future<void> _updateImage() async {
     if (_selectedImagePath == null) {
       setState(() {
-        _errorMessage = 'Vui lòng chọn ảnh trước khi cập nhật.';
+        _errorMessage = AppLocalizations.of(context).translate('please_select_image');
       });
       return;
     }
@@ -177,8 +178,8 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Cap nhat anh thanh cong!'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).translate('update_image_success')),
               backgroundColor: Colors.green,
             ),
           );
@@ -206,7 +207,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chỉnh sửa ảnh người mẫu'),
+        title: Text(AppLocalizations.of(context).translate('edit_model_image')),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -289,9 +290,9 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
-                    : const Text(
-                        'Cập nhật ảnh',
-                        style: TextStyle(
+                    : Text(
+                        AppLocalizations.of(context).translate('update_image'),
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,

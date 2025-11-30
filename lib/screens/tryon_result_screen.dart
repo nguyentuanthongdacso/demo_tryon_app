@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../l10n/app_localizations.dart';
 
 class TryonResultScreen extends StatefulWidget {
   final List<String> futureLinks;
@@ -50,10 +51,10 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
         timer.cancel();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('⏱️ Hết thời gian chờ. Vui lòng thử lại.'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).translate('timeout_try_again')),
               backgroundColor: Colors.orange,
-              duration: Duration(seconds: 3),
+              duration: const Duration(seconds: 3),
             ),
           );
         }
@@ -77,14 +78,14 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
       }
 
       // Nếu tất cả ảnh đã sẵn sàng, dừng timer
-      if (allReady) {
+        if (allReady) {
         timer.cancel();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Tất cả ảnh đã sẵn sàng!'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).translate('all_images_ready')),
               backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
+              duration: const Duration(seconds: 2),
             ),
           );
         }
@@ -111,7 +112,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Try-On Results'),
+        title: Text(AppLocalizations.of(context).translate('tryon_results_title')),
         actions: [
           if (!allReady)
             Padding(
@@ -131,7 +132,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Đang xử lý... ($readyCount/$totalCount)',
+                      '${AppLocalizations.of(context).translate('processing_short')} ($readyCount/$totalCount)',
                       style: const TextStyle(fontSize: 14),
                     ),
                   ],
@@ -154,8 +155,8 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                   children: [
                     Text(
                       allReady
-                          ? '✅ Hoàn thành!'
-                          : '⏳ Đang xử lý ảnh... ($readyCount/$totalCount)',
+                          ? AppLocalizations.of(context).translate('all_images_ready')
+                          : '${AppLocalizations.of(context).translate('processing_short')} ($readyCount/$totalCount)',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -178,9 +179,9 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
             const SizedBox(height: 16),
 
             // Hiển thị ảnh gốc
-            const Text(
-              'Ảnh gốc',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context).translate('original_image'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Row(
@@ -188,7 +189,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                      const Text('Người mẫu', style: TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context).translate('model_label'), style: const TextStyle(fontSize: 12)),
                       const SizedBox(height: 4),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -210,7 +211,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                      const Text('Quần áo', style: TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context).translate('cloth_label'), style: const TextStyle(fontSize: 12)),
                       const SizedBox(height: 4),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -233,9 +234,9 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
             const SizedBox(height: 24),
 
             // Hiển thị kết quả
-            const Text(
-              'Kết quả Try-On',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context).translate('tryon_results_title'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
 
@@ -250,7 +251,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Kết quả ${index + 1}',
+                      '${AppLocalizations.of(context).translate('results_label')} ${index + 1}',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,

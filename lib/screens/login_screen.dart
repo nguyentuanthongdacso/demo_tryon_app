@@ -4,6 +4,7 @@ import '../services/google_auth_service.dart';
 import '../services/auth_service.dart';
 import '../services/session_upload_manager.dart';
 import '../widgets/social_login_button.dart';
+import '../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback onLoginSuccess;
@@ -73,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           debugPrint('❌ Login failed: ${loginResult.message}');
           if (mounted) {
-            _showError('Đăng nhập thất bại: ${loginResult.message}');
+            _showError('${AppLocalizations.of(context).translate('login_failed')}: ${loginResult.message}');
           }
         }
       } else if (mounted) {
@@ -82,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       debugPrint('Google Sign-In error: $e');
       if (mounted) {
-        _showError('Đăng nhập Google thất bại: $e');
+        _showError('${AppLocalizations.of(context).translate('google_signin_failed')}: $e');
       }
     } finally {
       if (mounted) {
@@ -128,9 +129,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),
 
                 // Title
-                const Text(
-                  'Try-On App',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context).translate('app_title'),
+                  style: const TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -141,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Slogan
                 Text(
-                  'Virtual try-on made easy',
+                  AppLocalizations.of(context).translate('slogan'),
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.black.withOpacity(0.7),
@@ -160,23 +161,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Terms
                 Text.rich(
                   TextSpan(
-                    text: 'By clicking continue, you agree to our ',
+                    text: AppLocalizations.of(context).translate('terms_prefix'),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.black.withOpacity(0.7),
                     ),
-                    children: const [
+                    children: [
                       TextSpan(
-                        text: 'Terms of Service',
-                        style: TextStyle(
+                        text: AppLocalizations.of(context).translate('terms_of_service'),
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
                         ),
                       ),
                       TextSpan(text: '\nand '),
                       TextSpan(
-                        text: 'Privacy Policy',
-                        style: TextStyle(
+                        text: AppLocalizations.of(context).translate('privacy_policy'),
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
                         ),

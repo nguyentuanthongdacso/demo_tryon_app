@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class SocialLoginButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -41,7 +42,7 @@ class SocialLoginButton extends StatelessWidget {
               icon,
             const SizedBox(width: 12),
             Text(
-              isLoading ? 'Đang đăng nhập...' : label,
+              isLoading ? AppLocalizations.of(context).translate('google_signing_in') : label,
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16,
