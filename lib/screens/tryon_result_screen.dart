@@ -311,7 +311,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
