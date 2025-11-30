@@ -9,9 +9,14 @@ import 'screens/upload_images_screen.dart';
 import 'screens/suggest_idea_screen.dart';
 import 'screens/update_profile_screen.dart';
 import 'screens/login_screen.dart';
+import 'services/session_upload_manager.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Xoa anh tu phien truoc (neu app bi dong dot ngot)
+  await SessionUploadManager().cleanupPreviousSession();
+  
   // Khóa orientation - chỉ cho phép chế độ dọc
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -27,11 +32,39 @@ class MainApp extends StatefulWidget {
   State<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> {
+class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   bool _isLoggedIn = false;
   
-  // Global key để access context cho providers
-  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+  
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    // Chi xoa khi app bi DONG HOAN TOAN (detached)
+    // KHONG xoa khi chuyen qua app khac (paused/inactive)
+    if (state == AppLifecycleState.detached) {
+      debugPrint('🔴 App detached - cleaning up session uploads...');
+      _cleanupSessionUploads();
+    }
+  }
+  
+  /// Xoa cac anh da upload trong session (khong xoa anh model cua user)
+  Future<void> _cleanupSessionUploads() async {
+    if (_isLoggedIn) {
+      await SessionUploadManager().clearSessionUploads();
+    }
+  }
 
   void _handleLoginSuccess() {
     setState(() {

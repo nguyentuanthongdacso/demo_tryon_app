@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/google_auth_service.dart';
 import '../services/auth_service.dart';
+import '../services/session_upload_manager.dart';
 import '../widgets/social_login_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -61,6 +62,10 @@ class _LoginScreenState extends State<LoginScreen> {
           debugPrint('✅ Login success!');
           debugPrint('👤 User: ${_authService.currentUser}');
           debugPrint('🔑 JWT Token: ${_authService.jwtToken?.substring(0, 20)}...');
+          
+          // Lưu URL ảnh model của user để tránh xóa nhầm
+          final userImageUrl = _authService.currentUser?['image'] as String?;
+          await SessionUploadManager().setUserModelImageUrl(userImageUrl);
           
           if (mounted) {
             widget.onLoginSuccess();

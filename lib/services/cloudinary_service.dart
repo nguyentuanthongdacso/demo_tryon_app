@@ -5,30 +5,43 @@ import 'package:http/http.dart' as http;
 import '../constants/cloudinary_constants.dart';
 import 'session_upload_manager.dart';
 
+/// Ket qua upload anh len Cloudinary
+class CloudinaryUploadResult {
+  final String url;
+  final String publicId;
+  final String hash;
+
+  CloudinaryUploadResult({
+    required this.url,
+    required this.publicId,
+    required this.hash,
+  });
+}
+
 class CloudinaryService {
-  // Cache để tránh upload trùng lặp trong cùng session
-  final Map<String, String> _uploadCache = {};
+  // Cache de tranh upload trung lap trong cung session
+  final Map<String, CloudinaryUploadResult> _uploadCache = {};
   
-  // Session upload manager để track các ảnh đã upload
+  // Session upload manager de track cac anh da upload
   final SessionUploadManager _sessionManager = SessionUploadManager();
 
-  /// Tạo hash MD5 từ nội dung file để làm unique ID
-  /// Public method để có thể dùng từ bên ngoài
+  /// Tao hash MD5 tu noi dung file de lam unique ID
+  /// Public method de co the dung tu ben ngoai
   Future<String> getFileHash(File file) async {
     final bytes = await file.readAsBytes();
     final digest = md5.convert(bytes);
     return digest.toString();
   }
 
-  /// Tạo signature cho signed upload
+  /// Tao signature cho signed upload
   String _generateSignature(Map<String, String> params) {
-    // Sắp xếp params theo alphabet và tạo string
+    // Sap xep params theo alphabet va tao string
     final sortedKeys = params.keys.toList()..sort();
     final paramString = sortedKeys
         .map((key) => '$key=${params[key]}')
         .join('&');
     
-    // Thêm API Secret vào cuối và hash SHA1
+    // Them API Secret vao cuoi va hash SHA1
     final stringToSign = '$paramString${CloudinaryConstants.apiSecret}';
     final bytes = utf8.encode(stringToSign);
     final digest = sha1.convert(bytes);
@@ -37,14 +50,15 @@ class CloudinaryService {
   }
 
   /// Upload file to Cloudinary using SIGNED upload
-  /// Upload ảnh GỐC không có bất kỳ transformation nào
-  /// Sử dụng hash để tránh upload trùng lặp
-  Future<String> uploadImage(File file) async {
+  /// [imageType] - 'init' hoac 'cloth' de xac dinh loai anh
+  /// Su dung hash de tranh upload trung lap
+  /// Tu dong xoa anh cu va luu anh moi vao SessionUploadManager
+  Future<CloudinaryUploadResult> uploadImageWithTracking(File file, String imageType) async {
     try {
-      // Tạo hash từ file để kiểm tra trùng lặp
+      // Tao hash tu file de kiem tra trung lap
       final fileHash = await getFileHash(file);
       
-      // Kiểm tra cache - nếu đã upload trong session này thì trả về URL cũ
+      // Kiem tra cache - neu da upload trong session nay thi tra ve URL cu
       if (_uploadCache.containsKey(fileHash)) {
         print('♻️ Image already uploaded in this session, using cached URL');
         return _uploadCache[fileHash]!;
@@ -53,24 +67,24 @@ class CloudinaryService {
       final url = Uri.parse(CloudinaryConstants.uploadUrl);
       final request = http.MultipartRequest('POST', url);
 
-      print('🔵 Uploading to Cloudinary (signed, no transformation)...');
+      print('🔵 Uploading $imageType image to Cloudinary...');
       print('📁 File: ${file.path}');
       print('🔑 File Hash: $fileHash');
 
       // Timestamp cho signature
       final timestamp = (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString();
       
-      // Public ID dựa trên hash
-      final publicId = 'tryon_$fileHash';
+      // Public ID dua tren hash
+      final publicId = 'tryon_${imageType}_$fileHash';
       
-      // Params cần sign - CHỈ có timestamp, public_id, overwrite (KHÔNG có transformation)
+      // Params can sign
       final paramsToSign = {
         'timestamp': timestamp,
         'public_id': publicId,
         'overwrite': 'true',
       };
       
-      // Tạo signature
+      // Tao signature
       final signature = _generateSignature(paramsToSign);
 
       // Add the image file
@@ -80,7 +94,7 @@ class CloudinaryService {
       );
       request.files.add(multipartFile);
 
-      // Add all fields - KHÔNG có transformation
+      // Add all fields
       request.fields['api_key'] = CloudinaryConstants.apiKey;
       request.fields['timestamp'] = timestamp;
       request.fields['public_id'] = publicId;
@@ -95,18 +109,27 @@ class CloudinaryService {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        // Lấy URL ảnh gốc (không có transformation trong URL)
         final secureUrl = jsonResponse['secure_url'] as String;
         
-        // Lưu vào cache
-        _uploadCache[fileHash] = secureUrl;
+        final result = CloudinaryUploadResult(
+          url: secureUrl,
+          publicId: publicId,
+          hash: fileHash,
+        );
         
-        // Track upload để xóa khi logout
-        _sessionManager.trackUpload(publicId);
+        // Luu vao cache
+        _uploadCache[fileHash] = result;
+        
+        // Luu vao SessionUploadManager va xoa anh cu (neu co)
+        if (imageType == 'init') {
+          await _sessionManager.setInitImage(publicId, secureUrl);
+        } else if (imageType == 'cloth') {
+          await _sessionManager.setClothImage(publicId, secureUrl);
+        }
         
         print('✅ Upload successful!');
         print('🔗 URL: $secureUrl');
-        return secureUrl;
+        return result;
       } else {
         print('❌ Response body: ${response.body}');
         throw Exception('Upload failed: ${response.statusCode} - ${response.body}');
@@ -117,7 +140,57 @@ class CloudinaryService {
     }
   }
 
-  /// Xóa cache (nếu cần reset)
+  /// Upload don gian (khong tracking) - dung cho model image
+  Future<String> uploadImage(File file) async {
+    try {
+      final fileHash = await getFileHash(file);
+      
+      final url = Uri.parse(CloudinaryConstants.uploadUrl);
+      final request = http.MultipartRequest('POST', url);
+
+      print('🔵 Uploading to Cloudinary (no tracking)...');
+
+      final timestamp = (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString();
+      final publicId = 'model_$fileHash';
+      
+      final paramsToSign = {
+        'timestamp': timestamp,
+        'public_id': publicId,
+        'overwrite': 'true',
+      };
+      
+      final signature = _generateSignature(paramsToSign);
+
+      final multipartFile = await http.MultipartFile.fromPath(
+        'file',
+        file.path,
+      );
+      request.files.add(multipartFile);
+
+      request.fields['api_key'] = CloudinaryConstants.apiKey;
+      request.fields['timestamp'] = timestamp;
+      request.fields['public_id'] = publicId;
+      request.fields['overwrite'] = 'true';
+      request.fields['signature'] = signature;
+      
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        final secureUrl = jsonResponse['secure_url'] as String;
+        print('✅ Upload successful: $secureUrl');
+        return secureUrl;
+      } else {
+        throw Exception('Upload failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Upload error: $e');
+      throw Exception('Cloudinary upload error: $e');
+    }
+  }
+
+  /// Xoa cache (neu can reset)
   void clearCache() {
     _uploadCache.clear();
   }

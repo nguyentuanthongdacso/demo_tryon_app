@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import '../services/auth_service.dart';
 import '../services/cloudinary_service.dart';
+import '../services/session_upload_manager.dart';
 import '../constants/cloudinary_constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
@@ -157,6 +158,9 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
       final result = await _authService.changeImage(newImageUrl);
       
       if (result.success) {
+        // Cap nhat URL anh model moi trong SessionUploadManager
+        await SessionUploadManager().setUserModelImageUrl(newImageUrl);
+        
         // Xoa anh cu tren Cloudinary (neu co)
         await _deleteOldImage(oldImageUrl);
         

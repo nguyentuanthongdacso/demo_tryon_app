@@ -106,7 +106,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
           }
         });
       }
-      // Không upload ngay - chỉ upload khi bấm Try-on
+      // Khong upload ngay - chi upload khi bam Try-on
     }
   }
 
@@ -124,16 +124,17 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
 
     try {
       final file = File(localPath);
-      // Upload to Cloudinary
-      final publicUrl = await _cloudinaryService.uploadImage(file);
+      // Upload to Cloudinary voi tracking (tu dong xoa anh cu)
+      final imageType = isInit ? 'init' : 'cloth';
+      final result = await _cloudinaryService.uploadImageWithTracking(file, imageType);
       
       if (!mounted) return;
       setState(() {
         if (isInit) {
-          _initPublicUrl = publicUrl;
+          _initPublicUrl = result.url;
           _initUploading = false;
         } else {
-          _clothPublicUrl = publicUrl;
+          _clothPublicUrl = result.url;
           _clothUploading = false;
         }
       });
@@ -150,7 +151,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Upload thất bại: $e'),
+          content: Text('Upload that bai: $e'),
           backgroundColor: Colors.red,
         ),
       );
