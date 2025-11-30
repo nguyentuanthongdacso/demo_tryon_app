@@ -29,6 +29,9 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   bool _isLoggedIn = false;
+  
+  // Global key để access context cho providers
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   void _handleLoginSuccess() {
     setState(() {

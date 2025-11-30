@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../services/session_upload_manager.dart';
+import '../providers/search_provider.dart';
+import '../providers/tryon_provider.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   final VoidCallback? onLogout;
@@ -326,17 +330,51 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   void _handleLogout() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Đăng xuất'),
         content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Hủy'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              
+              // Hiển thị loading trong khi xóa ảnh
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (ctx) => const AlertDialog(
+                  content: Row(
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(width: 16),
+                      Text('Đang dọn dẹp phiên làm việc...'),
+                    ],
+                  ),
+                ),
+              );
+              
+              // Xóa tất cả ảnh đã upload trong session
+              final sessionManager = SessionUploadManager();
+              final result = await sessionManager.clearSessionUploads();
+              
+              // Đóng loading dialog
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
+              
+              // Log kết quả
+              print('🧹 Session cleanup: ${result['deleted']}/${result['total']} ảnh đã xóa');
+              
+              // Clear all provider data khi logout
+              if (context.mounted) {
+                context.read<SearchProvider>().clearAll();
+                context.read<TryonProvider>().clear();
+              }
+              
               _authService.logout();
               // Gọi callback để navigate về login screen
               if (widget.onLogout != null) {

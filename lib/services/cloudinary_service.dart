@@ -3,10 +3,14 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import '../constants/cloudinary_constants.dart';
+import 'session_upload_manager.dart';
 
 class CloudinaryService {
   // Cache để tránh upload trùng lặp trong cùng session
   final Map<String, String> _uploadCache = {};
+  
+  // Session upload manager để track các ảnh đã upload
+  final SessionUploadManager _sessionManager = SessionUploadManager();
 
   /// Tạo hash MD5 từ nội dung file để làm unique ID
   /// Public method để có thể dùng từ bên ngoài
@@ -100,6 +104,9 @@ class CloudinaryService {
         
         // Lưu vào cache
         _uploadCache[fileHash] = secureUrl;
+        
+        // Track upload để xóa khi logout
+        _sessionManager.trackUpload(publicId);
         
         print('✅ Upload successful!');
         print('🔗 URL: $secureUrl');
