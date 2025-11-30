@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'providers/search_provider.dart';
 import 'providers/tryon_provider.dart';
@@ -10,6 +11,12 @@ import 'screens/update_profile_screen.dart';
 import 'screens/login_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Khóa orientation - chỉ cho phép chế độ dọc
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const MainApp());
 }
 
@@ -26,6 +33,12 @@ class _MainAppState extends State<MainApp> {
   void _handleLoginSuccess() {
     setState(() {
       _isLoggedIn = true;
+    });
+  }
+
+  void _handleLogout() {
+    setState(() {
+      _isLoggedIn = false;
     });
   }
 
@@ -46,7 +59,7 @@ class _MainAppState extends State<MainApp> {
           ),
         ),
         home: _isLoggedIn
-            ? const MainTabBar()
+            ? MainTabBar(onLogout: _handleLogout)
             : LoginScreen(onLoginSuccess: _handleLoginSuccess),
         routes: {
           '/search': (context) => const SearchScreen(),
@@ -59,7 +72,9 @@ class _MainAppState extends State<MainApp> {
 }
 
 class MainTabBar extends StatefulWidget {
-  const MainTabBar({super.key});
+  final VoidCallback? onLogout;
+
+  const MainTabBar({super.key, this.onLogout});
 
   @override
   State<MainTabBar> createState() => _MainTabBarState();
@@ -68,11 +83,11 @@ class MainTabBar extends StatefulWidget {
 class _MainTabBarState extends State<MainTabBar> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _screens = <Widget>[
+  List<Widget> get _screens => <Widget>[
     const SearchScreen(),
     const UploadImagesScreen(),
     const SuggestIdeaScreen(),
-    const UpdateProfileScreen(),
+    UpdateProfileScreen(onLogout: widget.onLogout),
   ];
 
   static final List<BottomNavigationBarItem> _items = [

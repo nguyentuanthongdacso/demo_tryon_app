@@ -18,25 +18,31 @@ class ApiConstants {
     return 'ws://127.0.0.1';
   }
 
-  // Default ports for each service (can be changed if your servers use other ports)
-  static const int searchPort = 8001;
-  static const int tryonPort = 8005;
-  static const int uploadPort = 8002; // default upload endpoint lives on same try-on server
+  // ===== SERVER PORTS =====
+  static const int gatewayPort = 8003;  // 3_api_gateway - Auth & User management
+  static const int searchPort = 8001;   // 1_scrape_url - Web scraping
+  static const int tryonPort = 8002;    // 2_try_on - Try-on API
+  // Port 8002 = 4_connect_db (internal only, not accessible from client)
 
-  static String get baseUrl => '$baseHost:$searchPort';
-  static String get wsBaseUrl => '$wsBaseHost:$searchPort';
+  // ===== BASE URLs =====
+  static String get gatewayBaseUrl => '$baseHost:$gatewayPort';  // API Gateway
+  static String get baseUrl => '$baseHost:$searchPort';           // Search/Scrape
+  static String get wsBaseUrl => '$wsBaseHost:$searchPort';       // WebSocket
+  static String get tryOnBaseUrl => '$baseHost:$tryonPort';       // Try-on
   
-  // Cho Device thực (thay <IP> bằng IP máy tính)
-  // static const String baseUrl = 'http://<YOUR_COMPUTER_IP>:8001';
+  // ===== ENDPOINTS =====
+  // Gateway endpoints (Auth)
+  static const String checkLoginEndpoint = '/check-login';
+  static const String checkTokenEndpoint = '/check-token';
+  static const String subtractTokenEndpoint = '/subtract-token';
   
-  // Cho iOS Simulator
-  // static const String baseUrl = 'http://127.0.0.1:8001';
-  
+  // Search endpoints
   static const String searchEndpoint = '/scrape';
-  static const String tryOnEndpoint = '/try-on';
-  static String get tryOnBaseUrl => '$baseHost:$tryonPort';
-  static const String uploadEndpoint = '/upload';
-  static String get uploadBaseUrl => '$baseHost:$uploadPort';
   
+  // Try-on endpoints
+  static const String tryOnEndpoint = '/tryon';
+  
+  // ===== TIMEOUTS =====
   static const Duration connectionTimeout = Duration(seconds: 30);
+  static const Duration tryonTimeout = Duration(seconds: 120);
 }

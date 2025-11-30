@@ -8,9 +8,9 @@ class TryonService {
   // Use platform-aware host so Android emulators connect to host machine
   // Android emulator maps 10.0.2.2 -> host 127.0.0.1
   static String get _baseHost {
-    if (Platform.isAndroid) return 'http://10.0.2.2:8005';
+    if (Platform.isAndroid) return 'http://10.0.2.2:8002';
     // iOS Simulator and desktop will use localhost
-    return 'http://127.0.0.1:8005';
+    return 'http://127.0.0.1:8002';
   }
   static const String tryonEndpoint = '/tryon';
   static const Duration timeout = Duration(seconds: 120);

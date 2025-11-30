@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../models/auth_user.dart';
 import '../services/google_auth_service.dart';
+import '../services/auth_service.dart';
 import '../widgets/social_login_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,6 +18,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GoogleAuthService _googleAuth = GoogleAuthService();
+  final AuthService _authService = AuthService();
   bool _isLoading = false;
 
   @override
@@ -47,15 +48,29 @@ class _LoginScreenState extends State<LoginScreen> {
       debugPrint('Account email: ${account?.email}');
 
       if (account != null && mounted) {
-        final user = AuthUser(
-          id: account.id,
+        // Gọi API check-login để lấy JWT token và user data
+        debugPrint('🔐 Calling check-login API...');
+        
+        final loginResult = await _authService.checkLogin(
           email: account.email,
-          displayName: account.displayName,
+          name: account.displayName,
           photoUrl: account.photoUrl,
-          provider: AuthProvider.google,
         );
-        debugPrint('Logged in user: $user');
-        widget.onLoginSuccess();
+
+        if (loginResult.success) {
+          debugPrint('✅ Login success!');
+          debugPrint('👤 User: ${_authService.currentUser}');
+          debugPrint('🔑 JWT Token: ${_authService.jwtToken?.substring(0, 20)}...');
+          
+          if (mounted) {
+            widget.onLoginSuccess();
+          }
+        } else {
+          debugPrint('❌ Login failed: ${loginResult.message}');
+          if (mounted) {
+            _showError('Đăng nhập thất bại: ${loginResult.message}');
+          }
+        }
       } else if (mounted) {
         debugPrint('Account is null - user may have cancelled');
       }
