@@ -31,7 +31,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
     if (initImageUrl == null || initImageUrl.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Ban chua co anh nguoi dung. Vui long cap nhat trong Profile.'),
+          content: Text('Bạn chưa cài đặt ảnh người dùng. Vui lòng cập nhật trong Profile.'),
           backgroundColor: Colors.orange,
           duration: Duration(seconds: 3),
         ),
@@ -97,7 +97,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Anh cua ban:',
+                'Ảnh của bạn:',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -107,7 +107,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
               _buildInitImageSection(initImageUrl),
               const SizedBox(height: 24),
               const Text(
-                'Quan ao duoc chon:',
+                'Quần áo được chọn:',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
               _buildClothImageSection(clothImageUrl),
               const SizedBox(height: 24),
               const Text(
-                'Loai quan ao:',
+                'Loại quần áo:',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -158,7 +158,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
                   children: [
                     Icon(Icons.broken_image, size: 48, color: Colors.grey),
                     SizedBox(height: 8),
-                    Text('Khong the tai anh', style: TextStyle(color: Colors.grey)),
+                    Text('Không thể tải ảnh', style: TextStyle(color: Colors.grey)),
                   ],
                 ),
               );
@@ -192,7 +192,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
           Icon(Icons.warning_amber, size: 48, color: Colors.orange[700]),
           const SizedBox(height: 12),
           Text(
-            'Chua co anh nguoi dung',
+            'Chưa có ảnh người mẫu',
             style: TextStyle(
               color: Colors.orange[700],
               fontSize: 16,
@@ -201,7 +201,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Vui long cap nhat anh trong Profile',
+            'Vui lòng cập nhật ảnh người mẫu trong Profile',
             style: TextStyle(color: Colors.orange[600], fontSize: 14),
           ),
         ],
@@ -238,7 +238,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
                   children: [
                     Icon(Icons.broken_image, size: 64, color: Colors.grey),
                     SizedBox(height: 12),
-                    Text('Khong the tai anh',
+                    Text('Không thể tải ảnh',
                         style: TextStyle(color: Colors.grey, fontSize: 16)),
                   ],
                 ),
@@ -268,7 +268,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
       ),
       child: const Center(
         child: Text(
-          'Khong co anh duoc chon',
+          'Không có ảnh được chọn',
           style: TextStyle(color: Colors.grey, fontSize: 16),
         ),
       ),
@@ -279,15 +279,15 @@ class _TryOnScreenState extends State<TryOnScreen> {
     return Row(
       children: [
         Expanded(
-          child: _buildClothTypeButton('upper', 'Ao', Icons.checkroom),
+          child: _buildClothTypeButton('upper', 'Áo', Icons.checkroom),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _buildClothTypeButton('lower', 'Quan', Icons.straighten),
+          child: _buildClothTypeButton('lower', 'Quần', Icons.straighten),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _buildClothTypeButton('full', 'Ca bo', Icons.accessibility),
+          child: _buildClothTypeButton('full', 'Cả bộ', Icons.accessibility),
         ),
       ],
     );

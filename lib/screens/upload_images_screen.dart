@@ -33,80 +33,89 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
   // Uploading state
   bool _initUploading = false;
   bool _clothUploading = false;
+  bool _isPicking = false; // Ngan double-click
   
   String _clothType = 'upper_body';
   final _clothTypes = ['upper_body', 'lower_body', 'dress'];
   final _cloudinaryService = CloudinaryService();
 
   Future<void> _pickImage(bool isInit) async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      if (!mounted) return;
-      
-      try {
-        // Copy file từ cache sang app directory để tránh bị xóa
-        final appDir = await getApplicationDocumentsDirectory();
-        final fileName = '${isInit ? 'init' : 'cloth'}_${DateTime.now().millisecondsSinceEpoch}${path.extension(picked.path)}';
-        final savedPath = path.join(appDir.path, fileName);
-        
-        final originalFile = File(picked.path);
-        await originalFile.copy(savedPath);
-        
-        // Tính hash của file mới để kiểm tra có giống file cũ không
-        final newFile = File(savedPath);
-        final newHash = await _cloudinaryService.getFileHash(newFile);
-        
+    // Ngan double-click
+    if (_isPicking) return;
+    _isPicking = true;
+    
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(source: ImageSource.gallery);
+      if (picked != null) {
         if (!mounted) return;
         
-        // Kiểm tra xem ảnh mới có giống ảnh cũ không (cùng hash)
-        final oldHash = isInit ? _initFileHash : _clothFileHash;
-        final oldUrl = isInit ? _initPublicUrl : _clothPublicUrl;
-        
-        if (newHash == oldHash && oldUrl != null) {
-          // Ảnh giống nhau - giữ URL cũ, chỉ update local path
-          debugPrint('♻️ Same image detected (hash: $newHash), keeping existing URL');
+        try {
+          // Copy file từ cache sang app directory để tránh bị xóa
+          final appDir = await getApplicationDocumentsDirectory();
+          final fileName = '${isInit ? 'init' : 'cloth'}_${DateTime.now().millisecondsSinceEpoch}${path.extension(picked.path)}';
+          final savedPath = path.join(appDir.path, fileName);
+          
+          final originalFile = File(picked.path);
+          await originalFile.copy(savedPath);
+          
+          // Tính hash của file mới để kiểm tra có giống file cũ không
+          final newFile = File(savedPath);
+          final newHash = await _cloudinaryService.getFileHash(newFile);
+          
+          if (!mounted) return;
+          
+          // Kiểm tra xem ảnh mới có giống ảnh cũ không (cùng hash)
+          final oldHash = isInit ? _initFileHash : _clothFileHash;
+          final oldUrl = isInit ? _initPublicUrl : _clothPublicUrl;
+          
+          if (newHash == oldHash && oldUrl != null) {
+            // Ảnh giống nhau - giữ URL cũ, chỉ update local path
+            debugPrint('♻️ Đã phát hiện thấy hình ảnh tương tự (hash: $newHash), giữ URL hiện tại');
+            setState(() {
+              if (isInit) {
+                _initLocalPath = savedPath;
+                // Giữ _initPublicUrl và _initFileHash
+              } else {
+                _clothLocalPath = savedPath;
+                // Giữ _clothPublicUrl và _clothFileHash
+              }
+            });
+          } else {
+            // Ảnh khác - reset URL để upload lại
+            debugPrint('🆕 Đã phát hiện hình ảnh mới (hash: $newHash)');
+            setState(() {
+              if (isInit) {
+                _initLocalPath = savedPath;
+                _initPublicUrl = null;
+                _initFileHash = newHash;
+              } else {
+                _clothLocalPath = savedPath;
+                _clothPublicUrl = null;
+                _clothFileHash = newHash;
+              }
+            });
+          }
+        } catch (e) {
+          debugPrint('Lỗi khi xử lý file: $e');
+          // Fallback: dùng path gốc nếu copy/hash thất bại
+          if (!mounted) return;
           setState(() {
             if (isInit) {
-              _initLocalPath = savedPath;
-              // Giữ _initPublicUrl và _initFileHash
-            } else {
-              _clothLocalPath = savedPath;
-              // Giữ _clothPublicUrl và _clothFileHash
-            }
-          });
-        } else {
-          // Ảnh khác - reset URL để upload lại
-          debugPrint('🆕 New image detected (hash: $newHash)');
-          setState(() {
-            if (isInit) {
-              _initLocalPath = savedPath;
+              _initLocalPath = picked.path;
               _initPublicUrl = null;
-              _initFileHash = newHash;
+              _initFileHash = null;
             } else {
-              _clothLocalPath = savedPath;
+              _clothLocalPath = picked.path;
               _clothPublicUrl = null;
-              _clothFileHash = newHash;
+              _clothFileHash = null;
             }
           });
         }
-      } catch (e) {
-        debugPrint('Error processing file: $e');
-        // Fallback: dùng path gốc nếu copy/hash thất bại
-        if (!mounted) return;
-        setState(() {
-          if (isInit) {
-            _initLocalPath = picked.path;
-            _initPublicUrl = null;
-            _initFileHash = null;
-          } else {
-            _clothLocalPath = picked.path;
-            _clothPublicUrl = null;
-            _clothFileHash = null;
-          }
-        });
+        // Khong upload ngay - chi upload khi bam Try-on
       }
-      // Khong upload ngay - chi upload khi bam Try-on
+    } finally {
+      _isPicking = false;
     }
   }
 
@@ -151,7 +160,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Upload that bai: $e'),
+          content: Text('Upload thất bại: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -163,7 +172,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
     
     // Kiểm tra nếu đang loading thì không cho bấm nữa
     if (tryonProvider.isLoading) {
-      debugPrint('⚠️ Already loading, ignoring tap');
+      debugPrint('⚠️ Đang tải, bỏ qua thao tác');
       return;
     }
     
@@ -189,19 +198,19 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
       return;
     }
 
-    debugPrint('🚀 Starting Try-on process...');
+    debugPrint('🚀 Bắt đầu quá trình Try-on...');
 
     // Upload cả 2 ảnh lên Cloudinary nếu chưa upload
     try {
       // Upload init image nếu chưa có URL
       if (_initPublicUrl == null) {
-        debugPrint('📤 Uploading init image...');
+        debugPrint('📤 Đang tải ảnh người mẫu...');
         await _uploadImage(true);
       }
       
       // Upload cloth image nếu chưa có URL
       if (_clothPublicUrl == null) {
-        debugPrint('📤 Uploading cloth image...');
+        debugPrint('📤 Đang tải ảnh quần áo...');
         await _uploadImage(false);
       }
       
@@ -217,7 +226,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
         return;
       }
     } catch (e) {
-      debugPrint('❌ Upload error: $e');
+      debugPrint('❌ Lỗi upload: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -283,7 +292,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                   localPath: _initLocalPath,
                   publicUrl: _initPublicUrl,
                   uploading: _initUploading,
-                  placeholderText: 'Chọn ảnh người',
+                  placeholderText: 'Chọn ảnh người mẫu',
                 ),
               ),
               const SizedBox(height: 16),
@@ -311,7 +320,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                   if (val != null) setState(() => _clothType = val);
                 },
                 decoration: const InputDecoration(
-                  labelText: 'Cloth Type',
+                  labelText: 'Loại quần áo',
                   border: OutlineInputBorder(),
                 ),
               ),

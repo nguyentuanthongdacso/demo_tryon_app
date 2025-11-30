@@ -24,63 +24,74 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
   
   String? _selectedImagePath;
   bool _isUploading = false;
+  bool _isPicking = false; // Ngan double-click
   String? _errorMessage;
 
-  // Lay anh hien tai cua user (image, khong phai profile_image)
+  // Lấy ảnh hiện tại của user (image, không phải profile_image)
   String? get _currentImage => _authService.currentUser?['image'];
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
+    // Ngan double-click
+    if (_isPicking) return;
+    _isPicking = true;
     
-    if (picked != null) {
-      try {
-        // Copy file to app directory
-        final appDir = await getApplicationDocumentsDirectory();
-        final fileName = 'model_image_${DateTime.now().millisecondsSinceEpoch}${path.extension(picked.path)}';
-        final savedPath = path.join(appDir.path, fileName);
-        
-        final originalFile = File(picked.path);
-        await originalFile.copy(savedPath);
-        
-        setState(() {
-          _selectedImagePath = savedPath;
-          _errorMessage = null;
-        });
-      } catch (e) {
-        setState(() {
-          _errorMessage = 'Loi khi chon anh: $e';
-        });
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(source: ImageSource.gallery);
+      
+      if (picked != null && mounted) {
+        try {
+          // Copy file to app directory
+          final appDir = await getApplicationDocumentsDirectory();
+          final fileName = 'model_image_${DateTime.now().millisecondsSinceEpoch}${path.extension(picked.path)}';
+          final savedPath = path.join(appDir.path, fileName);
+          
+          final originalFile = File(picked.path);
+          await originalFile.copy(savedPath);
+          
+          setState(() {
+            _selectedImagePath = savedPath;
+            _errorMessage = null;
+          });
+        } catch (e) {
+          if (mounted) {
+            setState(() {
+              _errorMessage = 'Lỗi khi chọn ảnh: $e';
+            });
+          }
+        }
       }
+    } finally {
+      _isPicking = false;
     }
   }
 
-  /// Xoa anh cu tren Cloudinary neu co
+  /// Xóa ảnh cũ trên Cloudinary nếu có
   Future<void> _deleteOldImage(String? oldImageUrl) async {
     if (oldImageUrl == null || oldImageUrl.isEmpty) return;
     
     try {
-      // Extract public_id tu URL
+      // Extract public_id từ URL
       // URL format: https://res.cloudinary.com/cloud_name/image/upload/v123/public_id.ext
       final uri = Uri.parse(oldImageUrl);
       final pathSegments = uri.pathSegments;
       
-      // Tim vi tri 'upload' va lay phan sau do
+      // Tìm vị trí 'upload' và lấy phần sau đó
       final uploadIndex = pathSegments.indexOf('upload');
       if (uploadIndex == -1 || uploadIndex >= pathSegments.length - 1) return;
       
-      // Public ID la phan cuoi, bo extension
+      // Public ID là phần cuối, bỏ extension
       String publicId = pathSegments.last;
       final dotIndex = publicId.lastIndexOf('.');
       if (dotIndex != -1) {
         publicId = publicId.substring(0, dotIndex);
       }
       
-      // Neu co version (v123456), bo qua no
+      // Nếu có version (v123456), bỏ qua nó
       if (pathSegments.length > uploadIndex + 2) {
         final afterUpload = pathSegments[uploadIndex + 1];
         if (afterUpload.startsWith('v') && int.tryParse(afterUpload.substring(1)) != null) {
-          // Co version, public_id la phan con lai
+          // Có version, public_id là phần còn lại
           publicId = pathSegments.sublist(uploadIndex + 2).join('/');
           final lastDot = publicId.lastIndexOf('.');
           if (lastDot != -1) {
@@ -89,9 +100,9 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
         }
       }
       
-      debugPrint('Deleting old image with public_id: $publicId');
+      debugPrint('Xóa ảnh cũ với public_id: $publicId');
       
-      // Goi Cloudinary destroy API
+      // Gọi Cloudinary destroy API
       final timestamp = (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString();
       
       final paramsToSign = {
@@ -99,7 +110,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
         'timestamp': timestamp,
       };
       
-      // Tao signature
+      // Tạo signature
       final sortedKeys = paramsToSign.keys.toList()..sort();
       final paramString = sortedKeys.map((key) => '$key=${paramsToSign[key]}').join('&');
       final stringToSign = '$paramString${CloudinaryConstants.apiSecret}';
@@ -121,18 +132,18 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
       
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        debugPrint('Delete old image result: ${jsonResponse['result']}');
+        debugPrint('Kết quả xóa ảnh cũ: ${jsonResponse['result']}');
       }
     } catch (e) {
-      debugPrint('Error deleting old image: $e');
-      // Khong throw exception, chi log loi
+      debugPrint('Lỗi khi xóa ảnh cũ: $e');
+      // Không throw exception, chỉ log lỗi
     }
   }
 
   Future<void> _updateImage() async {
     if (_selectedImagePath == null) {
       setState(() {
-        _errorMessage = 'Vui long chon anh truoc';
+        _errorMessage = 'Vui lòng chọn ảnh trước khi cập nhật.';
       });
       return;
     }
@@ -143,25 +154,25 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
     });
 
     try {
-      // Luu lai anh cu de xoa sau
+      // Lưu lại ảnh cũ để xóa sau
       final oldImageUrl = _currentImage;
       
-      // Upload anh moi len Cloudinary
-      debugPrint('Uploading new model image...');
+      // Upload ảnh mới lên Cloudinary
+      debugPrint('Đang tải ảnh mẫu mới lên...');
       final file = File(_selectedImagePath!);
       final newImageUrl = await _cloudinaryService.uploadImage(file);
       
-      debugPrint('New image URL: $newImageUrl');
+      debugPrint('URL ảnh mới: $newImageUrl');
       
-      // Goi API de cap nhat image trong database
-      debugPrint('Updating user image in database...');
+      // Gọi API để cập nhật ảnh trong cơ sở dữ liệu
+      debugPrint('Đang cập nhật ảnh người dùng trong cơ sở dữ liệu...');
       final result = await _authService.changeImage(newImageUrl);
       
       if (result.success) {
-        // Cap nhat URL anh model moi trong SessionUploadManager
+        // Cập nhật URL ảnh model mới trong SessionUploadManager
         await SessionUploadManager().setUserModelImageUrl(newImageUrl);
         
-        // Xoa anh cu tren Cloudinary (neu co)
+        // Xóa ảnh cũ trên Cloudinary (nếu có)
         await _deleteOldImage(oldImageUrl);
         
         if (mounted) {
@@ -171,7 +182,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.pop(context, true); // Return true de bao hieu da cap nhat
+          Navigator.pop(context, true); // Return true để báo hiệu đã cập nhật
         }
       } else {
         setState(() {
@@ -180,7 +191,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Loi: $e';
+        _errorMessage = 'Lỗi: $e';
       });
     } finally {
       if (mounted) {
@@ -195,7 +206,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chinh sua anh mau'),
+        title: const Text('Chỉnh sửa ảnh người mẫu'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -203,9 +214,9 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hien thi anh hien tai
+            // Hiển thị ảnh hiện tại
             const Text(
-              'Anh mau hien tai:',
+              'Ảnh mẫu hiện tại:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -216,9 +227,9 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
             
             const SizedBox(height: 24),
             
-            // Chon anh moi
+            // Chọn ảnh mới
             const Text(
-              'Chon anh moi:',
+              'Chọn ảnh mới:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -254,7 +265,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
             
             const SizedBox(height: 24),
             
-            // Button cap nhat
+            // Nút cập nhật
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -279,7 +290,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
                         ),
                       )
                     : const Text(
-                        'Cap nhat anh',
+                        'Cập nhật ảnh',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -316,7 +327,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
                   children: [
                     Icon(Icons.broken_image, size: 48, color: Colors.grey),
                     SizedBox(height: 8),
-                    Text('Khong the tai anh', style: TextStyle(color: Colors.grey)),
+                    Text('Không thể tải ảnh', style: TextStyle(color: Colors.grey)),
                   ],
                 ),
               );
@@ -351,7 +362,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
           Icon(Icons.image_not_supported, size: 48, color: Colors.orange[700]),
           const SizedBox(height: 12),
           Text(
-            'Ban chua cap nhat anh mau',
+            'Bạn chưa cập nhật ảnh mẫu',
             style: TextStyle(
               color: Colors.orange[700],
               fontSize: 16,
@@ -360,7 +371,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Vui long chon anh de thu do',
+            'Xin vui lòng cài đặt ảnh người mẫu trước khi thử đồ',
             style: TextStyle(color: Colors.orange[600], fontSize: 14),
           ),
         ],
@@ -371,7 +382,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
   Widget _buildNewImageSection() {
     return Column(
       children: [
-        // Hien thi anh da chon
+        // Hiển thị ảnh đã chọn
         if (_selectedImagePath != null)
           Container(
             height: 250,
@@ -396,7 +407,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
           child: OutlinedButton.icon(
             onPressed: _isUploading ? null : _pickImage,
             icon: const Icon(Icons.photo_library),
-            label: Text(_selectedImagePath == null ? 'Chon anh tu thu vien' : 'Chon anh khac'),
+            label: Text(_selectedImagePath == null ? 'Chọn ảnh từ thư viện' : 'Chọn ảnh khác'),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(

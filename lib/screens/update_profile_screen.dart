@@ -78,7 +78,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               // Chinh sua anh mau
               _buildMenuItem(
                 icon: Icons.photo_camera,
-                title: 'Chinh sua anh mau cua ban',
+                title: 'Chỉnh sửa ảnh mẫu của bạn',
                 onTap: () => _navigateToEditModelImage(),
               ),
               const SizedBox(height: 12),
