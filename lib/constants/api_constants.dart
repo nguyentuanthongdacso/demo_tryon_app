@@ -3,19 +3,20 @@
 // - Development local: uncomment các dòng localhost bên dưới
 //
 // Domain structure (Cloudflare Tunnel):
-// - tryonstylist.com       -> Gateway (8003) - auth, user management  
-// - scrape.tryonstylist.com -> Scrape Server (8001) - search
-// - tryon.tryonstylist.com  -> Try-On Server (8002) - AI try-on
+// - gateway.tryonstylist.com -> Gateway (8003) - auth, user management  
+// - scrape.tryonstylist.com  -> Scrape Server (8001) - search
+// - tryon.tryonstylist.com   -> Try-On Server (8002) - AI try-on
+// - tryonstylist.com         -> Reserved for website
 
 // import 'dart:io'; // Chỉ cần khi dùng development mode
 
 class ApiConstants {
   // ===== PRODUCTION MODE =====
   // Mỗi server có subdomain riêng
-  static const String gatewayHost = 'https://tryonstylist.com';
+  static const String gatewayHost = 'https://gateway.tryonstylist.com';
   static const String scrapeHost = 'https://scrape.tryonstylist.com';
   static const String tryonHost = 'https://tryon.tryonstylist.com';
-  static const String wsHost = 'wss://tryonstylist.com';
+  static const String wsHost = 'wss://gateway.tryonstylist.com';
   
   // ===== DEVELOPMENT MODE (uncomment để test local) =====
   // static String get gatewayHost {
