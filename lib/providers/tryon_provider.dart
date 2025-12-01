@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/tryon_request.dart';
 import '../models/tryon_response.dart';
 import '../services/tryon_service.dart';
+import '../services/auth_service.dart';
 
 class TryonProvider extends ChangeNotifier {
   final TryonService _service = TryonService();
@@ -20,10 +21,15 @@ class TryonProvider extends ChangeNotifier {
     _response = null;
     notifyListeners();
     try {
+      // Get user_key from AuthService
+      final authService = AuthService();
+      final userKey = authService.currentUser?['user_key'] as String?;
+      
       final req = TryonRequest(
         initImage: initImage,
         clothImage: clothImage,
         clothType: clothType,
+        userKey: userKey,
       );
       final res = await _service.sendTryonRequest(req);
       _response = res;

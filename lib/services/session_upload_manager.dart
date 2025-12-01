@@ -1,25 +1,37 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../constants/cloudinary_constants.dart';
 
 /// Quan ly cac anh da upload trong phien dang nhap
 /// Chi giu toi da 2 anh (init + cloth) tai moi thoi diem
 /// Tu dong xoa tat ca anh khi user logout hoac app khoi dong lai
 /// KHONG xoa anh trung voi anh model cua user
+/// Su dung flutter_secure_storage de ma hoa du lieu luu tru
 class SessionUploadManager {
   // Singleton pattern
   static final SessionUploadManager _instance = SessionUploadManager._internal();
   factory SessionUploadManager() => _instance;
   SessionUploadManager._internal();
   
-  // Keys cho SharedPreferences
+  // Secure Storage instance với cấu hình bảo mật cao
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock_this_device,
+    ),
+  );
+  
+  // Keys cho Secure Storage
   static const String _keyInitPublicId = 'session_init_public_id';
   static const String _keyClothPublicId = 'session_cloth_public_id';
   static const String _keyInitUrl = 'session_init_url';
   static const String _keyClothUrl = 'session_cloth_url';
   static const String _keyUserModelUrl = 'session_user_model_url';
+  static const String _keyPendingDeletes = 'session_pending_deletes';
 
   // Luu public_id theo loai anh (init hoac cloth)
   String? _initImagePublicId;
@@ -31,6 +43,8 @@ class SessionUploadManager {
   
   // Luu URL anh model cua user (de khong xoa nhom anh nay)
   String? _userModelImageUrl;
+  // Pending deletes to retry later when network available
+  final List<String> _pendingDeletes = [];
 
   // Getters
   String? get initImagePublicId => _initImagePublicId;
@@ -96,70 +110,93 @@ class SessionUploadManager {
     return isMatch;
   }
   
-  // ========== PERSISTENCE (SharedPreferences) ==========
+  // ========== PERSISTENCE (Secure Storage - Mã hóa) ==========
   
-  /// Luu trang thai hien tai vao SharedPreferences
+  /// Luu trang thai hien tai vao Secure Storage (mã hóa)
   Future<void> _saveToStorage() async {
-    final prefs = await SharedPreferences.getInstance();
+    print('💾 Saving to secure storage:');
+    print('   Init: $_initImagePublicId');
+    print('   Cloth: $_clothImagePublicId');
+    print('   User model: $_userModelImageUrl');
+    print('   Pending deletes: ${_pendingDeletes.length}');
     
     if (_initImagePublicId != null) {
-      await prefs.setString(_keyInitPublicId, _initImagePublicId!);
+      await _secureStorage.write(key: _keyInitPublicId, value: _initImagePublicId);
     } else {
-      await prefs.remove(_keyInitPublicId);
+      await _secureStorage.delete(key: _keyInitPublicId);
     }
     
     if (_clothImagePublicId != null) {
-      await prefs.setString(_keyClothPublicId, _clothImagePublicId!);
+      await _secureStorage.write(key: _keyClothPublicId, value: _clothImagePublicId);
     } else {
-      await prefs.remove(_keyClothPublicId);
+      await _secureStorage.delete(key: _keyClothPublicId);
     }
     
     if (_initImageUrl != null) {
-      await prefs.setString(_keyInitUrl, _initImageUrl!);
+      await _secureStorage.write(key: _keyInitUrl, value: _initImageUrl);
     } else {
-      await prefs.remove(_keyInitUrl);
+      await _secureStorage.delete(key: _keyInitUrl);
     }
     
     if (_clothImageUrl != null) {
-      await prefs.setString(_keyClothUrl, _clothImageUrl!);
+      await _secureStorage.write(key: _keyClothUrl, value: _clothImageUrl);
     } else {
-      await prefs.remove(_keyClothUrl);
+      await _secureStorage.delete(key: _keyClothUrl);
     }
     
     if (_userModelImageUrl != null) {
-      await prefs.setString(_keyUserModelUrl, _userModelImageUrl!);
+      await _secureStorage.write(key: _keyUserModelUrl, value: _userModelImageUrl);
     } else {
-      await prefs.remove(_keyUserModelUrl);
+      await _secureStorage.delete(key: _keyUserModelUrl);
+    }
+
+    // Save pending deletes list
+    if (_pendingDeletes.isNotEmpty) {
+      await _secureStorage.write(key: _keyPendingDeletes, value: jsonEncode(_pendingDeletes));
+    } else {
+      await _secureStorage.delete(key: _keyPendingDeletes);
     }
     
-    print('💾 Session state saved to storage');
+    print('🔐 Session state saved to secure storage');
   }
   
-  /// Load trang thai tu SharedPreferences
+  /// Load trang thai tu Secure Storage (mã hóa)
   Future<void> _loadFromStorage() async {
-    final prefs = await SharedPreferences.getInstance();
+    _initImagePublicId = await _secureStorage.read(key: _keyInitPublicId);
+    _clothImagePublicId = await _secureStorage.read(key: _keyClothPublicId);
+    _initImageUrl = await _secureStorage.read(key: _keyInitUrl);
+    _clothImageUrl = await _secureStorage.read(key: _keyClothUrl);
+    _userModelImageUrl = await _secureStorage.read(key: _keyUserModelUrl);
     
-    _initImagePublicId = prefs.getString(_keyInitPublicId);
-    _clothImagePublicId = prefs.getString(_keyClothPublicId);
-    _initImageUrl = prefs.getString(_keyInitUrl);
-    _clothImageUrl = prefs.getString(_keyClothUrl);
-    _userModelImageUrl = prefs.getString(_keyUserModelUrl);
+    // Load pending deletes
+    final pendingJson = await _secureStorage.read(key: _keyPendingDeletes);
+    if (pendingJson != null) {
+      try {
+        final list = jsonDecode(pendingJson) as List<dynamic>;
+        _pendingDeletes.clear();
+        for (final item in list) {
+          if (item is String) _pendingDeletes.add(item);
+        }
+      } catch (e) {
+        print('⚠️ Failed to parse pending deletes: $e');
+      }
+    }
     
-    print('📂 Session state loaded from storage:');
+    print('🔐 Session state loaded from secure storage:');
     print('   Init: $_initImagePublicId');
     print('   Cloth: $_clothImagePublicId');
     print('   User model: $_userModelImageUrl');
   }
   
-  /// Xoa du lieu trong SharedPreferences
+  /// Xoa du lieu trong Secure Storage
   Future<void> _clearStorage() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_keyInitPublicId);
-    await prefs.remove(_keyClothPublicId);
-    await prefs.remove(_keyInitUrl);
-    await prefs.remove(_keyClothUrl);
-    await prefs.remove(_keyUserModelUrl);
-    print('🗑️ Session storage cleared');
+    await _secureStorage.delete(key: _keyInitPublicId);
+    await _secureStorage.delete(key: _keyClothPublicId);
+    await _secureStorage.delete(key: _keyInitUrl);
+    await _secureStorage.delete(key: _keyClothUrl);
+    await _secureStorage.delete(key: _keyUserModelUrl);
+    await _secureStorage.delete(key: _keyPendingDeletes);
+    print('🔐 Session storage cleared');
   }
   
   /// GOI KHI APP KHOI DONG: Load va xoa anh cu tu phien truoc
@@ -170,11 +207,38 @@ class SessionUploadManager {
       // Load du lieu tu storage
       await _loadFromStorage();
       
+      // First, attempt pending deletes from previous failures
+      if (_pendingDeletes.isNotEmpty) {
+        print('🔁 Attempting pending deletes (${_pendingDeletes.length})...');
+        final List<String> stillPending = [];
+        for (final publicId in List<String>.from(_pendingDeletes)) {
+          try {
+            final ok = await deleteImage(publicId);
+            if (!ok) {
+              stillPending.add(publicId);
+            }
+          } catch (e) {
+            // Network error or other - keep for next time
+            stillPending.add(publicId);
+          }
+        }
+        _pendingDeletes
+          ..clear()
+          ..addAll(stillPending);
+        // Save pending state
+        await _saveToStorage();
+      }
+      
       // Xoa anh cu (neu co) - KHONG xoa anh model cua user
       await clearSessionUploads();
       
-      // Xoa storage
-      await _clearStorage();
+      // If no pending deletes and no tracked session images, clear storage
+      if (_pendingDeletes.isEmpty && _initImagePublicId == null && _clothImagePublicId == null && _initImageUrl == null && _clothImageUrl == null && _userModelImageUrl == null) {
+        await _clearStorage();
+      } else {
+        // Persist current state (remaining pending deletes or any tracking)
+        await _saveToStorage();
+      }
       
       print('✅ Previous session cleanup complete');
     } catch (e) {
@@ -223,11 +287,14 @@ class SessionUploadManager {
         },
       );
 
+      print('📡 Cloudinary delete response: ${response.statusCode}');
+      print('📡 Response body: ${response.body}');
+      
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         final result = jsonResponse['result'];
         print('🗑️ Delete $publicId: $result');
-        return result == 'ok';
+        return result == 'ok' || result == 'not found';
       } else {
         print('❌ Delete failed for $publicId: ${response.statusCode}');
         return false;
@@ -290,44 +357,52 @@ class SessionUploadManager {
     int total = 0;
 
     // Xoa init image (neu khong phai anh model cua user)
-    if (_initImagePublicId != null) {
+        if (_initImagePublicId != null) {
       total++;
       if (_isUserModelImage(_initImageUrl)) {
         print('⚠️ Init image is user model image, skipping delete: $_initImagePublicId');
         skippedCount++;
         // Van reset tracking
-        _initImagePublicId = null;
-        _initImageUrl = null;
-      } else {
-        final success = await deleteImage(_initImagePublicId!);
-        if (success) {
-          deletedCount++;
           _initImagePublicId = null;
           _initImageUrl = null;
-        } else {
-          failedCount++;
-        }
+      } else {
+          final success = await deleteImage(_initImagePublicId!);
+          if (success) {
+            deletedCount++;
+            _initImagePublicId = null;
+            _initImageUrl = null;
+          } else {
+            failedCount++;
+            // Schedule for retry and still clear local tracking so user not stuck
+            await _addPendingDelete(_initImagePublicId!);
+            _initImagePublicId = null;
+            _initImageUrl = null;
+          }
       }
     }
 
     // Xoa cloth image (neu khong phai anh model cua user)
-    if (_clothImagePublicId != null) {
+        if (_clothImagePublicId != null) {
       total++;
       if (_isUserModelImage(_clothImageUrl)) {
         print('⚠️ Cloth image is user model image, skipping delete: $_clothImagePublicId');
         skippedCount++;
         // Van reset tracking
-        _clothImagePublicId = null;
-        _clothImageUrl = null;
-      } else {
-        final success = await deleteImage(_clothImagePublicId!);
-        if (success) {
-          deletedCount++;
           _clothImagePublicId = null;
           _clothImageUrl = null;
-        } else {
-          failedCount++;
-        }
+      } else {
+          final success = await deleteImage(_clothImagePublicId!);
+          if (success) {
+            deletedCount++;
+            _clothImagePublicId = null;
+            _clothImageUrl = null;
+          } else {
+            failedCount++;
+            // Schedule for retry and still clear local tracking so user not stuck
+            await _addPendingDelete(_clothImagePublicId!);
+            _clothImagePublicId = null;
+            _clothImageUrl = null;
+          }
       }
     }
     
@@ -346,6 +421,16 @@ class SessionUploadManager {
       'failed': failedCount,
       'total': total,
     };
+  }
+
+  /// Add a publicId to pending deletes (persisted)
+  Future<void> _addPendingDelete(String publicId) async {
+    if (publicId.isEmpty) return;
+    if (!_pendingDeletes.contains(publicId)) {
+      _pendingDeletes.add(publicId);
+      await _saveToStorage();
+      print('🔖 Scheduled pending delete: $publicId');
+    }
   }
 
   /// Reset tracking (khong xoa anh tren cloud)

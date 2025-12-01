@@ -375,7 +375,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 context.read<TryonProvider>().clear();
               }
               
-              _authService.logout();
+              await _authService.logout();
               // Gọi callback để navigate về login screen
               if (widget.onLogout != null) {
                 widget.onLogout!();

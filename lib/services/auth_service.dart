@@ -1,9 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'session_upload_manager.dart';
 
 /// Service xử lý authentication với API Gateway
 /// Gửi request đến 3_api_gateway và quản lý JWT token
+/// Session được lưu trữ MÃ HÓA và tự động khôi phục khi mở app
+/// Token hết hạn sau 7 ngày
+/// Sử dụng flutter_secure_storage (Keystore trên Android, Keychain trên iOS)
 class AuthService {
   // Singleton pattern
   static final AuthService _instance = AuthService._internal();
@@ -16,9 +21,28 @@ class AuthService {
     return 'http://127.0.0.1:8003';
   }
 
+  // Secure Storage instance với cấu hình bảo mật cao
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true, // Sử dụng EncryptedSharedPreferences
+    ),
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock_this_device,
+    ),
+  );
+
+  // Storage keys
+  static const String _keyJwtToken = 'auth_jwt_token';
+  static const String _keyCurrentUser = 'auth_current_user';
+  static const String _keyLoginTime = 'auth_login_time';
+  
+  // Token expiration: 7 days
+  static const int _tokenExpirationDays = 7;
+
   // JWT token và user data
   String? _jwtToken;
   Map<String, dynamic>? _currentUser;
+  DateTime? _loginTime;
 
   // Getters
   String? get jwtToken => _jwtToken;
@@ -31,6 +55,93 @@ class AuthService {
   String? get userName => _currentUser?['name'];
   int? get tokenFree => _currentUser?['token_free'];
   int? get tokenVip => _currentUser?['token_vip'];
+  
+  /// Kiểm tra xem token có hết hạn chưa (7 ngày)
+  bool get isTokenExpired {
+    if (_loginTime == null) return true;
+    final now = DateTime.now();
+    final diff = now.difference(_loginTime!);
+    return diff.inDays >= _tokenExpirationDays;
+  }
+  
+  /// Lưu session vào Secure Storage (mã hóa)
+  Future<void> _saveSession() async {
+    if (_jwtToken != null) {
+      await _secureStorage.write(key: _keyJwtToken, value: _jwtToken);
+    } else {
+      await _secureStorage.delete(key: _keyJwtToken);
+    }
+    
+    if (_currentUser != null) {
+      await _secureStorage.write(key: _keyCurrentUser, value: jsonEncode(_currentUser));
+    } else {
+      await _secureStorage.delete(key: _keyCurrentUser);
+    }
+    
+    if (_loginTime != null) {
+      await _secureStorage.write(key: _keyLoginTime, value: _loginTime!.toIso8601String());
+    } else {
+      await _secureStorage.delete(key: _keyLoginTime);
+    }
+    
+    print('🔐 Session saved to secure storage');
+  }
+  
+  /// Load session từ Secure Storage (mã hóa)
+  /// Trả về true nếu có session hợp lệ
+  Future<bool> loadSession() async {
+    try {
+      _jwtToken = await _secureStorage.read(key: _keyJwtToken);
+      
+      final userJson = await _secureStorage.read(key: _keyCurrentUser);
+      if (userJson != null) {
+        _currentUser = jsonDecode(userJson) as Map<String, dynamic>;
+      }
+      
+      final loginTimeStr = await _secureStorage.read(key: _keyLoginTime);
+      if (loginTimeStr != null) {
+        _loginTime = DateTime.parse(loginTimeStr);
+      }
+      
+      print('🔐 Session loaded from secure storage');
+      print('   Token: ${_jwtToken != null ? "exists" : "null"}');
+      print('   User: ${_currentUser?['email'] ?? "null"}');
+      print('   Login time: $_loginTime');
+      
+      // Kiểm tra token có hết hạn không
+      if (isTokenExpired) {
+        print('⏰ Token expired (>$_tokenExpirationDays days). Clearing session...');
+        await clearSession();
+        return false;
+      }
+      
+      return isLoggedIn;
+    } catch (e) {
+      print('❌ Error loading session: $e');
+      return false;
+    }
+  }
+  
+  /// Xóa session khỏi Secure Storage (gọi khi logout)
+  Future<void> clearSession() async {
+    try {
+      // Ensure any session uploads on Cloudinary are removed first
+      await SessionUploadManager().clearSessionUploads();
+    } catch (e) {
+      // Log error but continue to clear session data locally
+      print('⚠️ Failed to clear session uploads: $e');
+    }
+
+    await _secureStorage.delete(key: _keyJwtToken);
+    await _secureStorage.delete(key: _keyCurrentUser);
+    await _secureStorage.delete(key: _keyLoginTime);
+
+    _jwtToken = null;
+    _currentUser = null;
+    _loginTime = null;
+
+    print('🔐 Session cleared from secure storage');
+  }
 
   /// Check login với API Gateway sau Google Sign-In
   /// 
@@ -70,6 +181,8 @@ class AuthService {
         if (result.success && result.jwtToken != null) {
           _jwtToken = result.jwtToken;
           _currentUser = result.user;
+          _loginTime = DateTime.now();
+          await _saveSession(); // Lưu session vào storage
           print('✅ Login success! JWT saved.');
         }
 
@@ -102,10 +215,9 @@ class AuthService {
     return headers;
   }
 
-  /// Logout - xóa JWT và user data
-  void logout() {
-    _jwtToken = null;
-    _currentUser = null;
+  /// Logout - xóa JWT, user data và session từ storage
+  Future<void> logout() async {
+    await clearSession();
     print('👋 Logged out');
   }
 
@@ -135,7 +247,7 @@ class AuthService {
         return CheckTokenResponse.fromJson(jsonDecode(response.body));
       } else if (response.statusCode == 401) {
         // Token expired
-        logout();
+        await logout();
         return CheckTokenResponse(success: false, message: 'Token expired');
       }
       throw Exception('Server error: ${response.statusCode}');
@@ -171,7 +283,7 @@ class AuthService {
         }
         return result;
       } else if (response.statusCode == 401) {
-        logout();
+        await logout();
         return SubtractTokenResponse(success: false, message: 'Token expired');
       }
       throw Exception('Server error: ${response.statusCode}');
@@ -206,7 +318,7 @@ class AuthService {
         }
         return result;
       } else if (response.statusCode == 401) {
-        logout();
+        await logout();
         return ChangeImageResponse(success: false, message: 'Token expired');
       }
       throw Exception('Server error: ${response.statusCode}');

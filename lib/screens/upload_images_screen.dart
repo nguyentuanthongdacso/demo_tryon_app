@@ -18,7 +18,13 @@ class UploadImagesScreen extends StatefulWidget {
   State<UploadImagesScreen> createState() => _UploadImagesScreenState();
 }
 
-class _UploadImagesScreenState extends State<UploadImagesScreen> {
+class _UploadImagesScreenState extends State<UploadImagesScreen> 
+    with AutomaticKeepAliveClientMixin {
+  
+  // Giữ state khi chuyển tab
+  @override
+  bool get wantKeepAlive => true;
+  
   // Local file paths selected by user
   String? _initLocalPath;
   String? _clothLocalPath;
@@ -70,9 +76,11 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
           final oldHash = isInit ? _initFileHash : _clothFileHash;
           final oldUrl = isInit ? _initPublicUrl : _clothPublicUrl;
           
-          if (newHash == oldHash && oldUrl != null) {
-            // Ảnh giống nhau - giữ URL cũ, chỉ update local path
-            debugPrint('♻️ Đã phát hiện thấy hình ảnh tương tự (hash: $newHash), giữ URL hiện tại');
+          if (newHash == oldHash) {
+            // Ảnh giống nhau - giữ URL cũ, chỉ update local path nếu cần
+            if (oldUrl != null) {
+              debugPrint('♻️ Ảnh giống hệt (hash: $newHash), giữ URL hiện tại');
+            }
             setState(() {
               if (isInit) {
                 _initLocalPath = savedPath;
@@ -84,7 +92,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
             });
           } else {
             // Ảnh khác - reset URL để upload lại
-            debugPrint('🆕 Đã phát hiện hình ảnh mới (hash: $newHash)');
+            debugPrint('🆕 Ảnh mới được chọn (hash: $newHash)');
             setState(() {
               if (isInit) {
                 _initLocalPath = savedPath;
@@ -278,6 +286,9 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Required for AutomaticKeepAliveClientMixin
+    super.build(context);
+    
     return Consumer<TryonProvider>(
       builder: (context, provider, _) {
         return SingleChildScrollView(
@@ -330,17 +341,39 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                 onPressed: provider.isLoading ? null : _sendTryon,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.green,
                 ),
                 child: provider.isLoading
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                          const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
                           const SizedBox(width: 12),
-                          Text(AppLocalizations.of(context).translate('processing_info')),
+                          Text(AppLocalizations.of(context).translate('processing_info'), style: const TextStyle(color: Colors.white)),
                         ],
                       )
-                    : Text(AppLocalizations.of(context).translate('try_on')),
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(AppLocalizations.of(context).translate('try_on'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.toll, size: 16, color: Colors.amber),
+                                SizedBox(width: 4),
+                                Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
               ),
               if (provider.isLoading)
                 Padding(
