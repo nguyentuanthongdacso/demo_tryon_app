@@ -40,6 +40,53 @@ class _TryOnScreenState extends State<TryOnScreen> {
       return;
     }
 
+    // ========== CHECK TOKEN TRƯỚC KHI GỌI API ==========
+    debugPrint('🔍 Kiểm tra token trước khi try-on...');
+    const int tokenCost = 50;
+    
+    try {
+      final checkResult = await _authService.checkToken();
+      
+      if (!checkResult.success) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).translate('token_check_failed')),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      
+      final totalTokens = (checkResult.tokenFree ?? 0) + (checkResult.tokenVip ?? 0);
+      debugPrint('💰 Token hiện có: $totalTokens (Free: ${checkResult.tokenFree}, VIP: ${checkResult.tokenVip})');
+      
+      if (totalTokens < tokenCost) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).translate('not_enough_tokens')),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+        return;
+      }
+      
+      debugPrint('✅ Token đủ! Tiếp tục try-on...');
+    } catch (e) {
+      debugPrint('❌ Lỗi kiểm tra token: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${AppLocalizations.of(context).translate('token_check_failed')}: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    // ========== END CHECK TOKEN ==========
+
     debugPrint('Starting Try-on from Search...');
     debugPrint('init_image (user): $initImageUrl');
     debugPrint('cloth_image (selected): $clothImageUrl');
@@ -118,7 +165,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
               _buildClothImageSection(clothImageUrl),
               const SizedBox(height: 24),
               Text(
-                AppLocalizations.of(context).translate('language'),
+                AppLocalizations.of(context).translate('type_of_cloth'),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -363,13 +410,34 @@ class _TryOnScreenState extends State<TryOnScreen> {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : Text(
-                    AppLocalizations.of(context).translate('start_tryon'),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).translate('try_on'),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.toll, size: 16, color: Colors.amber),
+                            SizedBox(width: 4),
+                            Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
           );
         },

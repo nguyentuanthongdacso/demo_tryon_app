@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'session_upload_manager.dart';
+import '../constants/api_constants.dart';
 
 /// Service xử lý authentication với API Gateway
 /// Gửi request đến 3_api_gateway và quản lý JWT token
@@ -15,11 +16,8 @@ class AuthService {
   factory AuthService() => _instance;
   AuthService._internal();
 
-  // API Gateway URL - Port 8003
-  static String get _gatewayUrl {
-    if (Platform.isAndroid) return 'http://10.0.2.2:8003';
-    return 'http://127.0.0.1:8003';
-  }
+  // API Gateway URL - Production domain
+  static String get _gatewayUrl => ApiConstants.gatewayBaseUrl;
 
   // Secure Storage instance với cấu hình bảo mật cao
   static const FlutterSecureStorage _secureStorage = FlutterSecureStorage(

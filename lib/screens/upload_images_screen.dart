@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/tryon_provider.dart';
 import '../services/cloudinary_service.dart';
+import '../services/auth_service.dart';
 import 'tryon_result_screen.dart';
 import '../l10n/app_localizations.dart';
 
@@ -178,6 +179,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
 
   Future<void> _sendTryon() async {
     final tryonProvider = Provider.of<TryonProvider>(context, listen: false);
+    final authService = AuthService();
     
     // Kiểm tra nếu đang loading thì không cho bấm nữa
     if (tryonProvider.isLoading) {
@@ -208,6 +210,53 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
     }
 
     debugPrint('🚀 Bắt đầu quá trình Try-on...');
+
+    // ========== CHECK TOKEN TRƯỚC KHI UPLOAD ==========
+    debugPrint('🔍 Kiểm tra token trước khi upload...');
+    const int tokenCost = 50;
+    
+    try {
+      final checkResult = await authService.checkToken();
+      
+      if (!checkResult.success) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).translate('token_check_failed')),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      
+      final totalTokens = (checkResult.tokenFree ?? 0) + (checkResult.tokenVip ?? 0);
+      debugPrint('💰 Token hiện có: $totalTokens (Free: ${checkResult.tokenFree}, VIP: ${checkResult.tokenVip})');
+      
+      if (totalTokens < tokenCost) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).translate('not_enough_tokens')),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+        return;
+      }
+      
+      debugPrint('✅ Token đủ! Tiếp tục upload ảnh...');
+    } catch (e) {
+      debugPrint('❌ Lỗi kiểm tra token: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${AppLocalizations.of(context).translate('token_check_failed')}: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    // ========== END CHECK TOKEN ==========
 
     // Upload cả 2 ảnh lên Cloudinary nếu chưa upload
     try {

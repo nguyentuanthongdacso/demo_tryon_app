@@ -1,34 +1,47 @@
 // Hướng dẫn:
-// - Nếu chạy trên Android Emulator: dùng 10.0.2.2
-// - Nếu chạy trên Device thực: dùng IP của máy tính
-// - Nếu chạy trên Simulator iOS: dùng 127.0.0.1
+// - Production: sử dụng các subdomain của tryonstylist.com
+// - Development local: uncomment các dòng localhost bên dưới
+//
+// Domain structure (Cloudflare Tunnel):
+// - tryonstylist.com       -> Gateway (8003) - auth, user management  
+// - scrape.tryonstylist.com -> Scrape Server (8001) - search
+// - tryon.tryonstylist.com  -> Try-On Server (8002) - AI try-on
 
-import 'dart:io';
+// import 'dart:io'; // Chỉ cần khi dùng development mode
 
 class ApiConstants {
-  // Platform-aware base for localhost services. Use emulator host mapping for Android.
-  static String get baseHost {
-    if (Platform.isAndroid) return 'http://10.0.2.2';
-    return 'http://127.0.0.1';
-  }
+  // ===== PRODUCTION MODE =====
+  // Mỗi server có subdomain riêng
+  static const String gatewayHost = 'https://tryonstylist.com';
+  static const String scrapeHost = 'https://scrape.tryonstylist.com';
+  static const String tryonHost = 'https://tryon.tryonstylist.com';
+  static const String wsHost = 'wss://tryonstylist.com';
+  
+  // ===== DEVELOPMENT MODE (uncomment để test local) =====
+  // static String get gatewayHost {
+  //   if (Platform.isAndroid) return 'http://10.0.2.2:8003';
+  //   return 'http://127.0.0.1:8003';
+  // }
+  // static String get scrapeHost {
+  //   if (Platform.isAndroid) return 'http://10.0.2.2:8001';
+  //   return 'http://127.0.0.1:8001';
+  // }
+  // static String get tryonHost {
+  //   if (Platform.isAndroid) return 'http://10.0.2.2:8002';
+  //   return 'http://127.0.0.1:8002';
+  // }
 
-  // WebSocket base URL (ws:// instead of http://)
-  static String get wsBaseHost {
-    if (Platform.isAndroid) return 'ws://10.0.2.2';
-    return 'ws://127.0.0.1';
-  }
-
-  // ===== SERVER PORTS =====
-  static const int gatewayPort = 8003;  // 3_api_gateway - Auth & User management
-  static const int searchPort = 8001;   // 1_scrape_url - Web scraping
-  static const int tryonPort = 8002;    // 2_try_on - Try-on API
-  // Port 8002 = 4_connect_db (internal only, not accessible from client)
+  // ===== LEGACY PORTS (chỉ dùng cho development local) =====
+  static const int gatewayPort = 8003;
+  static const int searchPort = 8001;
+  static const int tryonPort = 8002;
 
   // ===== BASE URLs =====
-  static String get gatewayBaseUrl => '$baseHost:$gatewayPort';  // API Gateway
-  static String get baseUrl => '$baseHost:$searchPort';           // Search/Scrape
-  static String get wsBaseUrl => '$wsBaseHost:$searchPort';       // WebSocket
-  static String get tryOnBaseUrl => '$baseHost:$tryonPort';       // Try-on
+  static String get gatewayBaseUrl => gatewayHost;
+  static String get baseUrl => gatewayHost;  // Legacy compatibility
+  static String get wsBaseUrl => wsHost;
+  static String get searchBaseUrl => scrapeHost;
+  static String get tryOnBaseUrl => tryonHost;
   
   // ===== ENDPOINTS =====
   // Gateway endpoints (Auth)
@@ -36,10 +49,10 @@ class ApiConstants {
   static const String checkTokenEndpoint = '/check-token';
   static const String subtractTokenEndpoint = '/subtract-token';
   
-  // Search endpoints
+  // Search endpoints (on scrape server)
   static const String searchEndpoint = '/scrape';
   
-  // Try-on endpoints
+  // Try-on endpoints (on tryon server)
   static const String tryOnEndpoint = '/tryon';
   
   // ===== TIMEOUTS =====

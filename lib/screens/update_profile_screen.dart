@@ -328,21 +328,33 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   }
 
   void _handleLogout() {
+    // Lưu tất cả localized strings TRƯỚC khi show dialog
+    final localizations = AppLocalizations.of(context);
+    final logoutConfirmTitle = localizations.translate('logout_confirm_title');
+    final logoutConfirmContent = localizations.translate('logout_confirm_content');
+    final cancelText = localizations.translate('cancel');
+    final logoutText = localizations.translate('logout');
+    final clearingSessionText = localizations.translate('clearing_session_data');
+    
+    // Lưu callback trước
+    final onLogoutCallback = widget.onLogout;
+    
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-      title: Text(AppLocalizations.of(context).translate('logout_confirm_title')),
-      content: Text(AppLocalizations.of(context).translate('logout_confirm_content')),
+        title: Text(logoutConfirmTitle),
+        content: Text(logoutConfirmContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: Text(AppLocalizations.of(context).translate('cancel')),
+            child: Text(cancelText),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(dialogContext);
               
               // Hiển thị loading trong khi xóa ảnh
+              if (!mounted) return;
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -351,7 +363,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     children: [
                       const CircularProgressIndicator(),
                       const SizedBox(width: 16),
-                      Flexible(child: Text(AppLocalizations.of(context).translate('clearing_session_data'))),
+                      Flexible(child: Text(clearingSessionText)),
                     ],
                   ),
                 ),
@@ -362,7 +374,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               final result = await sessionManager.clearSessionUploads();
               
               // Đóng loading dialog
-              if (context.mounted) {
+              if (mounted) {
                 Navigator.pop(context);
               }
               
@@ -370,18 +382,18 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               print('🧹 Session cleanup: ${result['deleted']}/${result['total']} ảnh đã xóa trên Cloudinary');
               
               // Clear all provider data khi logout
-              if (context.mounted) {
+              if (mounted) {
                 context.read<SearchProvider>().clearAll();
                 context.read<TryonProvider>().clear();
               }
               
               await _authService.logout();
               // Gọi callback để navigate về login screen
-              if (widget.onLogout != null) {
-                widget.onLogout!();
+              if (onLogoutCallback != null) {
+                onLogoutCallback();
               }
             },
-            child: Text(AppLocalizations.of(context).translate('logout'), style: const TextStyle(color: Colors.red)),
+            child: Text(logoutText, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),

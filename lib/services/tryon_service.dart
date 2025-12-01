@@ -3,15 +3,11 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../models/tryon_request.dart';
 import '../models/tryon_response.dart';
+import '../constants/api_constants.dart';
 
 class TryonService {
-  // Use platform-aware host so Android emulators connect to host machine
-  // Android emulator maps 10.0.2.2 -> host 127.0.0.1
-  static String get _baseHost {
-    if (Platform.isAndroid) return 'http://10.0.2.2:8002';
-    // iOS Simulator and desktop will use localhost
-    return 'http://127.0.0.1:8002';
-  }
+  // Production URL via Cloudflare
+  static String get _baseHost => ApiConstants.tryOnBaseUrl;
   static const String tryonEndpoint = '/tryon';
   static const Duration timeout = Duration(seconds: 120);
 

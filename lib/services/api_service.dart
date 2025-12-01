@@ -9,19 +9,23 @@ import '../constants/api_constants.dart';
 import '../utils/logger.dart';
 
 class ApiService {
-  static String get baseUrl => ApiConstants.baseUrl;
+  // Search/Scrape uses scrape server
+  static String get searchBaseUrl => ApiConstants.searchBaseUrl;
   static String get wsBaseUrl => ApiConstants.wsBaseUrl;
   static const String searchEndpoint = ApiConstants.searchEndpoint;
+  
+  // Try-on uses tryon server
+  static String get tryOnBaseUrl => ApiConstants.tryOnBaseUrl;
   static const String tryOnEndpoint = ApiConstants.tryOnEndpoint;
 
   // Gọi API tìm kiếm với WebSocket
   Future<SearchResponse> searchImages(String imageUrl) async {
     try {
-      AppLogger.apiRequest('POST', '$baseUrl$searchEndpoint', body: {'url': imageUrl});
+      AppLogger.apiRequest('POST', '$searchBaseUrl$searchEndpoint', body: {'url': imageUrl});
       
       // Bước 1: Gửi HTTP request để tạo task
       final response = await http.post(
-        Uri.parse('$baseUrl$searchEndpoint'),
+        Uri.parse('$searchBaseUrl$searchEndpoint'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -33,7 +37,7 @@ class ApiService {
         },
       );
 
-      AppLogger.apiResponse('$baseUrl$searchEndpoint', response.statusCode, body: response.body);
+      AppLogger.apiResponse('$searchBaseUrl$searchEndpoint', response.statusCode, body: response.body);
 
       if (response.statusCode != 200) {
         throw Exception('Lỗi tạo task: ${response.statusCode} - ${response.body}');
@@ -49,7 +53,8 @@ class ApiService {
       AppLogger.info('📝 Task ID: $taskId');
       
       // Bước 2: Kết nối WebSocket để nhận real-time updates
-      final wsUrl = '$wsBaseUrl/ws/$taskId';
+      // WebSocket vẫn trên scrape server
+      final wsUrl = 'wss://scrape.tryonstylist.com/ws/$taskId';
       AppLogger.info('🔌 Connecting to WebSocket: $wsUrl');
       
       final channel = WebSocketChannel.connect(Uri.parse(wsUrl));
@@ -157,7 +162,7 @@ class ApiService {
       );
       
     } catch (e) {
-      AppLogger.apiError('$baseUrl$searchEndpoint', e);
+      AppLogger.apiError('$searchBaseUrl$searchEndpoint', e);
       throw Exception('Lỗi kết nối API: $e');
     }
   }
@@ -165,10 +170,10 @@ class ApiService {
   // Gọi API try-on
   Future<TryOnResponse> tryOn(String imageUrl) async {
     try {
-      AppLogger.apiRequest('POST', '$baseUrl$tryOnEndpoint', body: {'imageUrl': imageUrl});
+      AppLogger.apiRequest('POST', '$tryOnBaseUrl$tryOnEndpoint', body: {'imageUrl': imageUrl});
       
       final request = TryOnRequest(imageUrl: imageUrl);
-      final tryOnUrl = Uri.parse('${ApiConstants.tryOnBaseUrl}$tryOnEndpoint');
+      final tryOnUrl = Uri.parse('$tryOnBaseUrl$tryOnEndpoint');
       final response = await http.post(
         tryOnUrl,
         headers: {
@@ -182,7 +187,7 @@ class ApiService {
         },
       );
 
-      AppLogger.apiResponse('${ApiConstants.tryOnBaseUrl}$tryOnEndpoint', response.statusCode, body: response.body);
+      AppLogger.apiResponse('$tryOnBaseUrl$tryOnEndpoint', response.statusCode, body: response.body);
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
@@ -191,7 +196,7 @@ class ApiService {
         throw Exception('Lỗi try-on: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      AppLogger.apiError('$baseUrl$tryOnEndpoint', e);
+      AppLogger.apiError('$tryOnBaseUrl$tryOnEndpoint', e);
       throw Exception('Lỗi kết nối API: $e');
     }
   }

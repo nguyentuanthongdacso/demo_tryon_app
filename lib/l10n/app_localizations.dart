@@ -82,6 +82,9 @@ class AppLocalizations {
       'upload_failed': 'Upload thất bại',
       'upload_failed_try_again': 'Upload ảnh thất bại, vui lòng thử lại',
       'error': 'Lỗi',
+      'token_check_failed': 'Không thể kiểm tra token',
+      'not_enough_tokens': 'Token của bạn không đủ để thực hiện thao tác này. Vui lòng nạp thêm token.',
+      'select_this_item': 'Tôi muốn chọn chiếc này để tiếp tục',
     },
     // English (fallback for non-Vietnamese selections)
     'en': {
@@ -155,6 +158,9 @@ class AppLocalizations {
       'upload_failed': 'Upload failed',
       'upload_failed_try_again': 'Image upload failed, please try again',
       'error': 'Error',
+      'token_check_failed': 'Unable to check token',
+      'not_enough_tokens': 'Your tokens are not enough to perform this operation. Please get more tokens.',
+      'select_this_item': 'I want to select this item to continue',
     },
     // Chinese (Simplified)
     'zh': {
@@ -228,6 +234,9 @@ class AppLocalizations {
       'upload_failed': '上传失败',
       'upload_failed_try_again': '图片上传失败，请重试',
       'error': '错误',
+      'token_check_failed': '无法检查token',
+      'not_enough_tokens': '您的token不足以执行此操作。请获取更多token。',
+      'select_this_item': '我想选择这件继续',
     },
     // Spanish
     'es': {
@@ -301,6 +310,9 @@ class AppLocalizations {
       'upload_failed': 'Subida fallida',
       'upload_failed_try_again': 'La subida de imagen falló, inténtalo de nuevo',
       'error': 'Error',
+      'token_check_failed': 'No se pudo verificar el token',
+      'not_enough_tokens': 'Tus tokens no son suficientes para realizar esta operación. Por favor obtén más tokens.',
+      'select_this_item': 'Quiero seleccionar este artículo para continuar',
     },
     // Hindi
     'hi': {
@@ -374,6 +386,9 @@ class AppLocalizations {
       'upload_failed': 'अपलोड विफल',
       'upload_failed_try_again': 'छवि अपलोड विफल, कृपया पुनः प्रयास करें',
       'error': 'त्रुटि',
+      'token_check_failed': 'टोकन जांच नहीं हो सकी',
+      'not_enough_tokens': 'इस कार्य को करने के लिए आपके टोकन पर्याप्त नहीं हैं। कृपया और टोकन प्राप्त करें।',
+      'select_this_item': 'मैं जारी रखने के लिए इसे चुनना चाहता हूं',
     },
     // Arabic
     'ar': {
@@ -447,6 +462,9 @@ class AppLocalizations {
       'upload_failed': 'فشل الرفع',
       'upload_failed_try_again': 'فشل رفع الصورة، يرجى المحاولة مرة أخرى',
       'error': 'خطأ',
+      'token_check_failed': 'تعذر التحقق من الرموز',
+      'not_enough_tokens': 'رموزك غير كافية لتنفيذ هذه العملية. يرجى الحصول على المزيد من الرموز.',
+      'select_this_item': 'أريد اختيار هذا للمتابعة',
     },
     // Bengali
     'bn': {
@@ -520,6 +538,9 @@ class AppLocalizations {
       'upload_failed': 'আপলোড ব্যর্থ',
       'upload_failed_try_again': 'ছবি আপলোড ব্যর্থ হয়েছে, অনুগ্রহ করে আবার চেষ্টা করুন',
       'error': 'ত্রুটি',
+      'token_check_failed': 'টোকেন যাচাই করা যায়নি',
+      'not_enough_tokens': 'এই অপারেশন সম্পাদন করতে আপনার টোকেন যথেষ্ট নয়। অনুগ্রহ করে আরো টোকেন সংগ্রহ করুন।',
+      'select_this_item': 'আমি এটি নির্বাচন করে এগিয়ে যেতে চাই',
     },
     // French
     'fr': {
@@ -593,6 +614,9 @@ class AppLocalizations {
       'upload_failed': 'Échec du téléversement',
       'upload_failed_try_again': 'Le téléversement de l\'image a échoué, veuillez réessayer',
       'error': 'Erreur',
+      'token_check_failed': 'Impossible de vérifier le jeton',
+      'not_enough_tokens': 'Vos jetons sont insuffisants pour effectuer cette opération. Veuillez obtenir plus de jetons.',
+      'select_this_item': 'Je veux sélectionner cet article pour continuer',
     },
     // Russian
     'ru': {
@@ -666,6 +690,9 @@ class AppLocalizations {
       'upload_failed': 'Ошибка загрузки',
       'upload_failed_try_again': 'Не удалось загрузить изображение, попробуйте снова',
       'error': 'Ошибка',
+      'token_check_failed': 'Не удалось проверить токен',
+      'not_enough_tokens': 'Ваших токенов недостаточно для выполнения этой операции. Пожалуйста, получите больше токенов.',
+      'select_this_item': 'Я хочу выбрать это, чтобы продолжить',
     },
     // Portuguese
     'pt': {
@@ -739,6 +766,9 @@ class AppLocalizations {
       'upload_failed': 'Falha no envio',
       'upload_failed_try_again': 'Falha ao enviar imagem, tente novamente',
       'error': 'Erro',
+      'token_check_failed': 'Não foi possível verificar o token',
+      'not_enough_tokens': 'Seus tokens não são suficientes para realizar esta operação. Por favor, obtenha mais tokens.',
+      'select_this_item': 'Quero selecionar este item para continuar',
     },
   };
 
