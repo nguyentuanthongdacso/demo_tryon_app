@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   AppLocalizations.of(context).translate('slogan'),
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black.withOpacity(0.7),
+                    color: Colors.black.withValues(alpha: 0.7),
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     text: AppLocalizations.of(context).translate('terms_prefix'),
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.black.withOpacity(0.7),
+                      color: Colors.black.withValues(alpha: 0.7),
                     ),
                     children: [
                       TextSpan(

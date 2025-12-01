@@ -32,23 +32,30 @@ class _LanguageScreenState extends State<LanguageScreen> {
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                itemCount: LanguageProvider.supportedLanguages.length,
-                itemBuilder: (context, index) {
-                  final option = LanguageProvider.supportedLanguages[index];
-                  final selected = _selected?.languageCode == option.locale.languageCode;
-                  return RadioListTile<String>(
-                    value: option.locale.languageCode,
-                    groupValue: _selected?.languageCode,
-                    title: Text('${option.name} (${option.nativeName})'),
-                    onChanged: (val) {
-                      setState(() {
-                        _selected = option.locale;
-                      });
-                    },
-                    selected: selected,
-                  );
+              child: RadioGroup<String>(
+                groupValue: _selected?.languageCode,
+                onChanged: (val) {
+                  if (val != null) {
+                    final option = LanguageProvider.supportedLanguages.firstWhere(
+                      (o) => o.locale.languageCode == val,
+                    );
+                    setState(() {
+                      _selected = option.locale;
+                    });
+                  }
                 },
+                child: ListView.builder(
+                  itemCount: LanguageProvider.supportedLanguages.length,
+                  itemBuilder: (context, index) {
+                    final option = LanguageProvider.supportedLanguages[index];
+                    final selected = _selected?.languageCode == option.locale.languageCode;
+                    return RadioListTile<String>(
+                      value: option.locale.languageCode,
+                      title: Text('${option.name} (${option.nativeName})'),
+                      selected: selected,
+                    );
+                  },
+                ),
               ),
             ),
             ElevatedButton(

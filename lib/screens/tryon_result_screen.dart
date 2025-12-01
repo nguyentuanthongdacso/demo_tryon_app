@@ -197,7 +197,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                           widget.initImageUrl,
                           height: 200,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
+                          errorBuilder: (_, _, _) => Container(
                             height: 200,
                             color: Colors.grey[300],
                             child: const Icon(Icons.error),
@@ -219,7 +219,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                           widget.clothImageUrl,
                           height: 200,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
+                          errorBuilder: (_, _, _) => Container(
                             height: 200,
                             color: Colors.grey[300],
                             child: const Icon(Icons.error),
@@ -274,7 +274,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                                   ),
                                 );
                               },
-                              errorBuilder: (_, __, ___) => Container(
+                              errorBuilder: (_, _, _) => Container(
                                 height: 300,
                                 color: Colors.grey[300],
                                 child: const Column(
