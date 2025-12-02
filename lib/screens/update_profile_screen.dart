@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../services/session_upload_manager.dart';
+import '../services/ad_service.dart';
+import '../constants/ad_constants.dart';
 import '../providers/search_provider.dart';
 import '../providers/tryon_provider.dart';
 import 'edit_model_image_screen.dart';
@@ -116,6 +118,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 title: loc.translate('upgrade_account'),
                 onTap: () => _showComingSoon(loc.translate('upgrade_account')),
               ),
+              const SizedBox(height: 12),
+
+              // Click để nhận token - Rewarded Video Ad
+              _buildRewardedAdButton(loc),
               const SizedBox(height: 12),
 
               // Log out
@@ -303,6 +309,194 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   }
 
   // removed unused helper
+
+  /// Nút xem quảng cáo để nhận token
+  Widget _buildRewardedAdButton(AppLocalizations loc) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.orange.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ListTile(
+        leading: const Icon(Icons.play_circle_fill, color: Colors.white, size: 32),
+        title: Text(
+          loc.translate('click_to_get_token'),
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          loc.translate('watch_ad_reward'),
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.white70,
+          ),
+        ),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.toll, size: 18, color: Colors.white),
+              SizedBox(width: 4),
+              Text(
+                '+25',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+        onTap: _handleWatchRewardedAd,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    );
+  }
+
+  /// Xử lý khi nhấn nút xem quảng cáo
+  Future<void> _handleWatchRewardedAd() async {
+    final loc = AppLocalizations.of(context);
+    final adService = AdService();
+    
+    // Kiểm tra có thể xem không
+    final canShow = await adService.canShowRewardedAd();
+    if (canShow['allowed'] != true) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(canShow['message'] ?? loc.translate('ad_not_ready')),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+    
+    // Hiển thị quảng cáo
+    final result = await adService.showRewardedAd(
+      userKey: _authService.userKey ?? '',
+    );
+    
+    if (!mounted) return;
+    
+    if (result['success'] == true) {
+      // Test Mode: Client gọi trực tiếp API vì test ads không gọi SSV callback
+      // Production Mode: Đợi SSV callback từ Google
+      
+      if (AdConstants.isTestMode) {
+        // TEST MODE: Gọi trực tiếp API add-token-free
+        try {
+          final addResult = await _authService.addTokenFree(AdConstants.rewardTokenAmount);
+          if (addResult.success) {
+            await _authService.refreshTokenFromServer();
+            if (mounted) {
+              setState(() {}); // Rebuild UI với token mới
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '[TEST] ${loc.translate('ad_reward_success').replaceAll('{amount}', '${AdConstants.rewardTokenAmount}')}',
+                  ),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
+          } else {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('[TEST] Error: ${addResult.message}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        } catch (e) {
+          debugPrint('Test mode add token error: $e');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('[TEST] Error: $e'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } else {
+        // PRODUCTION MODE: SSV Flow
+        // Google sẽ gửi callback đến server để cộng token
+        // Client chỉ cần đợi và refresh token từ server
+        
+        // Hiển thị thông báo đang xác thực
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(loc.translate('ad_verifying')),
+            backgroundColor: Colors.blue,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        
+        // Đợi 3-5 giây để Google gửi SSV callback và server xử lý
+        await Future.delayed(const Duration(seconds: 4));
+        
+        // Refresh token từ server (server đã cộng token qua SSV)
+        try {
+          await _authService.refreshTokenFromServer();
+          if (mounted) {
+            setState(() {}); // Rebuild UI với token mới
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  loc.translate('ad_reward_success')
+                      .replaceAll('{amount}', '${AdConstants.rewardTokenAmount}'),
+                ),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } catch (e) {
+          debugPrint('Error refreshing token: $e');
+          // Nếu refresh thất bại, vẫn thông báo cho user biết reward đang được xử lý
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(loc.translate('ad_reward_processing')),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['error'] ?? loc.translate('ad_not_ready')),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   void _showComingSoon(String feature) {
     ScaffoldMessenger.of(context).showSnackBar(

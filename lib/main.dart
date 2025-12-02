@@ -14,9 +14,13 @@ import 'screens/login_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'services/auth_service.dart';
 import 'services/session_upload_manager.dart';
+import 'services/ad_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Khởi tạo AdMob SDK
+  await AdService().initialize();
   
   // Xóa ảnh từ phiên trước (nếu app bị đóng đột ngột)
   // Giữ lại để tối ưu storage trên Cloudinary

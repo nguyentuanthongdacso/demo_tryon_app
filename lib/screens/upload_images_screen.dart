@@ -11,6 +11,7 @@ import '../services/cloudinary_service.dart';
 import '../services/auth_service.dart';
 import 'tryon_result_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/banner_ad_widget.dart';
 
 class UploadImagesScreen extends StatefulWidget {
   const UploadImagesScreen({super.key});
@@ -340,12 +341,18 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
     
     return Consumer<TryonProvider>(
       builder: (context, provider, _) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-                Text(AppLocalizations.of(context).translate('bottom_upload'), style: const TextStyle(fontWeight: FontWeight.bold)),
+        return Column(
+          children: [
+            // Banner Ad ở đầu màn hình
+            const BannerAdWidget(),
+            // Main content - scrollable
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                      Text(AppLocalizations.of(context).translate('bottom_upload'), style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: () => _pickImage(true),
@@ -433,8 +440,11 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                     style: const TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ),
-            ],
-          ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         );
       },
     );

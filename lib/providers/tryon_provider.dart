@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 
 class TryonProvider extends ChangeNotifier {
   final TryonService _service = TryonService();
+  final AuthService _authService = AuthService();
 
   bool _isLoading = false;
   String? _error;
@@ -22,8 +23,7 @@ class TryonProvider extends ChangeNotifier {
     notifyListeners();
     try {
       // Get user_key from AuthService
-      final authService = AuthService();
-      final userKey = authService.currentUser?['user_key'] as String?;
+      final userKey = _authService.currentUser?['user_key'] as String?;
       
       final req = TryonRequest(
         initImage: initImage,
@@ -33,6 +33,11 @@ class TryonProvider extends ChangeNotifier {
       );
       final res = await _service.sendTryonRequest(req);
       _response = res;
+      
+      // Refresh token từ server sau khi tryon thành công
+      if (res.status == 'success') {
+        await _authService.refreshTokenFromServer();
+      }
     } catch (e) {
       _error = e.toString();
     } finally {

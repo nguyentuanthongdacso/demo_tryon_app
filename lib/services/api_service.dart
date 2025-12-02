@@ -7,8 +7,12 @@ import '../models/api_response.dart';
 import '../models/image_item.dart';
 import '../constants/api_constants.dart';
 import '../utils/logger.dart';
+import 'auth_service.dart';
 
 class ApiService {
+  // AuthService để lấy JWT token
+  final AuthService _authService = AuthService();
+  
   // Search/Scrape uses scrape server
   static String get searchBaseUrl => ApiConstants.searchBaseUrl;
   static String get wsBaseUrl => ApiConstants.wsBaseUrl;
@@ -17,18 +21,30 @@ class ApiService {
   // Try-on uses tryon server
   static String get tryOnBaseUrl => ApiConstants.tryOnBaseUrl;
   static const String tryOnEndpoint = ApiConstants.tryOnEndpoint;
+  
+  /// Get authorization headers with JWT token
+  Map<String, String> _getAuthHeaders() {
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+    };
+    
+    final token = _authService.jwtToken;
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    
+    return headers;
+  }
 
   // Gọi API tìm kiếm với WebSocket
   Future<SearchResponse> searchImages(String imageUrl) async {
     try {
       AppLogger.apiRequest('POST', '$searchBaseUrl$searchEndpoint', body: {'url': imageUrl});
       
-      // Bước 1: Gửi HTTP request để tạo task
+      // Bước 1: Gửi HTTP request để tạo task (với JWT)
       final response = await http.post(
         Uri.parse('$searchBaseUrl$searchEndpoint'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: _getAuthHeaders(),
         body: jsonEncode({'url': imageUrl}),
       ).timeout(
         const Duration(seconds: 10),
@@ -38,6 +54,11 @@ class ApiService {
       );
 
       AppLogger.apiResponse('$searchBaseUrl$searchEndpoint', response.statusCode, body: response.body);
+      
+      // Check for auth errors
+      if (response.statusCode == 401) {
+        throw Exception('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+      }
 
       if (response.statusCode != 200) {
         throw Exception('Lỗi tạo task: ${response.statusCode} - ${response.body}');
@@ -176,9 +197,7 @@ class ApiService {
       final tryOnUrl = Uri.parse('$tryOnBaseUrl$tryOnEndpoint');
       final response = await http.post(
         tryOnUrl,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: _getAuthHeaders(),  // JWT token included
         body: jsonEncode(request.toJson()),
       ).timeout(
         ApiConstants.connectionTimeout,
@@ -188,6 +207,11 @@ class ApiService {
       );
 
       AppLogger.apiResponse('$tryOnBaseUrl$tryOnEndpoint', response.statusCode, body: response.body);
+      
+      // Check for auth errors
+      if (response.statusCode == 401) {
+        throw Exception('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+      }
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);

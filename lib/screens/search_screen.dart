@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/search_provider.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/banner_ad_widget.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -40,23 +41,28 @@ class _SearchScreenState extends State<SearchScreen> {
         centerTitle: true,
         elevation: 2,
       ),
-      body: Stack(
+      body: Column(
         children: [
+          // Banner Ad ở đầu màn hình
+          const BannerAdWidget(),
           // Main content - scrollable
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 16.0,
-                top: 16.0,
-                right: 16.0,
-                bottom: 100, // Space for fixed button at bottom
-              ),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: _urlController,
-                    focusNode: _focusNode,
-                    decoration: InputDecoration(
+          Expanded(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16.0,
+                      top: 16.0,
+                      right: 16.0,
+                      bottom: 100, // Space for fixed button at bottom
+                    ),
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: _urlController,
+                          focusNode: _focusNode,
+                          decoration: InputDecoration(
                       hintText: AppLocalizations.of(context).translate('enter_image_url_hint'),
                       labelText: AppLocalizations.of(context).translate('url_label'),
                       prefixIcon: const Icon(Icons.link),
@@ -295,6 +301,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               );
             },
+          ),
+              ],
+            ),
           ),
         ],
       ),

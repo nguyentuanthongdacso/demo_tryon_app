@@ -85,6 +85,17 @@ class AppLocalizations {
       'token_check_failed': 'Không thể kiểm tra token',
       'not_enough_tokens': 'Token của bạn không đủ để thực hiện thao tác này. Vui lòng nạp thêm token.',
       'select_this_item': 'Tôi muốn chọn chiếc này để tiếp tục',
+      // AdMob
+      'click_to_get_token': 'Click để nhận token',
+      'watch_ad_reward': 'Xem quảng cáo để nhận +25 token miễn phí',
+      'ad_loading': 'Đang tải quảng cáo...',
+      'ad_not_ready': 'Quảng cáo chưa sẵn sàng. Vui lòng thử lại.',
+      'ad_reward_success': 'Chúc mừng! Bạn đã nhận được {amount} token!',
+      'ad_cooldown': 'Vui lòng đợi {seconds} giây trước khi xem tiếp',
+      'ad_hourly_limit': 'Bạn đã đạt giới hạn xem quảng cáo mỗi giờ',
+      'ad_daily_limit': 'Bạn đã đạt giới hạn xem quảng cáo hôm nay',
+      'ad_verifying': 'Đang xác thực phần thưởng...',
+      'ad_reward_processing': 'Phần thưởng đang được xử lý. Vui lòng đợi...',
     },
     // English (fallback for non-Vietnamese selections)
     'en': {
@@ -161,6 +172,17 @@ class AppLocalizations {
       'token_check_failed': 'Unable to check token',
       'not_enough_tokens': 'Your tokens are not enough to perform this operation. Please get more tokens.',
       'select_this_item': 'I want to select this item to continue',
+      // AdMob
+      'click_to_get_token': 'Click to get tokens',
+      'watch_ad_reward': 'Watch ad to get +25 free tokens',
+      'ad_loading': 'Loading ad...',
+      'ad_not_ready': 'Ad not ready. Please try again.',
+      'ad_reward_success': 'Congratulations! You received {amount} tokens!',
+      'ad_cooldown': 'Please wait {seconds} seconds before watching again',
+      'ad_hourly_limit': 'You have reached the hourly ad limit',
+      'ad_daily_limit': 'You have reached the daily ad limit',
+      'ad_verifying': 'Verifying reward...',
+      'ad_reward_processing': 'Your reward is being processed. Please wait...',
     },
     // Chinese (Simplified)
     'zh': {
@@ -237,6 +259,17 @@ class AppLocalizations {
       'token_check_failed': '无法检查token',
       'not_enough_tokens': '您的token不足以执行此操作。请获取更多token。',
       'select_this_item': '我想选择这件继续',
+      // AdMob
+      'click_to_get_token': '点击获取token',
+      'watch_ad_reward': '观看广告获得+25免费token',
+      'ad_loading': '广告加载中...',
+      'ad_not_ready': '广告未就绪，请重试。',
+      'ad_reward_success': '恭喜！您获得了{amount}个token！',
+      'ad_cooldown': '请等待{seconds}秒后再观看',
+      'ad_hourly_limit': '您已达到每小时广告限制',
+      'ad_daily_limit': '您已达到今日广告限制',
+      'ad_verifying': '正在验证奖励...',
+      'ad_reward_processing': '您的奖励正在处理中，请稍等...',
     },
     // Spanish
     'es': {

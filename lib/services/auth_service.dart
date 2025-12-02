@@ -254,6 +254,27 @@ class AuthService {
     }
   }
 
+  /// Refresh token data từ server (dùng sau khi nhận reward từ ad)
+  Future<void> refreshTokenFromServer() async {
+    if (_jwtToken == null || userKey == null) {
+      throw Exception('Not logged in');
+    }
+
+    try {
+      final response = await checkToken();
+      if (response.success && _currentUser != null) {
+        // Cập nhật local user data với token mới từ server
+        _currentUser!['token_free'] = response.tokenFree;
+        _currentUser!['token_vip'] = response.tokenVip;
+        await _saveSession();
+        print('🔄 Token refreshed: free=${response.tokenFree}, vip=${response.tokenVip}');
+      }
+    } catch (e) {
+      print('❌ Error refreshing token: $e');
+      rethrow;
+    }
+  }
+
   /// Trừ token
   Future<SubtractTokenResponse> subtractToken(int amount) async {
     if (_jwtToken == null || userKey == null) {
@@ -287,6 +308,43 @@ class AuthService {
       throw Exception('Server error: ${response.statusCode}');
     } catch (e) {
       return SubtractTokenResponse(success: false, message: e.toString());
+    }
+  }
+
+  /// Cộng token miễn phí (dùng sau khi xem quảng cáo)
+  Future<AddTokenFreeResponse> addTokenFree(int amount) async {
+    if (_jwtToken == null || userKey == null) {
+      return AddTokenFreeResponse(success: false, message: 'Not logged in');
+    }
+
+    try {
+      final url = Uri.parse('$_gatewayUrl/add-token-free');
+      final response = await http.post(
+        url,
+        headers: getAuthHeaders(),
+        body: jsonEncode({
+          'type': 'add_token_free',
+          'user_key': userKey,
+          'token_value': amount,
+        }),
+      ).timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        final result = AddTokenFreeResponse.fromJson(jsonDecode(response.body));
+        // Cập nhật local user data
+        if (result.success && _currentUser != null) {
+          _currentUser!['token_free'] = result.tokenFreeNew;
+          await _saveSession();
+          print('✅ Token added: +$amount, new balance: ${result.tokenFreeNew}');
+        }
+        return result;
+      } else if (response.statusCode == 401) {
+        await logout();
+        return AddTokenFreeResponse(success: false, message: 'Token expired');
+      }
+      throw Exception('Server error: ${response.statusCode}');
+    } catch (e) {
+      return AddTokenFreeResponse(success: false, message: e.toString());
     }
   }
 
@@ -420,6 +478,27 @@ class ChangeImageResponse {
       success: json['success'] ?? false,
       message: json['message'] ?? '',
       image: json['image'],
+    );
+  }
+}
+
+
+class AddTokenFreeResponse {
+  final bool success;
+  final String? message;
+  final int? tokenFreeNew;
+
+  AddTokenFreeResponse({
+    required this.success,
+    this.message,
+    this.tokenFreeNew,
+  });
+
+  factory AddTokenFreeResponse.fromJson(Map<String, dynamic> json) {
+    return AddTokenFreeResponse(
+      success: json['success'] ?? false,
+      message: json['message'],
+      tokenFreeNew: json['token_free'],  // Server trả về token_free
     );
   }
 }

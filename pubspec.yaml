@@ -21,6 +21,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_secure_storage: ^9.2.4
+  google_mobile_ads: ^5.2.0
 
 dev_dependencies:
   flutter_test:
