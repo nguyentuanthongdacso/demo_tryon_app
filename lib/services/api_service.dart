@@ -5,6 +5,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../models/try_on_request.dart';
 import '../models/api_response.dart';
 import '../models/image_item.dart';
+import '../models/tryon_image.dart';
 import '../constants/api_constants.dart';
 import '../utils/logger.dart';
 import 'auth_service.dart';
@@ -222,6 +223,92 @@ class ApiService {
     } catch (e) {
       AppLogger.apiError('$tryOnBaseUrl$tryOnEndpoint', e);
       throw Exception('Lỗi kết nối API: $e');
+    }
+  }
+
+  // ==================== TRYON IMAGE APIs ====================
+
+  /// Lưu ảnh tryon vào database
+  /// Trả về SaveTryonImageResponse với thông tin ảnh đã lưu
+  Future<SaveTryonImageResponse> saveTryonImage({
+    required String userKey,
+    required String imageUrl,
+  }) async {
+    try {
+      final url = '${ApiConstants.gatewayBaseUrl}${ApiConstants.saveTryonImageEndpoint}';
+      AppLogger.apiRequest('POST', url, body: {
+        'type': 'save_tryon_image',
+        'user_key': userKey,
+        'image_url': imageUrl,
+      });
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: _getAuthHeaders(),
+        body: jsonEncode({
+          'type': 'save_tryon_image',
+          'user_key': userKey,
+          'image_url': imageUrl,
+        }),
+      ).timeout(ApiConstants.connectionTimeout);
+
+      AppLogger.apiResponse(url, response.statusCode, body: response.body);
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        return SaveTryonImageResponse.fromJson(jsonResponse);
+      } else {
+        throw Exception('Lỗi lưu ảnh tryon: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      AppLogger.apiError('saveTryonImage', e);
+      return SaveTryonImageResponse(
+        success: false,
+        message: 'Lỗi kết nối: $e',
+        tryonImage: null,
+      );
+    }
+  }
+
+  /// Lấy danh sách ảnh tryon của user (tối đa 10 ảnh gần nhất)
+  Future<GetTryonImagesResponse> getTryonImages({
+    required String userKey,
+    int limit = 10,
+  }) async {
+    try {
+      final url = '${ApiConstants.gatewayBaseUrl}${ApiConstants.getTryonImagesEndpoint}';
+      AppLogger.apiRequest('POST', url, body: {
+        'type': 'get_tryon_images',
+        'user_key': userKey,
+        'limit': limit,
+      });
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: _getAuthHeaders(),
+        body: jsonEncode({
+          'type': 'get_tryon_images',
+          'user_key': userKey,
+          'limit': limit,
+        }),
+      ).timeout(ApiConstants.connectionTimeout);
+
+      AppLogger.apiResponse(url, response.statusCode, body: response.body);
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        return GetTryonImagesResponse.fromJson(jsonResponse);
+      } else {
+        throw Exception('Lỗi lấy ảnh tryon: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      AppLogger.apiError('getTryonImages', e);
+      return GetTryonImagesResponse(
+        success: false,
+        message: 'Lỗi kết nối: $e',
+        tryonImages: [],
+        total: 0,
+      );
     }
   }
 }

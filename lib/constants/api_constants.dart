@@ -49,6 +49,8 @@ class ApiConstants {
   static const String checkLoginEndpoint = '/check-login';
   static const String checkTokenEndpoint = '/check-token';
   static const String subtractTokenEndpoint = '/subtract-token';
+  static const String saveTryonImageEndpoint = '/save-tryon-image';
+  static const String getTryonImagesEndpoint = '/get-tryon-images';
   
   // Search endpoints (on scrape server)
   static const String searchEndpoint = '/scrape';

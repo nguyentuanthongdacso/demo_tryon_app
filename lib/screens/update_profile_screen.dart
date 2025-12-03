@@ -8,6 +8,7 @@ import '../providers/search_provider.dart';
 import '../providers/tryon_provider.dart';
 import 'edit_model_image_screen.dart';
 import 'language_screen.dart';
+import 'my_assets_screen.dart';
 import '../l10n/app_localizations.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
@@ -93,6 +94,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 icon: Icons.photo_camera,
                 title: loc.translate('edit_model_image'),
                 onTap: () => _navigateToEditModelImage(),
+              ),
+              const SizedBox(height: 12),
+
+              // My Assets - Ảnh của tôi
+              _buildMenuItem(
+                icon: Icons.photo_library,
+                title: loc.translate('my_assets'),
+                onTap: () => _navigateToMyAssets(),
               ),
               const SizedBox(height: 12),
 
@@ -519,6 +528,15 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     if (result == true && mounted) {
       setState(() {});
     }
+  }
+
+  void _navigateToMyAssets() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MyAssetsScreen(),
+      ),
+    );
   }
 
   void _handleLogout() {
