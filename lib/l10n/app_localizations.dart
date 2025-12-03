@@ -103,7 +103,8 @@ class AppLocalizations {
       'ad_reward_processing': 'Phần thưởng đang được xử lý. Vui lòng đợi...',
       // Image context menu
       'save_to_gallery': 'Lưu vào thư viện',
-      'copy_image': 'Sao chép URL ảnh',
+      'copy_image': 'Sao chép ảnh',
+      'copy_image_url': 'Sao chép URL ảnh',
       'share_image': 'Chia sẻ ảnh',
       'saving': 'Đang lưu...',
       'preparing': 'Đang chuẩn bị...',
@@ -111,6 +112,8 @@ class AppLocalizations {
       'saved_to_gallery': 'Đã lưu vào thư viện ảnh',
       'save_failed': 'Lưu ảnh thất bại',
       'url_copied': 'Đã sao chép URL ảnh',
+      'image_copied': 'Đã sao chép ảnh',
+      'copy_failed': 'Sao chép ảnh thất bại',
       'share_failed': 'Chia sẻ thất bại',
     },
     // English (fallback for non-Vietnamese selections)
@@ -206,7 +209,8 @@ class AppLocalizations {
       'ad_reward_processing': 'Your reward is being processed. Please wait...',
       // Image context menu
       'save_to_gallery': 'Save to gallery',
-      'copy_image': 'Copy image URL',
+      'copy_image': 'Copy image',
+      'copy_image_url': 'Copy image URL',
       'share_image': 'Share image',
       'saving': 'Saving...',
       'preparing': 'Preparing...',
@@ -214,6 +218,8 @@ class AppLocalizations {
       'saved_to_gallery': 'Saved to photo gallery',
       'save_failed': 'Failed to save image',
       'url_copied': 'Image URL copied',
+      'image_copied': 'Image copied',
+      'copy_failed': 'Copy failed',
       'share_failed': 'Share failed',
     },
     // Chinese (Simplified)
@@ -309,7 +315,8 @@ class AppLocalizations {
       'ad_reward_processing': '您的奖励正在处理中，请稍等...',
       // Image context menu
       'save_to_gallery': '保存到相册',
-      'copy_image': '复制图片链接',
+      'copy_image': '复制图片',
+      'copy_image_url': '复制图片链接',
       'share_image': '分享图片',
       'saving': '保存中...',
       'preparing': '准备中...',
@@ -317,6 +324,8 @@ class AppLocalizations {
       'saved_to_gallery': '已保存到相册',
       'save_failed': '保存图片失败',
       'url_copied': '图片链接已复制',
+      'image_copied': '图片已复制',
+      'copy_failed': '复制图片失败',
       'share_failed': '分享失败',
     },
     // Spanish
@@ -412,7 +421,8 @@ class AppLocalizations {
       'ad_reward_processing': 'Tu recompensa está siendo procesada. Por favor espera...',
       // Image context menu
       'save_to_gallery': 'Guardar en galería',
-      'copy_image': 'Copiar URL de imagen',
+      'copy_image': 'Copiar imagen',
+      'copy_image_url': 'Copiar URL de imagen',
       'share_image': 'Compartir imagen',
       'saving': 'Guardando...',
       'preparing': 'Preparando...',
@@ -420,6 +430,8 @@ class AppLocalizations {
       'saved_to_gallery': 'Guardado en la galería de fotos',
       'save_failed': 'Error al guardar imagen',
       'url_copied': 'URL de imagen copiada',
+      'image_copied': 'Imagen copiada',
+      'copy_failed': 'Error al copiar imagen',
       'share_failed': 'Error al compartir',
     },
     // Hindi
@@ -515,7 +527,8 @@ class AppLocalizations {
       'ad_reward_processing': 'आपका इनाम प्रोसेस हो रहा है। कृपया प्रतीक्षा करें...',
       // Image context menu
       'save_to_gallery': 'गैलरी में सेव करें',
-      'copy_image': 'छवि URL कॉपी करें',
+      'copy_image': 'छवि कॉपी करें',
+      'copy_image_url': 'छवि URL कॉपी करें',
       'share_image': 'छवि साझा करें',
       'saving': 'सेव हो रहा है...',
       'preparing': 'तैयारी हो रही है...',
@@ -523,6 +536,8 @@ class AppLocalizations {
       'saved_to_gallery': 'फोटो गैलरी में सेव हो गया',
       'save_failed': 'छवि सेव विफल',
       'url_copied': 'छवि URL कॉपी हो गया',
+      'image_copied': 'छवि कॉपी हो गई',
+      'copy_failed': 'छवि कॉपी विफल',
       'share_failed': 'साझा करना विफल',
     },
     // Arabic
@@ -618,7 +633,8 @@ class AppLocalizations {
       'ad_reward_processing': 'جارٍ معالجة مكافأتك. يرجى الانتظار...',
       // Image context menu
       'save_to_gallery': 'حفظ في المعرض',
-      'copy_image': 'نسخ رابط الصورة',
+      'copy_image': 'نسخ الصورة',
+      'copy_image_url': 'نسخ رابط الصورة',
       'share_image': 'مشاركة الصورة',
       'saving': 'جارٍ الحفظ...',
       'preparing': 'جارٍ التحضير...',
@@ -626,6 +642,8 @@ class AppLocalizations {
       'saved_to_gallery': 'تم الحفظ في معرض الصور',
       'save_failed': 'فشل حفظ الصورة',
       'url_copied': 'تم نسخ رابط الصورة',
+      'image_copied': 'تم نسخ الصورة',
+      'copy_failed': 'فشل نسخ الصورة',
       'share_failed': 'فشلت المشاركة',
     },
     // Bengali
@@ -721,7 +739,8 @@ class AppLocalizations {
       'ad_reward_processing': 'আপনার পুরস্কার প্রক্রিয়াধীন। অনুগ্রহ করে অপেক্ষা করুন...',
       // Image context menu
       'save_to_gallery': 'গ্যালারিতে সংরক্ষণ করুন',
-      'copy_image': 'ছবির URL কপি করুন',
+      'copy_image': 'ছবি কপি করুন',
+      'copy_image_url': 'ছবির URL কপি করুন',
       'share_image': 'ছবি শেয়ার করুন',
       'saving': 'সংরক্ষণ হচ্ছে...',
       'preparing': 'প্রস্তুত হচ্ছে...',
@@ -729,6 +748,8 @@ class AppLocalizations {
       'saved_to_gallery': 'ফটো গ্যালারিতে সংরক্ষিত',
       'save_failed': 'ছবি সংরক্ষণ ব্যর্থ',
       'url_copied': 'ছবির URL কপি করা হয়েছে',
+      'image_copied': 'ছবি কপি করা হয়েছে',
+      'copy_failed': 'ছবি কপি ব্যর্থ',
       'share_failed': 'শেয়ার ব্যর্থ',
     },
     // French
@@ -824,7 +845,8 @@ class AppLocalizations {
       'ad_reward_processing': 'Votre récompense est en cours de traitement. Veuillez patienter...',
       // Image context menu
       'save_to_gallery': 'Enregistrer dans la galerie',
-      'copy_image': 'Copier l\'URL de l\'image',
+      'copy_image': 'Copier l\'image',
+      'copy_image_url': 'Copier l\'URL de l\'image',
       'share_image': 'Partager l\'image',
       'saving': 'Enregistrement...',
       'preparing': 'Préparation...',
@@ -832,6 +854,8 @@ class AppLocalizations {
       'saved_to_gallery': 'Enregistré dans la galerie photo',
       'save_failed': 'Échec de l\'enregistrement de l\'image',
       'url_copied': 'URL de l\'image copiée',
+      'image_copied': 'Image copiée',
+      'copy_failed': 'Échec de la copie de l\'image',
       'share_failed': 'Échec du partage',
     },
     // Russian
@@ -927,7 +951,8 @@ class AppLocalizations {
       'ad_reward_processing': 'Ваша награда обрабатывается. Пожалуйста, подождите...',
       // Image context menu
       'save_to_gallery': 'Сохранить в галерею',
-      'copy_image': 'Копировать URL изображения',
+      'copy_image': 'Копировать изображение',
+      'copy_image_url': 'Копировать URL изображения',
       'share_image': 'Поделиться изображением',
       'saving': 'Сохранение...',
       'preparing': 'Подготовка...',
@@ -935,6 +960,8 @@ class AppLocalizations {
       'saved_to_gallery': 'Сохранено в галерею',
       'save_failed': 'Не удалось сохранить изображение',
       'url_copied': 'URL изображения скопирован',
+      'image_copied': 'Изображение скопировано',
+      'copy_failed': 'Не удалось скопировать изображение',
       'share_failed': 'Не удалось поделиться',
     },
     // Portuguese
@@ -1030,7 +1057,8 @@ class AppLocalizations {
       'ad_reward_processing': 'Sua recompensa está sendo processada. Por favor, aguarde...',
       // Image context menu
       'save_to_gallery': 'Salvar na galeria',
-      'copy_image': 'Copiar URL da imagem',
+      'copy_image': 'Copiar imagem',
+      'copy_image_url': 'Copiar URL da imagem',
       'share_image': 'Compartilhar imagem',
       'saving': 'Salvando...',
       'preparing': 'Preparando...',
@@ -1038,6 +1066,8 @@ class AppLocalizations {
       'saved_to_gallery': 'Salvo na galeria de fotos',
       'save_failed': 'Falha ao salvar imagem',
       'url_copied': 'URL da imagem copiada',
+      'image_copied': 'Imagem copiada',
+      'copy_failed': 'Falha ao copiar imagem',
       'share_failed': 'Falha ao compartilhar',
     },
   };

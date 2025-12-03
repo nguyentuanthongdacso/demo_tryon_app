@@ -33,6 +33,7 @@ class ImageWithContextMenu extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       onLongPress: () => _showContextMenu(context),
+      behavior: HitTestBehavior.opaque, // Đảm bảo nhận gesture trên toàn bộ vùng
       child: ClipRRect(
         borderRadius: borderRadius ?? BorderRadius.zero,
         child: Image.network(
@@ -95,17 +96,17 @@ class ImageWithContextMenu extends StatelessWidget {
                 },
               ),
               
-              // Copy image
+              // Copy image URL
               ListTile(
-                leading: const Icon(Icons.copy, color: Colors.green),
-                title: Text(loc.translate('copy_image')),
+                leading: const Icon(Icons.link, color: Colors.purple),
+                title: Text(loc.translate('copy_image_url')),
                 onTap: () {
                   Navigator.pop(context);
-                  _copyImage(context);
+                  _copyImageUrl(context);
                 },
               ),
               
-              // Share image
+              // Share image (gửi ảnh đến app khác)
               ListTile(
                 leading: const Icon(Icons.share, color: Colors.orange),
                 title: Text(loc.translate('share_image')),
@@ -192,11 +193,10 @@ class ImageWithContextMenu extends StatelessWidget {
     }
   }
 
-  Future<void> _copyImage(BuildContext context) async {
+  Future<void> _copyImageUrl(BuildContext context) async {
     final loc = AppLocalizations.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     
-    // Copy URL to clipboard (Flutter không hỗ trợ copy image trực tiếp)
     await Clipboard.setData(ClipboardData(text: imageUrl));
     scaffoldMessenger.showSnackBar(
       SnackBar(
