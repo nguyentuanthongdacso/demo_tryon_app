@@ -398,14 +398,19 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: Colors.green,
+                  disabledBackgroundColor: Colors.grey[400],
                 ),
                 child: provider.isLoading
-                    ? Row(
+                    ? const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
-                          const SizedBox(width: 12),
-                          Text(AppLocalizations.of(context).translate('processing_info'), style: const TextStyle(color: Colors.white)),
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          ),
+                          SizedBox(width: 12),
+                          Text('Processing...', style: TextStyle(color: Colors.white)),
                         ],
                       )
                     : Row(

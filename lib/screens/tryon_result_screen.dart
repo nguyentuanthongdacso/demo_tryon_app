@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../l10n/app_localizations.dart';
+import '../widgets/image_with_context_menu.dart';
 
 class TryonResultScreen extends StatefulWidget {
   final List<String> futureLinks;
@@ -258,36 +259,34 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: isReady
-                          ? Image.network(
-                              link,
-                              fit: BoxFit.cover,
-                              loadingBuilder: (context, child, progress) {
-                                if (progress == null) return child;
-                                return Container(
-                                  height: 300,
-                                  color: Colors.grey[200],
-                                  child: const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (_, _, _) => Container(
-                                height: 300,
-                                color: Colors.grey[300],
-                                child: const Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.error, size: 48),
-                                    SizedBox(height: 8),
-                                    Text('Lỗi tải ảnh'),
-                                  ],
-                                ),
+                    isReady
+                        ? ImageWithContextMenu(
+                            imageUrl: link,
+                            fit: BoxFit.cover,
+                            borderRadius: BorderRadius.circular(8),
+                            placeholder: Container(
+                              height: 300,
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: CircularProgressIndicator(),
                               ),
-                            )
-                          : Container(
+                            ),
+                            errorWidget: Container(
+                              height: 300,
+                              color: Colors.grey[300],
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.error, size: 48),
+                                  SizedBox(height: 8),
+                                  Text('Lỗi tải ảnh'),
+                                ],
+                              ),
+                            ),
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
                               height: 300,
                               decoration: BoxDecoration(
                                 color: Colors.grey[200],
@@ -308,7 +307,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                                 ],
                               ),
                             ),
-                    ),
+                          ),
                   ],
                 ),
               );

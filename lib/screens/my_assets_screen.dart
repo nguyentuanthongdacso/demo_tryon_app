@@ -3,6 +3,7 @@ import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../models/tryon_image.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/image_with_context_menu.dart';
 
 /// Màn hình hiển thị 10 ảnh tryon gần nhất của user
 class MyAssetsScreen extends StatefulWidget {
@@ -211,51 +212,41 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
   }
 
   Widget _buildImageCard(TryonImage tryonImage) {
-    return GestureDetector(
-      onTap: () => _showImageDetail(tryonImage),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // Ảnh chính
-              Image.network(
-                tryonImage.imageUrl,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
-                  );
-                },
-                errorBuilder: (_, __, ___) => Container(
-                  color: Colors.grey[200],
-                  child: const Icon(Icons.broken_image, size: 48),
-                ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Ảnh chính với context menu (nhấn giữ)
+            ImageWithContextMenu(
+              imageUrl: tryonImage.imageUrl,
+              fit: BoxFit.cover,
+              onTap: () => _showImageDetail(tryonImage),
+              placeholder: const Center(child: CircularProgressIndicator()),
+              errorWidget: Container(
+                color: Colors.grey[200],
+                child: const Icon(Icons.broken_image, size: 48),
               ),
-              
-              // Gradient overlay ở dưới
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
+            ),
+            
+            // Gradient overlay ở dưới
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: IgnorePointer(
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -277,8 +268,8 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

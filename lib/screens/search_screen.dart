@@ -80,16 +80,26 @@ class _SearchScreenState extends State<SearchScreen> {
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: _handleSearch,
-                      icon: const Icon(Icons.search),
-                      label: Text(AppLocalizations.of(context).translate('search_button')),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
+                    child: Consumer<SearchProvider>(
+                      builder: (context, provider, _) {
+                        return ElevatedButton.icon(
+                          onPressed: provider.isLoading ? null : _handleSearch,
+                          icon: provider.isLoading 
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                )
+                              : const Icon(Icons.search),
+                          label: Text(AppLocalizations.of(context).translate('search_button')),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 24),

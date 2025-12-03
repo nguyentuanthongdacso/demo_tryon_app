@@ -390,7 +390,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
               initImageUrl.isNotEmpty;
 
           return ElevatedButton(
-            onPressed: canTryOn && !provider.isLoading
+            onPressed: (canTryOn && !provider.isLoading)
                 ? () => _handleTryOn(clothImageUrl)
                 : null,
             style: ElevatedButton.styleFrom(
@@ -402,13 +402,26 @@ class _TryOnScreenState extends State<TryOnScreen> {
               ),
             ),
             child: provider.isLoading
-                ? const SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
+                ? const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                        'Processing...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
