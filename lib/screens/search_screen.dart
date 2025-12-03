@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/search_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/banner_ad_widget.dart';
+import 'try_on_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -276,9 +277,13 @@ class _SearchScreenState extends State<SearchScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed(
-                          '/try-on',
-                          arguments: provider.selectedImage?.url,
+                        // Push vào Navigator của tab (không phải root Navigator)
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => TryOnScreen(
+                              imageUrl: provider.selectedImage?.url,
+                            ),
+                          ),
                         );
                       },
                       style: ElevatedButton.styleFrom(

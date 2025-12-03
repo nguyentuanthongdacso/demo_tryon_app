@@ -6,6 +6,7 @@
 /// Lưu ý: 
 /// - Test trên emulator sẽ tự động dùng test ads
 /// - Production chỉ hoạt động trên device thật với signed APK
+library;
 
 class AdConstants {
   // ===== TEST MODE =====

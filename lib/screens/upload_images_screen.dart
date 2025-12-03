@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
-import '../providers/tryon_provider.dart';
+import '../providers/upload_tryon_provider.dart';
 import '../services/cloudinary_service.dart';
 import '../services/auth_service.dart';
 import 'tryon_result_screen.dart';
@@ -179,7 +179,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
   }
 
   Future<void> _sendTryon() async {
-    final tryonProvider = Provider.of<TryonProvider>(context, listen: false);
+    final tryonProvider = Provider.of<UploadTryonProvider>(context, listen: false);
     final authService = AuthService();
     
     // Kiểm tra nếu đang loading thì không cho bấm nữa
@@ -339,7 +339,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
     // Required for AutomaticKeepAliveClientMixin
     super.build(context);
     
-    return Consumer<TryonProvider>(
+    return Consumer<UploadTryonProvider>(
       builder: (context, provider, _) {
         return Column(
           children: [

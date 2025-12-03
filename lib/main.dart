@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'providers/search_provider.dart';
-import 'providers/tryon_provider.dart';
+import 'providers/search_tryon_provider.dart';
+import 'providers/upload_tryon_provider.dart';
 import 'providers/language_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/search_screen.dart';
-import 'screens/try_on_screen.dart';
 import 'screens/upload_images_screen.dart';
 import 'screens/suggest_idea_screen.dart';
 import 'screens/update_profile_screen.dart';
@@ -130,7 +130,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SearchProvider()),
-        ChangeNotifierProvider(create: (_) => TryonProvider()),
+        ChangeNotifierProvider(create: (_) => SearchTryonProvider()),
+        ChangeNotifierProvider(create: (_) => UploadTryonProvider()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
       child: Consumer<LanguageProvider>(
@@ -171,10 +172,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
                 : _isLoggedIn
                     ? MainTabBar(onLogout: _handleLogout)
                     : LoginScreen(onLoginSuccess: _handleLoginSuccess),
-            routes: {
-              '/search': (context) => const SearchScreen(),
-              '/try-on': (context) => const TryOnScreen(),
-            },
             debugShowCheckedModeBanner: false,
           );
         },
@@ -189,11 +186,19 @@ class MainTabBar extends StatefulWidget {
   const MainTabBar({super.key, this.onLogout});
 
   @override
-  State<MainTabBar> createState() => _MainTabBarState();
+  State<MainTabBar> createState() => MainTabBarState();
 }
 
-class _MainTabBarState extends State<MainTabBar> {
+class MainTabBarState extends State<MainTabBar> {
   int _selectedIndex = 0;
+  
+  // Navigator keys cho mỗi tab để giữ stack riêng
+  final List<GlobalKey<NavigatorState>> _navigatorKeys = [
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+  ];
   
   // Cache screens để giữ state khi chuyển tab
   late final List<Widget> _screens;
@@ -211,39 +216,81 @@ class _MainTabBarState extends State<MainTabBar> {
   }
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == _selectedIndex) {
+      // Nếu tap vào tab đang active, pop về root của tab đó
+      _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  // Cho phép navigate trong tab từ bên ngoài
+  void navigateInCurrentTab(Widget screen) {
+    _navigatorKeys[_selectedIndex].currentState?.push(
+      MaterialPageRoute(builder: (context) => screen),
+    );
+  }
+
+  // Xử lý nút back - pop trong tab trước, sau đó mới exit app
+  Future<bool> _onWillPop() async {
+    final navigator = _navigatorKeys[_selectedIndex].currentState;
+    if (navigator != null && navigator.canPop()) {
+      navigator.pop();
+      return false;
+    }
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // Dùng IndexedStack để giữ state của tất cả các tab
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: Builder(
-        builder: (context) {
-          final loc = AppLocalizations.of(context);
-          final items = <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: const Icon(Icons.search), label: loc.translate('bottom_search')),
-            BottomNavigationBarItem(icon: const Icon(Icons.cloud_upload), label: loc.translate('bottom_upload')),
-            BottomNavigationBarItem(icon: const Icon(Icons.lightbulb), label: loc.translate('bottom_idea')),
-            BottomNavigationBarItem(icon: const Icon(Icons.person), label: loc.translate('bottom_profile')),
-          ];
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldPop = await _onWillPop();
+        if (shouldPop && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        // Dùng IndexedStack với Navigator riêng cho mỗi tab
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: List.generate(_screens.length, (index) {
+            return Navigator(
+              key: _navigatorKeys[index],
+              onGenerateRoute: (settings) {
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (context) => _screens[index],
+                );
+              },
+            );
+          }),
+        ),
+        bottomNavigationBar: Builder(
+          builder: (context) {
+            final loc = AppLocalizations.of(context);
+            final items = <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: const Icon(Icons.search), label: loc.translate('bottom_search')),
+              BottomNavigationBarItem(icon: const Icon(Icons.cloud_upload), label: loc.translate('bottom_upload')),
+              BottomNavigationBarItem(icon: const Icon(Icons.lightbulb), label: loc.translate('bottom_idea')),
+              BottomNavigationBarItem(icon: const Icon(Icons.person), label: loc.translate('bottom_profile')),
+            ];
 
-          return BottomNavigationBar(
-            items: items,
-            currentIndex: _selectedIndex,
-            onTap: _onItemTapped,
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: Colors.blue,
-            unselectedItemColor: Colors.grey,
-            showUnselectedLabels: true,
-          );
-        },
+            return BottomNavigationBar(
+              items: items,
+              currentIndex: _selectedIndex,
+              onTap: _onItemTapped,
+              type: BottomNavigationBarType.fixed,
+              selectedItemColor: Colors.blue,
+              unselectedItemColor: Colors.grey,
+              showUnselectedLabels: true,
+            );
+          },
+        ),
       ),
     );
   }

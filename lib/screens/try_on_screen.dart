@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/tryon_provider.dart';
+import '../providers/search_tryon_provider.dart';
 import '../services/auth_service.dart';
 import 'tryon_result_screen.dart';
 import '../l10n/app_localizations.dart';
@@ -21,7 +21,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
   String? get _userInitImage => _authService.currentUser?['image'];
 
   Future<void> _handleTryOn(String clothImageUrl) async {
-    final tryonProvider = Provider.of<TryonProvider>(context, listen: false);
+    final tryonProvider = Provider.of<SearchTryonProvider>(context, listen: false);
     final initImageUrl = _userInitImage;
 
     if (tryonProvider.isLoading) {
@@ -383,7 +383,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
   Widget _buildTryOnButton(String? clothImageUrl, String? initImageUrl) {
     return SizedBox(
       width: double.infinity,
-      child: Consumer<TryonProvider>(
+      child: Consumer<SearchTryonProvider>(
         builder: (context, provider, _) {
           final canTryOn = clothImageUrl != null &&
               initImageUrl != null &&
@@ -446,7 +446,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
   }
 
   Widget _buildErrorSection() {
-    return Consumer<TryonProvider>(
+    return Consumer<SearchTryonProvider>(
       builder: (context, provider, _) {
         if (provider.error != null) {
           return Container(

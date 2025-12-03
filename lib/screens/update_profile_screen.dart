@@ -5,7 +5,8 @@ import '../services/session_upload_manager.dart';
 import '../services/ad_service.dart';
 import '../constants/ad_constants.dart';
 import '../providers/search_provider.dart';
-import '../providers/tryon_provider.dart';
+import '../providers/search_tryon_provider.dart';
+import '../providers/upload_tryon_provider.dart';
 import 'edit_model_image_screen.dart';
 import 'language_screen.dart';
 import 'my_assets_screen.dart';
@@ -596,7 +597,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               // Clear all provider data khi logout
               if (mounted) {
                 context.read<SearchProvider>().clearAll();
-                context.read<TryonProvider>().clear();
+                context.read<SearchTryonProvider>().clear();
+                context.read<UploadTryonProvider>().clear();
               }
               
               await _authService.logout();

@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../l10n/app_localizations.dart';
-import '../services/api_service.dart';
-import '../services/auth_service.dart';
 
 class TryonResultScreen extends StatefulWidget {
   final List<String> futureLinks;
@@ -24,12 +22,8 @@ class TryonResultScreen extends StatefulWidget {
 class _TryonResultScreenState extends State<TryonResultScreen> {
   Timer? _reloadTimer;
   final Map<String, bool> _imageStatus = {};
-  final Set<String> _savedImages = {}; // Track saved images
   int _attemptCount = 0;
   final int _maxAttempts = 360; // Thử trong 360 giây
-  
-  final ApiService _apiService = ApiService();
-  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -76,11 +70,6 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
             setState(() {
               _imageStatus[link] = isReady;
             });
-            
-            // Lưu ảnh vào database khi ảnh ready
-            if (isReady && !_savedImages.contains(link)) {
-              _saveTryonImage(link);
-            }
           }
           if (!isReady) {
             allReady = false;
@@ -102,31 +91,6 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
         }
       }
     });
-  }
-
-  /// Lưu ảnh tryon vào database
-  Future<void> _saveTryonImage(String imageUrl) async {
-    final userKey = _authService.userKey;
-    if (userKey == null) return;
-    
-    // Đánh dấu đã lưu để tránh lưu trùng
-    _savedImages.add(imageUrl);
-    
-    try {
-      final response = await _apiService.saveTryonImage(
-        userKey: userKey,
-        imageUrl: imageUrl,
-      );
-      
-      if (mounted && response.success) {
-        // Hiển thị thông báo nhỏ (optional)
-        debugPrint('✅ Saved tryon image: $imageUrl');
-      }
-    } catch (e) {
-      debugPrint('❌ Failed to save tryon image: $e');
-      // Xóa khỏi set để có thể thử lại
-      _savedImages.remove(imageUrl);
-    }
   }
 
   Future<bool> _checkImageAvailable(String url) async {
