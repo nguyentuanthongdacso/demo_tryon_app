@@ -51,6 +51,7 @@ class ApiConstants {
   static const String subtractTokenEndpoint = '/subtract-token';
   static const String saveTryonImageEndpoint = '/save-tryon-image';
   static const String getTryonImagesEndpoint = '/get-tryon-images';
+  static const String deleteTryonImageEndpoint = '/delete-tryon-image';
   
   // Search endpoints (on scrape server)
   static const String searchEndpoint = '/scrape';

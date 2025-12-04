@@ -120,6 +120,13 @@ class AppLocalizations {
       'image_copied': 'Đã sao chép ảnh',
       'copy_failed': 'Sao chép ảnh thất bại',
       'share_failed': 'Chia sẻ thất bại',
+      // Delete image
+      'delete_from_assets': 'Xóa khỏi ảnh của tôi',
+      'delete_image_title': 'Xóa ảnh',
+      'delete_image_confirm': 'Bạn có chắc chắn muốn xóa ảnh này khỏi "Ảnh của tôi"?',
+      'delete': 'Xóa',
+      'image_deleted': 'Đã xóa ảnh thành công',
+      'delete_failed': 'Không thể xóa ảnh',
     },
     // English (fallback for non-Vietnamese selections)
     'en': {
@@ -231,6 +238,13 @@ class AppLocalizations {
       'image_copied': 'Image copied',
       'copy_failed': 'Copy failed',
       'share_failed': 'Share failed',
+      // Delete image
+      'delete_from_assets': 'Delete from My Assets',
+      'delete_image_title': 'Delete Image',
+      'delete_image_confirm': 'Are you sure you want to delete this image from "My Assets"?',
+      'delete': 'Delete',
+      'image_deleted': 'Image deleted successfully',
+      'delete_failed': 'Failed to delete image',
     },
     // Chinese (Simplified)
     'zh': {
@@ -342,6 +356,13 @@ class AppLocalizations {
       'image_copied': '图片已复制',
       'copy_failed': '复制图片失败',
       'share_failed': '分享失败',
+      // Delete image
+      'delete_from_assets': '从我的图片中删除',
+      'delete_image_title': '删除图片',
+      'delete_image_confirm': '确定要从"我的图片"中删除此图片吗？',
+      'delete': '删除',
+      'image_deleted': '图片删除成功',
+      'delete_failed': '删除图片失败',
     },
     // Spanish
     'es': {
@@ -453,6 +474,13 @@ class AppLocalizations {
       'image_copied': 'Imagen copiada',
       'copy_failed': 'Error al copiar imagen',
       'share_failed': 'Error al compartir',
+      // Delete image
+      'delete_from_assets': 'Eliminar de Mis fotos',
+      'delete_image_title': 'Eliminar imagen',
+      'delete_image_confirm': '¿Estás seguro de que deseas eliminar esta imagen de "Mis fotos"?',
+      'delete': 'Eliminar',
+      'image_deleted': 'Imagen eliminada correctamente',
+      'delete_failed': 'Error al eliminar imagen',
     },
     // Hindi
     'hi': {
@@ -564,6 +592,13 @@ class AppLocalizations {
       'image_copied': 'छवि कॉपी हो गई',
       'copy_failed': 'छवि कॉपी विफल',
       'share_failed': 'साझा करना विफल',
+      // Delete image
+      'delete_from_assets': 'मेरी फ़ोटो से हटाएं',
+      'delete_image_title': 'छवि हटाएं',
+      'delete_image_confirm': 'क्या आप वाकई इस छवि को "मेरी फ़ोटो" से हटाना चाहते हैं?',
+      'delete': 'हटाएं',
+      'image_deleted': 'छवि सफलतापूर्वक हटा दी गई',
+      'delete_failed': 'छवि हटाने में विफल',
     },
     // Arabic
     'ar': {
@@ -675,6 +710,13 @@ class AppLocalizations {
       'image_copied': 'تم نسخ الصورة',
       'copy_failed': 'فشل نسخ الصورة',
       'share_failed': 'فشلت المشاركة',
+      // Delete image
+      'delete_from_assets': 'حذف من صوري',
+      'delete_image_title': 'حذف الصورة',
+      'delete_image_confirm': 'هل أنت متأكد من حذف هذه الصورة من "صوري"؟',
+      'delete': 'حذف',
+      'image_deleted': 'تم حذف الصورة بنجاح',
+      'delete_failed': 'فشل حذف الصورة',
     },
     // Bengali
     'bn': {
@@ -786,6 +828,13 @@ class AppLocalizations {
       'image_copied': 'ছবি কপি করা হয়েছে',
       'copy_failed': 'ছবি কপি ব্যর্থ',
       'share_failed': 'শেয়ার ব্যর্থ',
+      // Delete image
+      'delete_from_assets': 'আমার ছবি থেকে মুছুন',
+      'delete_image_title': 'ছবি মুছুন',
+      'delete_image_confirm': 'আপনি কি নিশ্চিত যে আপনি এই ছবিটি "আমার ছবি" থেকে মুছতে চান?',
+      'delete': 'মুছুন',
+      'image_deleted': 'ছবি সফলভাবে মুছে ফেলা হয়েছে',
+      'delete_failed': 'ছবি মুছতে ব্যর্থ',
     },
     // French
     'fr': {
@@ -897,6 +946,13 @@ class AppLocalizations {
       'image_copied': 'Image copiée',
       'copy_failed': 'Échec de la copie de l\'image',
       'share_failed': 'Échec du partage',
+      // Delete image
+      'delete_from_assets': 'Supprimer de Mes photos',
+      'delete_image_title': 'Supprimer l\'image',
+      'delete_image_confirm': 'Êtes-vous sûr de vouloir supprimer cette image de "Mes photos"?',
+      'delete': 'Supprimer',
+      'image_deleted': 'Image supprimée avec succès',
+      'delete_failed': 'Échec de la suppression de l\'image',
     },
     // Russian
     'ru': {
@@ -1008,6 +1064,13 @@ class AppLocalizations {
       'image_copied': 'Изображение скопировано',
       'copy_failed': 'Не удалось скопировать изображение',
       'share_failed': 'Не удалось поделиться',
+      // Delete image
+      'delete_from_assets': 'Удалить из Мои фото',
+      'delete_image_title': 'Удалить изображение',
+      'delete_image_confirm': 'Вы уверены, что хотите удалить это изображение из "Мои фото"?',
+      'delete': 'Удалить',
+      'image_deleted': 'Изображение успешно удалено',
+      'delete_failed': 'Не удалось удалить изображение',
     },
     // Portuguese
     'pt': {
@@ -1119,6 +1182,13 @@ class AppLocalizations {
       'image_copied': 'Imagem copiada',
       'copy_failed': 'Falha ao copiar imagem',
       'share_failed': 'Falha ao compartilhar',
+      // Delete image
+      'delete_from_assets': 'Excluir de Minhas fotos',
+      'delete_image_title': 'Excluir imagem',
+      'delete_image_confirm': 'Tem certeza de que deseja excluir esta imagem de "Minhas fotos"?',
+      'delete': 'Excluir',
+      'image_deleted': 'Imagem excluída com sucesso',
+      'delete_failed': 'Falha ao excluir imagem',
     },
   };
 

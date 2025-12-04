@@ -28,18 +28,22 @@ class SessionUploadManager {
   // Keys cho Secure Storage
   static const String _keyInitPublicId = 'session_init_public_id';
   static const String _keyClothPublicId = 'session_cloth_public_id';
+  static const String _keyCroppedPublicId = 'session_cropped_public_id';
   static const String _keyInitUrl = 'session_init_url';
   static const String _keyClothUrl = 'session_cloth_url';
+  static const String _keyCroppedUrl = 'session_cropped_url';
   static const String _keyUserModelUrl = 'session_user_model_url';
   static const String _keyPendingDeletes = 'session_pending_deletes';
 
-  // Luu public_id theo loai anh (init hoac cloth)
+  // Luu public_id theo loai anh (init, cloth, cropped)
   String? _initImagePublicId;
   String? _clothImagePublicId;
+  String? _croppedImagePublicId;
   
   // Luu URL tuong ung
   String? _initImageUrl;
   String? _clothImageUrl;
+  String? _croppedImageUrl;
   
   // Luu URL anh model cua user (de khong xoa nhom anh nay)
   String? _userModelImageUrl;
@@ -49,8 +53,10 @@ class SessionUploadManager {
   // Getters
   String? get initImagePublicId => _initImagePublicId;
   String? get clothImagePublicId => _clothImagePublicId;
+  String? get croppedImagePublicId => _croppedImagePublicId;
   String? get initImageUrl => _initImageUrl;
   String? get clothImageUrl => _clothImageUrl;
+  String? get croppedImageUrl => _croppedImageUrl;
   String? get userModelImageUrl => _userModelImageUrl;
   
   /// Set URL anh model cua user (goi sau khi login)
@@ -117,6 +123,7 @@ class SessionUploadManager {
     print('💾 Saving to secure storage:');
     print('   Init: $_initImagePublicId');
     print('   Cloth: $_clothImagePublicId');
+    print('   Cropped: $_croppedImagePublicId');
     print('   User model: $_userModelImageUrl');
     print('   Pending deletes: ${_pendingDeletes.length}');
     
@@ -132,6 +139,12 @@ class SessionUploadManager {
       await _secureStorage.delete(key: _keyClothPublicId);
     }
     
+    if (_croppedImagePublicId != null) {
+      await _secureStorage.write(key: _keyCroppedPublicId, value: _croppedImagePublicId);
+    } else {
+      await _secureStorage.delete(key: _keyCroppedPublicId);
+    }
+    
     if (_initImageUrl != null) {
       await _secureStorage.write(key: _keyInitUrl, value: _initImageUrl);
     } else {
@@ -142,6 +155,12 @@ class SessionUploadManager {
       await _secureStorage.write(key: _keyClothUrl, value: _clothImageUrl);
     } else {
       await _secureStorage.delete(key: _keyClothUrl);
+    }
+    
+    if (_croppedImageUrl != null) {
+      await _secureStorage.write(key: _keyCroppedUrl, value: _croppedImageUrl);
+    } else {
+      await _secureStorage.delete(key: _keyCroppedUrl);
     }
     
     if (_userModelImageUrl != null) {
@@ -164,8 +183,10 @@ class SessionUploadManager {
   Future<void> _loadFromStorage() async {
     _initImagePublicId = await _secureStorage.read(key: _keyInitPublicId);
     _clothImagePublicId = await _secureStorage.read(key: _keyClothPublicId);
+    _croppedImagePublicId = await _secureStorage.read(key: _keyCroppedPublicId);
     _initImageUrl = await _secureStorage.read(key: _keyInitUrl);
     _clothImageUrl = await _secureStorage.read(key: _keyClothUrl);
+    _croppedImageUrl = await _secureStorage.read(key: _keyCroppedUrl);
     _userModelImageUrl = await _secureStorage.read(key: _keyUserModelUrl);
     
     // Load pending deletes
@@ -185,6 +206,7 @@ class SessionUploadManager {
     print('🔐 Session state loaded from secure storage:');
     print('   Init: $_initImagePublicId');
     print('   Cloth: $_clothImagePublicId');
+    print('   Cropped: $_croppedImagePublicId');
     print('   User model: $_userModelImageUrl');
   }
   
@@ -192,8 +214,10 @@ class SessionUploadManager {
   Future<void> _clearStorage() async {
     await _secureStorage.delete(key: _keyInitPublicId);
     await _secureStorage.delete(key: _keyClothPublicId);
+    await _secureStorage.delete(key: _keyCroppedPublicId);
     await _secureStorage.delete(key: _keyInitUrl);
     await _secureStorage.delete(key: _keyClothUrl);
+    await _secureStorage.delete(key: _keyCroppedUrl);
     await _secureStorage.delete(key: _keyUserModelUrl);
     await _secureStorage.delete(key: _keyPendingDeletes);
     print('🔐 Session storage cleared');
@@ -233,7 +257,7 @@ class SessionUploadManager {
       await clearSessionUploads();
       
       // If no pending deletes and no tracked session images, clear storage
-      if (_pendingDeletes.isEmpty && _initImagePublicId == null && _clothImagePublicId == null && _initImageUrl == null && _clothImageUrl == null && _userModelImageUrl == null) {
+      if (_pendingDeletes.isEmpty && _initImagePublicId == null && _clothImagePublicId == null && _croppedImagePublicId == null && _initImageUrl == null && _clothImageUrl == null && _croppedImageUrl == null && _userModelImageUrl == null) {
         await _clearStorage();
       } else {
         // Persist current state (remaining pending deletes or any tracking)
@@ -285,7 +309,7 @@ class SessionUploadManager {
           'api_key': CloudinaryConstants.apiKey,
           'signature': signature,
         },
-      );
+      ).timeout(const Duration(seconds: 10)); // Add timeout to prevent hanging
 
       print('📡 Cloudinary delete response: ${response.statusCode}');
       print('📡 Response body: ${response.body}');
@@ -347,6 +371,21 @@ class SessionUploadManager {
     print('📝 Set cloth image: $publicId');
   }
 
+  /// Luu thong tin anh cropped moi (tu Search tab), xoa anh cu neu co
+  /// Goi SAU khi upload thanh cong
+  Future<void> setCroppedImage(String publicId, String url) async {
+    // Xoa anh cu neu co va khac voi anh moi
+    if (_croppedImagePublicId != null && _croppedImagePublicId != publicId) {
+      print('🗑️ Deleting old cropped image: $_croppedImagePublicId');
+      await deleteImage(_croppedImagePublicId!);
+    }
+    
+    _croppedImagePublicId = publicId;
+    _croppedImageUrl = url;
+    await _saveToStorage();
+    print('📝 Set cropped image: $publicId');
+  }
+
   /// Xoa tat ca anh da upload trong session
   /// Goi method nay khi user logout
   /// KHONG xoa anh trung voi anh model cua user
@@ -406,8 +445,28 @@ class SessionUploadManager {
       }
     }
     
+    // Xoa cropped image (tu Search tab)
+    if (_croppedImagePublicId != null) {
+      total++;
+      final success = await deleteImage(_croppedImagePublicId!);
+      if (success) {
+        deletedCount++;
+        _croppedImagePublicId = null;
+        _croppedImageUrl = null;
+      } else {
+        failedCount++;
+        // Schedule for retry and still clear local tracking so user not stuck
+        await _addPendingDelete(_croppedImagePublicId!);
+        _croppedImagePublicId = null;
+        _croppedImageUrl = null;
+      }
+    }
+    
     // Reset user model image URL
     _userModelImageUrl = null;
+    
+    // Save updated state
+    await _saveToStorage();
 
     if (total == 0) {
       print('📭 No uploads to delete in this session');
@@ -437,8 +496,10 @@ class SessionUploadManager {
   void resetTracking() {
     _initImagePublicId = null;
     _clothImagePublicId = null;
+    _croppedImagePublicId = null;
     _initImageUrl = null;
     _clothImageUrl = null;
+    _croppedImageUrl = null;
     print('🔄 Upload tracking reset');
   }
 }

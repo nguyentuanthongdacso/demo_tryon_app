@@ -234,6 +234,8 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
               imageUrl: tryonImage.imageUrl,
               fit: BoxFit.cover,
               onTap: () => _showImageDetail(tryonImage),
+              showDeleteOption: true,
+              onDelete: () => _confirmDeleteImage(tryonImage),
               placeholder: const Center(child: CircularProgressIndicator()),
               errorWidget: Container(
                 color: Colors.grey[200],
@@ -287,6 +289,108 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
     final minute = localDate.minute.toString().padLeft(2, '0');
     
     return '$day/$month/$year $hour:$minute';
+  }
+
+  /// Hiển thị dialog xác nhận xóa ảnh
+  void _confirmDeleteImage(TryonImage tryonImage) {
+    final loc = AppLocalizations.of(context);
+    
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(loc.translate('delete_image_title')),
+        content: Text(loc.translate('delete_image_confirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(loc.translate('cancel')),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              _deleteImage(tryonImage);
+            },
+            child: Text(
+              loc.translate('delete'),
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Xóa ảnh khỏi My Assets
+  Future<void> _deleteImage(TryonImage tryonImage) async {
+    final loc = AppLocalizations.of(context);
+    final userKey = _authService.userKey;
+    
+    if (userKey == null) return;
+    
+    // Lưu navigator để đóng dialog sau này
+    final navigator = Navigator.of(context, rootNavigator: true);
+    
+    // Hiển thị loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 16),
+            Text('Deleting...'),
+          ],
+        ),
+      ),
+    );
+    
+    try {
+      final response = await _apiService.deleteTryonImage(
+        userKey: userKey,
+        imageId: tryonImage.id,
+      );
+      
+      // Đóng loading dialog bằng navigator đã lưu
+      navigator.pop();
+      
+      if (response.success) {
+        // Xóa khỏi danh sách local
+        setState(() {
+          _tryonImages.removeWhere((img) => img.id == tryonImage.id);
+        });
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(loc.translate('image_deleted')),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(response.message.isNotEmpty ? response.message : loc.translate('delete_failed')),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Đóng loading dialog
+      navigator.pop();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _showImageDetail(TryonImage tryonImage) {

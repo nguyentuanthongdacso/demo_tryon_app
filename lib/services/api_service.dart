@@ -311,4 +311,44 @@ class ApiService {
       );
     }
   }
+
+  /// Xóa ảnh tryon của user
+  Future<DeleteTryonImageResponse> deleteTryonImage({
+    required String userKey,
+    required int imageId,
+  }) async {
+    try {
+      final url = '${ApiConstants.gatewayBaseUrl}${ApiConstants.deleteTryonImageEndpoint}';
+      AppLogger.apiRequest('POST', url, body: {
+        'type': 'delete_tryon_image',
+        'user_key': userKey,
+        'image_id': imageId,
+      });
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: _getAuthHeaders(),
+        body: jsonEncode({
+          'type': 'delete_tryon_image',
+          'user_key': userKey,
+          'image_id': imageId,
+        }),
+      ).timeout(ApiConstants.connectionTimeout);
+
+      AppLogger.apiResponse(url, response.statusCode, body: response.body);
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        return DeleteTryonImageResponse.fromJson(jsonResponse);
+      } else {
+        throw Exception('Lỗi xóa ảnh: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      AppLogger.apiError('deleteTryonImage', e);
+      return DeleteTryonImageResponse(
+        success: false,
+        message: 'Lỗi kết nối: $e',
+      );
+    }
+  }
 }

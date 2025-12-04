@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +8,7 @@ import 'package:gal/gal.dart';
 import '../l10n/app_localizations.dart';
 
 /// Widget hiển thị ảnh với menu context khi nhấn giữ
-/// Hỗ trợ: Lưu ảnh, Sao chép, Chia sẻ
+/// Hỗ trợ: Lưu ảnh, Sao chép, Chia sẻ, Xóa (tùy chọn)
 class ImageWithContextMenu extends StatelessWidget {
   final String imageUrl;
   final BoxFit fit;
@@ -17,6 +16,8 @@ class ImageWithContextMenu extends StatelessWidget {
   final Widget? errorWidget;
   final BorderRadius? borderRadius;
   final VoidCallback? onTap;
+  final VoidCallback? onDelete; // Callback khi nhấn xóa
+  final bool showDeleteOption; // Hiển thị tùy chọn xóa
 
   const ImageWithContextMenu({
     super.key,
@@ -26,6 +27,8 @@ class ImageWithContextMenu extends StatelessWidget {
     this.errorWidget,
     this.borderRadius,
     this.onTap,
+    this.onDelete,
+    this.showDeleteOption = false,
   });
 
   @override
@@ -115,6 +118,20 @@ class ImageWithContextMenu extends StatelessWidget {
                   _shareImage(context);
                 },
               ),
+              
+              // Delete option (nếu được bật)
+              if (showDeleteOption && onDelete != null)
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: Colors.red),
+                  title: Text(
+                    loc.translate('delete_from_assets'),
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    onDelete!();
+                  },
+                ),
               
               const SizedBox(height: 8),
               

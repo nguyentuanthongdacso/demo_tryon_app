@@ -134,12 +134,12 @@ class _SearchScreenState extends State<SearchScreen>
       );
       
       if (croppedFile != null && mounted) {
-        // Upload ảnh đã crop lên Cloudinary
+        // Upload ảnh đã crop lên Cloudinary với tracking
         final croppedFileObj = File(croppedFile.path);
-        final uploadedUrl = await _cloudinaryService.uploadImage(croppedFileObj);
+        final uploadResult = await _cloudinaryService.uploadImageWithTracking(croppedFileObj, 'cropped');
         
         setState(() {
-          _croppedImageUrl = uploadedUrl;
+          _croppedImageUrl = uploadResult.url;
         });
         
         if (mounted) {

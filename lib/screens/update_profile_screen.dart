@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
-import '../services/session_upload_manager.dart';
 import '../services/ad_service.dart';
 import '../constants/ad_constants.dart';
 import '../providers/search_provider.dart';
@@ -552,6 +551,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     // Lưu callback trước
     final onLogoutCallback = widget.onLogout;
     
+    // Lưu navigator context để đóng dialog sau
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -568,9 +570,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               
               // Hiển thị loading trong khi xóa ảnh
               if (!mounted) return;
+              
+              // Show loading dialog với rootNavigator
               showDialog(
                 context: context,
                 barrierDismissible: false,
+                useRootNavigator: true,
                 builder: (ctx) => AlertDialog(
                   content: Row(
                     children: [
@@ -582,18 +587,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 ),
               );
               
-              // Xóa tất cả ảnh đã upload trong session trên Cloudinary
-              final sessionManager = SessionUploadManager();
-              final result = await sessionManager.clearSessionUploads();
-              
-              // Đóng loading dialog
-              if (mounted) {
-                Navigator.pop(context);
-              }
-              
-              // Log kết quả
-              print('🧹 Session cleanup: ${result['deleted']}/${result['total']} ảnh đã xóa trên Cloudinary');
-              
               // Clear all provider data khi logout
               if (mounted) {
                 context.read<SearchProvider>().clearAll();
@@ -601,7 +594,17 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 context.read<UploadTryonProvider>().clear();
               }
               
+              // Logout - this will handle session cleanup with timeout
               await _authService.logout();
+              
+              // Đóng loading dialog TRƯỚC khi gọi callback
+              // Sử dụng rootNavigator để đảm bảo đóng được dialog
+              try {
+                rootNavigator.pop();
+              } catch (e) {
+                debugPrint('⚠️ Error closing loading dialog: $e');
+              }
+              
               // Gọi callback để navigate về login screen
               if (onLogoutCallback != null) {
                 onLogoutCallback();

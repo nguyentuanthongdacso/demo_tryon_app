@@ -125,6 +125,8 @@ class CloudinaryService {
           await _sessionManager.setInitImage(publicId, secureUrl);
         } else if (imageType == 'cloth') {
           await _sessionManager.setClothImage(publicId, secureUrl);
+        } else if (imageType == 'cropped') {
+          await _sessionManager.setCroppedImage(publicId, secureUrl);
         }
         
         print('✅ Upload successful!');

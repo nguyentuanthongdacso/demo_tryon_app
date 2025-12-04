@@ -124,7 +124,12 @@ class AuthService {
   Future<void> clearSession() async {
     try {
       // Ensure any session uploads on Cloudinary are removed first
-      await SessionUploadManager().clearSessionUploads();
+      // Add timeout to prevent hanging on logout
+      await SessionUploadManager().clearSessionUploads()
+          .timeout(const Duration(seconds: 15), onTimeout: () {
+        print('⚠️ Session uploads cleanup timed out, continuing logout...');
+        return {'deleted': 0, 'skipped': 0, 'failed': 0, 'total': 0};
+      });
     } catch (e) {
       // Log error but continue to clear session data locally
       print('⚠️ Failed to clear session uploads: $e');

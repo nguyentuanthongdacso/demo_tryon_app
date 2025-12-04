@@ -96,3 +96,22 @@ class GetTryonImagesResponse {
     );
   }
 }
+
+
+/// Response khi xóa ảnh tryon
+class DeleteTryonImageResponse {
+  final bool success;
+  final String message;
+
+  DeleteTryonImageResponse({
+    required this.success,
+    required this.message,
+  });
+
+  factory DeleteTryonImageResponse.fromJson(Map<String, dynamic> json) {
+    return DeleteTryonImageResponse(
+      success: json['success'] as bool,
+      message: json['message'] as String,
+    );
+  }
+}

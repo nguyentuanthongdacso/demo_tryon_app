@@ -23,8 +23,15 @@ void main() async {
   await AdService().initialize();
   
   // Xóa ảnh từ phiên trước (nếu app bị đóng đột ngột)
-  // Giữ lại để tối ưu storage trên Cloudinary
-  await SessionUploadManager().cleanupPreviousSession();
+  // Thêm timeout để tránh treo app khi khởi động
+  try {
+    await SessionUploadManager().cleanupPreviousSession()
+        .timeout(const Duration(seconds: 5), onTimeout: () {
+      debugPrint('⚠️ Cleanup previous session timed out, continuing...');
+    });
+  } catch (e) {
+    debugPrint('⚠️ Error during cleanup: $e');
+  }
   
   // Khóa orientation - chỉ cho phép chế độ dọc
   SystemChrome.setPreferredOrientations([
@@ -80,7 +87,12 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   /// Xóa các ảnh đã upload trong session (không xóa ảnh model của user)
   Future<void> _cleanupSessionUploads() async {
     if (_isLoggedIn) {
-      await SessionUploadManager().clearSessionUploads();
+      // Add timeout to prevent hanging when app is detached
+      await SessionUploadManager().clearSessionUploads()
+          .timeout(const Duration(seconds: 10), onTimeout: () {
+        debugPrint('⚠️ Session cleanup timed out');
+        return {'deleted': 0, 'skipped': 0, 'failed': 0, 'total': 0};
+      });
     }
   }
   
