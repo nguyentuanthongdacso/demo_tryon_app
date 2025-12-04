@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import '../services/auth_service.dart';
@@ -41,29 +42,73 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
       final picked = await picker.pickImage(source: ImageSource.gallery);
       
       if (picked != null && mounted) {
-        try {
-          // Copy file to app directory
-          final appDir = await getApplicationDocumentsDirectory();
-          final fileName = 'model_image_${DateTime.now().millisecondsSinceEpoch}${path.extension(picked.path)}';
-          final savedPath = path.join(appDir.path, fileName);
-          
-          final originalFile = File(picked.path);
-          await originalFile.copy(savedPath);
-          
-          setState(() {
-            _selectedImagePath = savedPath;
-            _errorMessage = null;
-          });
-        } catch (e) {
-          if (mounted) {
-            setState(() {
-              _errorMessage = '${AppLocalizations.of(context).translate('error_prefix')}: $e';
-            });
-          }
-        }
+        // Mở màn hình crop ảnh
+        await _cropImage(picked.path);
       }
     } finally {
       _isPicking = false;
+    }
+  }
+
+  /// Crop ảnh với tỷ lệ tự do hoặc các preset
+  Future<void> _cropImage(String imagePath) async {
+    try {
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: imagePath,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: AppLocalizations.of(context).translate('crop_image'),
+            toolbarColor: Colors.blue,
+            toolbarWidgetColor: Colors.white,
+            statusBarColor: Colors.blue,
+            backgroundColor: Colors.black,
+            activeControlsWidgetColor: Colors.blue,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+            hideBottomControls: false,
+            showCropGrid: true,
+            cropStyle: CropStyle.rectangle,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio3x2,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPreset.ratio16x9,
+            ],
+          ),
+          IOSUiSettings(
+            title: AppLocalizations.of(context).translate('crop_image'),
+            aspectRatioPresets: [
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio3x2,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPreset.ratio16x9,
+            ],
+          ),
+        ],
+      );
+
+      if (croppedFile != null && mounted) {
+        // Copy file đã crop vào app directory
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = 'model_image_${DateTime.now().millisecondsSinceEpoch}${path.extension(croppedFile.path)}';
+        final savedPath = path.join(appDir.path, fileName);
+        
+        final croppedFileObj = File(croppedFile.path);
+        await croppedFileObj.copy(savedPath);
+        
+        setState(() {
+          _selectedImagePath = savedPath;
+          _errorMessage = null;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = '${AppLocalizations.of(context).translate('error_prefix')}: $e';
+        });
+      }
     }
   }
 

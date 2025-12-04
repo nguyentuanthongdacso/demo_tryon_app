@@ -1,8 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 import '../providers/search_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/banner_ad_widget.dart';
+import '../services/cloudinary_service.dart';
 import 'try_on_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -16,6 +22,10 @@ class _SearchScreenState extends State<SearchScreen>
     with AutomaticKeepAliveClientMixin {
   final TextEditingController _urlController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  final CloudinaryService _cloudinaryService = CloudinaryService();
+  
+  bool _isCropping = false;
+  String? _croppedImageUrl; // URL của ảnh đã crop và upload lên Cloudinary
 
   // Giữ state khi chuyển tab
   @override
@@ -36,7 +46,133 @@ class _SearchScreenState extends State<SearchScreen>
       );
       return;
     }
+    // Reset cropped image khi search mới
+    setState(() {
+      _croppedImageUrl = null;
+    });
     context.read<SearchProvider>().searchImages(url);
+  }
+
+  /// Download ảnh từ URL về local
+  Future<File?> _downloadImage(String imageUrl) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        final tempDir = await getTemporaryDirectory();
+        final fileName = 'temp_crop_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final file = File(path.join(tempDir.path, fileName));
+        await file.writeAsBytes(response.bodyBytes);
+        return file;
+      }
+    } catch (e) {
+      debugPrint('Error downloading image: $e');
+    }
+    return null;
+  }
+
+  /// Crop ảnh đã chọn và upload lên Cloudinary
+  Future<void> _cropSelectedImage() async {
+    final provider = context.read<SearchProvider>();
+    final selectedImage = provider.selectedImage;
+    
+    if (selectedImage == null) return;
+    
+    setState(() {
+      _isCropping = true;
+    });
+    
+    try {
+      // Download ảnh về local
+      final localFile = await _downloadImage(selectedImage.url);
+      if (localFile == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).translate('error_downloading_image')),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+      
+      // Mở màn hình crop
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: localFile.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: AppLocalizations.of(context).translate('crop_image'),
+            toolbarColor: Colors.blue,
+            toolbarWidgetColor: Colors.white,
+            statusBarColor: Colors.blue,
+            backgroundColor: Colors.black,
+            activeControlsWidgetColor: Colors.blue,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+            hideBottomControls: false,
+            showCropGrid: true,
+            cropStyle: CropStyle.rectangle,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio3x2,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPreset.ratio16x9,
+            ],
+          ),
+          IOSUiSettings(
+            title: AppLocalizations.of(context).translate('crop_image'),
+            aspectRatioPresets: [
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio3x2,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPreset.ratio16x9,
+            ],
+          ),
+        ],
+      );
+      
+      if (croppedFile != null && mounted) {
+        // Upload ảnh đã crop lên Cloudinary
+        final croppedFileObj = File(croppedFile.path);
+        final uploadedUrl = await _cloudinaryService.uploadImage(croppedFileObj);
+        
+        setState(() {
+          _croppedImageUrl = uploadedUrl;
+        });
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).translate('crop_success')),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      }
+      
+      // Xóa file tạm
+      try {
+        await localFile.delete();
+      } catch (_) {}
+      
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppLocalizations.of(context).translate('error_prefix')}: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isCropping = false;
+        });
+      }
+    }
   }
 
   @override
@@ -291,35 +427,127 @@ class _SearchScreenState extends State<SearchScreen>
                     ],
                   ),
                   padding: const EdgeInsets.all(16),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Push vào Navigator của tab (không phải root Navigator)
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => TryOnScreen(
-                              imageUrl: provider.selectedImage?.url,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Hiển thị ảnh đã crop (nếu có)
+                      if (_croppedImageUrl != null) ...[
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.green[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.green[300]!),
+                          ),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: Image.network(
+                                  _croppedImageUrl!,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      AppLocalizations.of(context).translate('cropped_image'),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green[700],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      AppLocalizations.of(context).translate('will_use_cropped'),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.green[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _croppedImageUrl = null;
+                                  });
+                                },
+                                icon: Icon(Icons.close, color: Colors.green[700]),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      // Các nút action
+                      Row(
+                        children: [
+                          // Nút Crop
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: _isCropping ? null : _cropSelectedImage,
+                              icon: _isCropping
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Icon(Icons.crop, color: Colors.white),
+                              label: Text(
+                                AppLocalizations.of(context).translate('crop_image'),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                backgroundColor: Colors.orange,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
                             ),
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        backgroundColor: Colors.green,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                          const SizedBox(width: 12),
+                          // Nút Try-On
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                // Sử dụng ảnh đã crop nếu có, không thì dùng ảnh gốc
+                                final imageUrl = _croppedImageUrl ?? provider.selectedImage?.url;
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => TryOnScreen(
+                                      imageUrl: imageUrl,
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.checkroom, color: Colors.white),
+                              label: Text(
+                                AppLocalizations.of(context).translate('try_on'),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        AppLocalizations.of(context).translate('select_this_item'),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
                 ),
               );
