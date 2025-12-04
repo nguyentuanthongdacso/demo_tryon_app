@@ -18,6 +18,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
   final AuthService _authService = AuthService();
   String _clothType = 'upper';
 
+  // Getter trực tiếp từ AuthService singleton - luôn có data mới nhất
   String? get _userInitImage => _authService.currentUser?['image'];
 
   Future<void> _handleTryOn(String clothImageUrl) async {
@@ -185,6 +186,8 @@ class _TryOnScreenState extends State<TryOnScreen> {
   }
 
   Widget _buildInitImageSection(String? initImageUrl) {
+    debugPrint('🖼️ Building init image section with URL: $initImageUrl');
+    
     if (initImageUrl != null && initImageUrl.isNotEmpty) {
       return Container(
         height: 200,
@@ -198,16 +201,26 @@ class _TryOnScreenState extends State<TryOnScreen> {
           child: Image.network(
             initImageUrl,
             fit: BoxFit.contain,
+            cacheWidth: 400, // Giảm memory footprint, tránh bị clear cache
             errorBuilder: (context, error, stackTrace) {
-              return Container(
-                color: Colors.grey[300],
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                    const SizedBox(height: 8),
-                    Text(AppLocalizations.of(context).translate('cannot_load_image'), style: const TextStyle(color: Colors.grey)),
-                  ],
+              debugPrint('❌ Image load error: $error');
+              return GestureDetector(
+                onTap: () {
+                  // Tap để retry load ảnh
+                  setState(() {});
+                },
+                child: Container(
+                  color: Colors.grey[300],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                      const SizedBox(height: 8),
+                      Text(AppLocalizations.of(context).translate('cannot_load_image'), style: const TextStyle(color: Colors.grey)),
+                      const SizedBox(height: 4),
+                      Text('Chạm để thử lại', style: TextStyle(color: Colors.blue[400], fontSize: 12)),
+                    ],
+                  ),
                 ),
               );
             },

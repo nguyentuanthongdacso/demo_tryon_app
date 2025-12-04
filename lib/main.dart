@@ -62,12 +62,19 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     
+    debugPrint('📱 App lifecycle state: $state');
+    
     // Xóa ảnh session khi app bị ĐÓNG HOÀN TOÀN (detached)
-    // KHÔNG xóa khi chuyển qua app khác (paused/inactive)
+    // KHÔNG xóa khi chuyển qua app khác (paused/inactive/hidden/resumed)
     if (state == AppLifecycleState.detached) {
       debugPrint('🔴 App detached - cleaning up session uploads...');
       _cleanupSessionUploads();
     }
+    // Các state khác KHÔNG clear data:
+    // - paused: user chuyển sang app khác
+    // - inactive: app đang transition (ví dụ: incoming call)
+    // - hidden: app bị ẩn nhưng vẫn chạy
+    // - resumed: user quay lại app
   }
   
   /// Xóa các ảnh đã upload trong session (không xóa ảnh model của user)
@@ -206,6 +213,7 @@ class MainTabBarState extends State<MainTabBar> {
   @override
   void initState() {
     super.initState();
+    debugPrint('🏠 MainTabBarState initState called');
     // Khởi tạo screens một lần duy nhất
     _screens = <Widget>[
       const SearchScreen(),
@@ -213,6 +221,12 @@ class MainTabBarState extends State<MainTabBar> {
       const SuggestIdeaScreen(),
       UpdateProfileScreen(onLogout: widget.onLogout),
     ];
+  }
+
+  @override
+  void dispose() {
+    debugPrint('🏠 MainTabBarState dispose called');
+    super.dispose();
   }
 
   void _onItemTapped(int index) {

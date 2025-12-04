@@ -12,9 +12,14 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen> 
+    with AutomaticKeepAliveClientMixin {
   final TextEditingController _urlController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+
+  // Giữ state khi chuyển tab
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void dispose() {
@@ -36,6 +41,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Required for AutomaticKeepAliveClientMixin
+    super.build(context);
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('app_title')), // generic title
