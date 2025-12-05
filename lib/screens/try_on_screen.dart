@@ -175,7 +175,10 @@ class _TryOnScreenState extends State<TryOnScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Expanded(child: _buildInitImageSection(initImageUrl)),
+                              AspectRatio(
+                                aspectRatio: 9 / 21,
+                                child: _buildInitImageSection(initImageUrl),
+                              ),
                             ],
                           ),
                         ),
@@ -193,7 +196,10 @@ class _TryOnScreenState extends State<TryOnScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Expanded(child: _buildClothImageSection(clothImageUrl)),
+                              AspectRatio(
+                                aspectRatio: 9 / 21,
+                                child: _buildClothImageSection(clothImageUrl),
+                              ),
                             ],
                           ),
                         ),
@@ -224,7 +230,6 @@ class _TryOnScreenState extends State<TryOnScreen> {
       return Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue[300]!),
           borderRadius: BorderRadius.circular(12),
         ),
         child: ClipRRect(
@@ -271,7 +276,6 @@ class _TryOnScreenState extends State<TryOnScreen> {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.orange[50],
-        border: Border.all(color: Colors.orange[300]!),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -304,7 +308,6 @@ class _TryOnScreenState extends State<TryOnScreen> {
       return Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.green[300]!),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -351,7 +354,6 @@ class _TryOnScreenState extends State<TryOnScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        border: Border.all(color: Colors.grey[300]!),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
@@ -365,7 +367,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
 
   Widget _buildClothTypeSelector() {
     return DropdownButtonFormField<String>(
-      value: _clothType,
+      initialValue: _clothType,
       items: _clothTypes
           .map((type) => DropdownMenuItem(
                 value: type,
@@ -448,11 +450,11 @@ class _TryOnScreenState extends State<TryOnScreen> {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                          const Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
                           const SizedBox(width: 4),
-                          Image.asset('assets/icons/coin_free.png', width: 16, height: 16),
-                          const Text(' / ', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                          Image.asset('assets/icons/coin_vip.png', width: 16, height: 16),
+                          Image.asset('assets/icons/coin_free.png', width: 20, height: 20),
+                          const Text(' / ', style: TextStyle(color: Colors.white70, fontSize: 18)),
+                          Image.asset('assets/icons/coin_vip.png', width: 20, height: 20),
                         ],
                       ),
                     ],

@@ -11,6 +11,7 @@ import 'edit_model_image_screen.dart';
 import 'language_screen.dart';
 import 'theme_screen.dart';
 import 'my_assets_screen.dart';
+import 'report_bug_screen.dart';
 import '../l10n/app_localizations.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class UpdateProfileScreen extends StatefulWidget {
 
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final AuthService _authService = AuthService();
-  bool _isSettingsExpanded = true;
+  bool _isSettingsExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -80,16 +81,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               title: loc.translate('personal_info'),
                               onTap: () => _showComingSoon(loc.translate('personal_info')),
                             ),
-                            _buildMenuItem(
-                              icon: Icons.lock_outline,
-                              title: loc.translate('password_security'),
-                              onTap: () => _showComingSoon(loc.translate('password_security')),
-                            ),
-                            _buildMenuItem(
-                              icon: Icons.link,
-                              title: loc.translate('link_accounts'),
-                              onTap: () => _showComingSoon(loc.translate('link_accounts')),
-                            ),
+                            // Password & Security - Tạm ẩn, sẽ dùng lại trong tương lai
+                            // _buildMenuItem(
+                            //   icon: Icons.lock_outline,
+                            //   title: loc.translate('password_security'),
+                            //   onTap: () => _showComingSoon(loc.translate('password_security')),
+                            // ),
                             _buildMenuItem(
                               icon: Icons.language,
                               title: loc.translate('language'),
@@ -142,11 +139,18 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Yêu cầu trợ giúp
+                        // Báo cáo lỗi
                         _buildMenuItem(
-                          icon: Icons.chat_bubble_outline,
-                          title: loc.translate('request_help'),
-                          onTap: () => _showComingSoon(loc.translate('request_help')),
+                          icon: Icons.bug_report,
+                          title: loc.translate('report_bug'),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ReportBugScreen(),
+                              ),
+                            );
+                          },
                         ),
                         const SizedBox(height: 12),
 
@@ -355,66 +359,128 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   /// Nút xem quảng cáo để nhận token
   Widget _buildRewardedAdButton(AppLocalizations loc) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return GestureDetector(
+      onTap: _handleWatchRewardedAd,
+      child: Container(
+        height: 70,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          image: const DecorationImage(
+            image: AssetImage('assets/backgrounds/bg_get_token.jpg'),
+            fit: BoxFit.cover,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.orange.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ListTile(
-        leading: const Icon(Icons.play_circle_fill, color: Colors.white, size: 32),
-        title: Text(
-          loc.translate('click_to_get_token'),
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Text(
-          loc.translate('watch_ad_reward'),
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.white70,
-          ),
-        ),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
             children: [
-              const Text(
-                '+25',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
+              // Overlay gradient nhẹ để text dễ đọc
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Colors.black.withOpacity(0.4),
+                      Colors.transparent,
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.5, 1.0],
+                  ),
                 ),
               ),
-              const SizedBox(width: 4),
-              Image.asset('assets/icons/coin_free.png', width: 18, height: 18),
-              const Text(' / ', style: TextStyle(color: Colors.white70, fontSize: 12)),
-              Image.asset('assets/icons/coin_vip.png', width: 18, height: 18),
+              // Nội dung
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Row(
+                  children: [
+                    // Icon play
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.95),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.play_arrow_rounded,
+                        color: Colors.orange.shade600,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Text
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            loc.translate('click_to_get_token'),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black45,
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            loc.translate('watch_ad_reward'),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.black.withOpacity(0.9),
+                              shadows: const [
+                                Shadow(
+                                  color: Colors.black45,
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Badge +25
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '+25',
+                            style: TextStyle(
+                              color: Colors.orange.shade700,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Image.asset('assets/icons/coin_free.png', width: 20, height: 20),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-        ),
-        onTap: _handleWatchRewardedAd,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
         ),
       ),
     );
@@ -461,7 +527,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    '[TEST] ${loc.translate('ad_reward_success').replaceAll('{amount}', '${AdConstants.rewardTokenAmount}')}',
+                    loc.translate('ad_reward_success').replaceAll('{amount}', '${AdConstants.rewardTokenAmount}'),
                   ),
                   backgroundColor: Colors.green,
                 ),
@@ -471,7 +537,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('[TEST] Error: ${addResult.message}'),
+                  content: Text('Error: ${addResult.message}'),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -482,7 +548,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('[TEST] Error: $e'),
+                content: Text('Error: $e'),
                 backgroundColor: Colors.red,
               ),
             );

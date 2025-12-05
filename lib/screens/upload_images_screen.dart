@@ -385,7 +385,8 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                         ),
                                         const SizedBox(height: 8),
-                                        Expanded(
+                                        AspectRatio(
+                                          aspectRatio: 9 / 21,
                                           child: GestureDetector(
                                             onTap: () => _pickImage(true),
                                             child: _buildImagePreview(
@@ -410,7 +411,8 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                         ),
                                         const SizedBox(height: 8),
-                                        Expanded(
+                                        AspectRatio(
+                                          aspectRatio: 9 / 21,
                                           child: GestureDetector(
                                             onTap: () => _pickImage(false),
                                             child: _buildImagePreview(
@@ -430,7 +432,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                             const SizedBox(height: 12),
                             // Cloth type selector
                             DropdownButtonFormField<String>(
-                              value: _clothType,
+                              initialValue: _clothType,
                               items: _clothTypes
                                 .map((type) => DropdownMenuItem(
                                     value: type,
@@ -459,35 +461,54 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                               onPressed: provider.isLoading ? null : _sendTryon,
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(vertical: 16),
-                                backgroundColor: Colors.green,
-                                disabledBackgroundColor: Colors.grey[400],
+                                backgroundColor: Colors.blue,
+                                disabledBackgroundColor: Colors.grey[300],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
                               child: provider.isLoading
                                   ? const Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          ),
                                         ),
                                         SizedBox(width: 12),
-                                        Text('Processing...', style: TextStyle(color: Colors.white)),
+                                        Text(
+                                          'Processing...',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ],
                                     )
                                   : Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Text(AppLocalizations.of(context).translate('try_on'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                        Text(
+                                          AppLocalizations.of(context).translate('try_on'),
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                         const SizedBox(width: 8),
                                         Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            const Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                            const Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
                                             const SizedBox(width: 4),
-                                            Image.asset('assets/icons/coin_free.png', width: 16, height: 16),
-                                            const Text(' / ', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                                            Image.asset('assets/icons/coin_vip.png', width: 16, height: 16),
+                                            Image.asset('assets/icons/coin_free.png', width: 20, height: 20),
+                                            const Text(' / ', style: TextStyle(color: Colors.white70, fontSize: 18)),
+                                            Image.asset('assets/icons/coin_vip.png', width: 20, height: 20),
                                           ],
                                         ),
                                       ],
@@ -527,7 +548,6 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey[300]!),
         ),
         child: Center(
           child: Column(
@@ -546,7 +566,6 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.green[300]!),
         ),
         child: Stack(
           children: [
@@ -582,7 +601,6 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue[300]!),
       ),
       child: Stack(
         children: [

@@ -40,6 +40,7 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   void _handleSearch() {
+    FocusScope.of(context).unfocus(); // Đóng bàn phím
     final url = _urlController.text.trim();
     if (url.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(

@@ -42,7 +42,7 @@ class ThemeProvider extends ChangeNotifier {
     ),
   };
 
-  AppThemeType _currentTheme = AppThemeType.pinkPastel;
+  AppThemeType _currentTheme = AppThemeType.blueSky;
   bool _isLoaded = false;
 
   /// Theme hiện tại
