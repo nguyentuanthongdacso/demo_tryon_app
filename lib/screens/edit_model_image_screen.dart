@@ -4,10 +4,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../services/cloudinary_service.dart';
 import '../services/session_upload_manager.dart';
 import '../constants/cloudinary_constants.dart';
+import '../providers/theme_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -251,53 +253,64 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF87CEEB),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('edit_model_image')),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Hiển thị ảnh hiện tại
-            Text(
-              AppLocalizations.of(context).translate('current_model_image'),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              Provider.of<ThemeProvider>(context).mainBackground,
+              fit: BoxFit.cover,
             ),
-            const SizedBox(height: 12),
-            _buildCurrentImage(),
-            
-            const SizedBox(height: 24),
-            
-            // Chọn ảnh mới
-            Text(
-              AppLocalizations.of(context).translate('select_new_image'),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildNewImageSection(),
-            
-            const SizedBox(height: 24),
-            
-            // Error message
-            if (_errorMessage != null)
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.red[100],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red[300]!),
-                ),
-                child: Row(
-                  children: [
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Hiển thị ảnh hiện tại
+                  Text(
+                    AppLocalizations.of(context).translate('current_model_image'),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildCurrentImage(),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Chọn ảnh mới
+                  Text(
+                    AppLocalizations.of(context).translate('select_new_image'),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildNewImageSection(),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Error message
+                  if (_errorMessage != null)
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red[100],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red[300]!),
+                      ),
+                      child: Row(
+                        children: [
                     Icon(Icons.error_outline, color: Colors.red[700]),
                     const SizedBox(width: 8),
                     Expanded(
@@ -346,8 +359,11 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
                       ),
               ),
             ),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

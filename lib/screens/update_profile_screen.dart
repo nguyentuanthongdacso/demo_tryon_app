@@ -6,8 +6,10 @@ import '../constants/ad_constants.dart';
 import '../providers/search_provider.dart';
 import '../providers/search_tryon_provider.dart';
 import '../providers/upload_tryon_provider.dart';
+import '../providers/theme_provider.dart';
 import 'edit_model_image_screen.dart';
 import 'language_screen.dart';
+import 'theme_screen.dart';
 import 'my_assets_screen.dart';
 import '../l10n/app_localizations.dart';
 
@@ -35,114 +37,146 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     final userImage = user?['profile_image'] ?? user?['image'];
 
     final loc = AppLocalizations.of(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF87CEEB), // Sky blue background
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              // Header với avatar và tên
-              _buildHeader(userName, userImage),
-              const SizedBox(height: 24),
-
-              // Settings & Privacy Section (expandable)
-              _buildExpandableSection(
-                icon: Icons.settings,
-                title: loc.translate('settings_privacy'),
-                isExpanded: _isSettingsExpanded,
-                onTap: () {
-                  setState(() {
-                    _isSettingsExpanded = !_isSettingsExpanded;
-                  });
-                },
-                children: [
-                  _buildMenuItem(
-                    icon: Icons.person_outline,
-                    title: loc.translate('personal_info'),
-                    onTap: () => _showComingSoon(loc.translate('personal_info')),
-                  ),
-                  _buildMenuItem(
-                    icon: Icons.lock_outline,
-                    title: loc.translate('password_security'),
-                    onTap: () => _showComingSoon(loc.translate('password_security')),
-                  ),
-                  _buildMenuItem(
-                    icon: Icons.link,
-                    title: loc.translate('link_accounts'),
-                    onTap: () => _showComingSoon(loc.translate('link_accounts')),
-                  ),
-                  _buildMenuItem(
-                    icon: Icons.language,
-                    title: loc.translate('language'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LanguageScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Chinh sua anh mau
-              _buildMenuItem(
-                icon: Icons.photo_camera,
-                title: loc.translate('edit_model_image'),
-                onTap: () => _navigateToEditModelImage(),
-              ),
-              const SizedBox(height: 12),
-
-              // My Assets - Ảnh của tôi
-              _buildMenuItem(
-                icon: Icons.photo_library,
-                title: loc.translate('my_assets'),
-                onTap: () => _navigateToMyAssets(),
-              ),
-              const SizedBox(height: 12),
-
-              // Trung tâm hỗ trợ
-              _buildMenuItem(
-                icon: Icons.help_outline,
-                title: loc.translate('support_center'),
-                onTap: () => _showComingSoon(loc.translate('support_center')),
-              ),
-              const SizedBox(height: 12),
-
-              // Yêu cầu trợ giúp
-              _buildMenuItem(
-                icon: Icons.chat_bubble_outline,
-                title: loc.translate('request_help'),
-                onTap: () => _showComingSoon(loc.translate('request_help')),
-              ),
-              const SizedBox(height: 12),
-
-              // Nâng cấp tài khoản
-              _buildMenuItem(
-                icon: Icons.attach_money,
-                title: loc.translate('upgrade_account'),
-                onTap: () => _showComingSoon(loc.translate('upgrade_account')),
-              ),
-              const SizedBox(height: 12),
-
-              // Click để nhận token - Rewarded Video Ad
-              _buildRewardedAdButton(loc),
-              const SizedBox(height: 12),
-
-              // Log out
-              _buildMenuItem(
-                icon: Icons.logout,
-                title: loc.translate('logout'),
-                titleColor: Colors.red,
-                onTap: _handleLogout,
-              ),
-            ],
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              themeProvider.mainBackground,
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - 32, // Trừ padding
+                    ),
+                    child: Column(
+                      children: [
+                        // Header với avatar và tên
+                        _buildHeader(userName, userImage),
+                        const SizedBox(height: 24),
+
+                        // Settings & Privacy Section (expandable)
+                        _buildExpandableSection(
+                          icon: Icons.settings,
+                          title: loc.translate('settings_privacy'),
+                          isExpanded: _isSettingsExpanded,
+                          onTap: () {
+                            setState(() {
+                              _isSettingsExpanded = !_isSettingsExpanded;
+                            });
+                          },
+                          children: [
+                            _buildMenuItem(
+                              icon: Icons.person_outline,
+                              title: loc.translate('personal_info'),
+                              onTap: () => _showComingSoon(loc.translate('personal_info')),
+                            ),
+                            _buildMenuItem(
+                              icon: Icons.lock_outline,
+                              title: loc.translate('password_security'),
+                              onTap: () => _showComingSoon(loc.translate('password_security')),
+                            ),
+                            _buildMenuItem(
+                              icon: Icons.link,
+                              title: loc.translate('link_accounts'),
+                              onTap: () => _showComingSoon(loc.translate('link_accounts')),
+                            ),
+                            _buildMenuItem(
+                              icon: Icons.language,
+                              title: loc.translate('language'),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LanguageScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            _buildMenuItem(
+                              icon: Icons.palette,
+                              title: loc.translate('theme_button'),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ThemeScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Chinh sua anh mau
+                        _buildMenuItem(
+                          icon: Icons.photo_camera,
+                          title: loc.translate('edit_model_image'),
+                          onTap: () => _navigateToEditModelImage(),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // My Assets - Ảnh của tôi
+                        _buildMenuItem(
+                          icon: Icons.photo_library,
+                          title: loc.translate('my_assets'),
+                          onTap: () => _navigateToMyAssets(),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Trung tâm hỗ trợ
+                        _buildMenuItem(
+                          icon: Icons.help_outline,
+                          title: loc.translate('support_center'),
+                          onTap: () => _showComingSoon(loc.translate('support_center')),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Yêu cầu trợ giúp
+                        _buildMenuItem(
+                          icon: Icons.chat_bubble_outline,
+                          title: loc.translate('request_help'),
+                          onTap: () => _showComingSoon(loc.translate('request_help')),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Nâng cấp tài khoản
+                        _buildMenuItem(
+                          icon: Icons.attach_money,
+                          title: loc.translate('upgrade_account'),
+                          onTap: () => _showComingSoon(loc.translate('upgrade_account')),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Click để nhận token - Rewarded Video Ad
+                        _buildRewardedAdButton(loc),
+                        const SizedBox(height: 12),
+
+                        // Log out
+                        _buildMenuItem(
+                          icon: Icons.logout,
+                          title: loc.translate('logout'),
+                          titleColor: Colors.red,
+                          onTap: _handleLogout,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -360,12 +394,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
             color: Colors.white.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.toll, size: 18, color: Colors.white),
-              SizedBox(width: 4),
-              Text(
+              const Text(
                 '+25',
                 style: TextStyle(
                   color: Colors.white,
@@ -373,6 +405,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   fontSize: 14,
                 ),
               ),
+              const SizedBox(width: 4),
+              Image.asset('assets/icons/coin_free.png', width: 18, height: 18),
+              const Text(' / ', style: TextStyle(color: Colors.white70, fontSize: 12)),
+              Image.asset('assets/icons/coin_vip.png', width: 18, height: 18),
             ],
           ),
         ),

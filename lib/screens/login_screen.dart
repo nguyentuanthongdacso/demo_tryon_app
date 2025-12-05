@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../services/google_auth_service.dart';
 import '../services/auth_service.dart';
 import '../services/session_upload_manager.dart';
 import '../widgets/social_login_button.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/theme_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback onLoginSuccess;
@@ -105,10 +107,17 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF87CEEB),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              Provider.of<ThemeProvider>(context).mainBackground,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -191,6 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+          ),
+        ],
       ),
     );
   }

@@ -143,6 +143,17 @@ class AppLocalizations {
       'upload_cloth_image_label': 'Tải ảnh quần áo của bạn',
       'select_model_image': 'Chọn ảnh người mẫu',
       'select_cloth_image': 'Chọn ảnh quần áo',
+      // Theme
+      'theme_title': 'Giao diện',
+      'theme_button': 'Giao diện',
+      'select_theme': 'Chọn giao diện',
+      'theme_preview': 'Xem trước',
+      'main_background': 'Nền chính',
+      'bottom_nav_background': 'Nền thanh điều hướng',
+      'theme_saved': 'Đã lưu giao diện',
+      'theme_pink_pastel': 'Pink Pastel',
+      'theme_blue_sky': 'Blue Sky',
+      'save': 'Lưu',
     },
     // English (fallback for non-Vietnamese selections)
     'en': {
@@ -277,6 +288,17 @@ class AppLocalizations {
       'upload_cloth_image_label': 'Upload your cloth image',
       'select_model_image': 'Select model image',
       'select_cloth_image': 'Select cloth image',
+      // Theme
+      'theme_title': 'Theme',
+      'theme_button': 'Theme',
+      'select_theme': 'Select theme',
+      'theme_preview': 'Preview',
+      'main_background': 'Main background',
+      'bottom_nav_background': 'Navigation bar background',
+      'theme_saved': 'Theme saved',
+      'theme_pink_pastel': 'Pink Pastel',
+      'theme_blue_sky': 'Blue Sky',
+      'save': 'Save',
     },
     // Chinese (Simplified)
     'zh': {
@@ -411,6 +433,17 @@ class AppLocalizations {
       'upload_cloth_image_label': '上传您的服装图片',
       'select_model_image': '选择模特图片',
       'select_cloth_image': '选择服装图片',
+      // Theme
+      'theme_title': '主题',
+      'theme_button': '主题',
+      'select_theme': '选择主题',
+      'theme_preview': '预览',
+      'main_background': '主背景',
+      'bottom_nav_background': '导航栏背景',
+      'theme_saved': '主题已保存',
+      'theme_pink_pastel': '粉红色',
+      'theme_blue_sky': '蓝天',
+      'save': '保存',
     },
     // Spanish
     'es': {
@@ -545,6 +578,17 @@ class AppLocalizations {
       'upload_cloth_image_label': 'Sube tu imagen de prenda',
       'select_model_image': 'Seleccionar imagen de modelo',
       'select_cloth_image': 'Seleccionar imagen de prenda',
+      // Theme
+      'theme_title': 'Tema',
+      'theme_button': 'Tema',
+      'select_theme': 'Seleccionar tema',
+      'theme_preview': 'Vista previa',
+      'main_background': 'Fondo principal',
+      'bottom_nav_background': 'Fondo de la barra de navegación',
+      'theme_saved': 'Tema guardado',
+      'theme_pink_pastel': 'Rosa Pastel',
+      'theme_blue_sky': 'Cielo Azul',
+      'save': 'Guardar',
     },
     // Hindi
     'hi': {
@@ -679,6 +723,17 @@ class AppLocalizations {
       'upload_cloth_image_label': 'अपनी कपड़े की छवि अपलोड करें',
       'select_model_image': 'मॉडल छवि चुनें',
       'select_cloth_image': 'कपड़े की छवि चुनें',
+      // Theme
+      'theme_title': 'थीम',
+      'theme_button': 'थीम',
+      'select_theme': 'थीम चुनें',
+      'theme_preview': 'पूर्वावलोकन',
+      'main_background': 'मुख्य पृष्ठभूमि',
+      'bottom_nav_background': 'नेविगेशन बार पृष्ठभूमि',
+      'theme_saved': 'थीम सहेजा गया',
+      'theme_pink_pastel': 'पिंक पेस्टल',
+      'theme_blue_sky': 'ब्लू स्काई',
+      'save': 'सहेजें',
     },
     // Arabic
     'ar': {
@@ -813,6 +868,17 @@ class AppLocalizations {
       'upload_cloth_image_label': 'ارفع صورة الملابس الخاصة بك',
       'select_model_image': 'اختر صورة العارض',
       'select_cloth_image': 'اختر صورة الملابس',
+      // Theme
+      'theme_title': 'السمة',
+      'theme_button': 'السمة',
+      'select_theme': 'اختر السمة',
+      'theme_preview': 'معاينة',
+      'main_background': 'الخلفية الرئيسية',
+      'bottom_nav_background': 'خلفية شريط التنقل',
+      'theme_saved': 'تم حفظ السمة',
+      'theme_pink_pastel': 'وردي باستيل',
+      'theme_blue_sky': 'سماء زرقاء',
+      'save': 'حفظ',
     },
     // Bengali
     'bn': {
@@ -947,6 +1013,17 @@ class AppLocalizations {
       'upload_cloth_image_label': 'আপনার পোশাকের ছবি আপলোড করুন',
       'select_model_image': 'মডেল ছবি নির্বাচন করুন',
       'select_cloth_image': 'পোশাকের ছবি নির্বাচন করুন',
+      // Theme
+      'theme_title': 'থিম',
+      'theme_button': 'থিম',
+      'select_theme': 'থিম নির্বাচন করুন',
+      'theme_preview': 'পূর্বরূপ',
+      'main_background': 'প্রধান পটভূমি',
+      'bottom_nav_background': 'নেভিগেশন বার পটভূমি',
+      'theme_saved': 'থিম সংরক্ষিত',
+      'theme_pink_pastel': 'পিংক পেস্টেল',
+      'theme_blue_sky': 'ব্লু স্কাই',
+      'save': 'সংরক্ষণ',
     },
     // French
     'fr': {
@@ -1081,6 +1158,17 @@ class AppLocalizations {
       'upload_cloth_image_label': 'Téléchargez votre image de vêtement',
       'select_model_image': 'Sélectionner l\'image du modèle',
       'select_cloth_image': 'Sélectionner l\'image du vêtement',
+      // Theme
+      'theme_title': 'Thème',
+      'theme_button': 'Thème',
+      'select_theme': 'Sélectionner le thème',
+      'theme_preview': 'Aperçu',
+      'main_background': 'Fond principal',
+      'bottom_nav_background': 'Fond de la barre de navigation',
+      'theme_saved': 'Thème enregistré',
+      'theme_pink_pastel': 'Rose Pastel',
+      'theme_blue_sky': 'Ciel Bleu',
+      'save': 'Enregistrer',
     },
     // Russian
     'ru': {
@@ -1215,6 +1303,17 @@ class AppLocalizations {
       'upload_cloth_image_label': 'Загрузите фото одежды',
       'select_model_image': 'Выберите изображение модели',
       'select_cloth_image': 'Выберите изображение одежды',
+      // Theme
+      'theme_title': 'Тема',
+      'theme_button': 'Тема',
+      'select_theme': 'Выберите тему',
+      'theme_preview': 'Предварительный просмотр',
+      'main_background': 'Основной фон',
+      'bottom_nav_background': 'Фон панели навигации',
+      'theme_saved': 'Тема сохранена',
+      'theme_pink_pastel': 'Розовая пастель',
+      'theme_blue_sky': 'Голубое небо',
+      'save': 'Сохранить',
     },
     // Portuguese
     'pt': {
@@ -1349,6 +1448,17 @@ class AppLocalizations {
       'upload_cloth_image_label': 'Envie sua imagem de roupa',
       'select_model_image': 'Selecionar imagem de modelo',
       'select_cloth_image': 'Selecionar imagem de roupa',
+      // Theme
+      'theme_title': 'Tema',
+      'theme_button': 'Tema',
+      'select_theme': 'Selecionar tema',
+      'theme_preview': 'Visualização',
+      'main_background': 'Fundo principal',
+      'bottom_nav_background': 'Fundo da barra de navegação',
+      'theme_saved': 'Tema salvo',
+      'theme_pink_pastel': 'Rosa Pastel',
+      'theme_blue_sky': 'Céu Azul',
+      'save': 'Salvar',
     },
   };
 

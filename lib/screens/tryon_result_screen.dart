@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/theme_provider.dart';
 import '../widgets/image_with_context_menu.dart';
 
 class TryonResultScreen extends StatefulWidget {
@@ -112,9 +114,11 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
     final totalCount = _imageStatus.length;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF87CEEB),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('tryon_results_title')),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           if (!allReady)
             Padding(
@@ -143,41 +147,50 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
             ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Hiển thị thông tin
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      allReady
-                          ? AppLocalizations.of(context).translate('all_images_ready')
-                          : '${AppLocalizations.of(context).translate('processing_short')} ($readyCount/$totalCount)',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: allReady ? Colors.green : Colors.orange,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              Provider.of<ThemeProvider>(context).mainBackground,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Hiển thị thông tin
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            allReady
+                                ? AppLocalizations.of(context).translate('all_images_ready')
+                                : '${AppLocalizations.of(context).translate('processing_short')} ($readyCount/$totalCount)',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: allReady ? Colors.green : Colors.orange,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Thời gian chờ: $_attemptCount giây',
+                            style: const TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                          if (!allReady) ...[
+                            const SizedBox(height: 8),
+                            const LinearProgressIndicator(),
+                          ],
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Thời gian chờ: $_attemptCount giây',
-                      style: const TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                    if (!allReady) ...[
-                      const SizedBox(height: 8),
-                      const LinearProgressIndicator(),
-                    ],
-                  ],
-                ),
-              ),
-            ),
+                  ),
             const SizedBox(height: 16),
 
             // Hiển thị ảnh gốc
@@ -309,12 +322,15 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                               ),
                             ),
                           ),
-                  ],
-                ),
-              );
-            }),
-          ],
-        ),
+                    ],
+                  ),
+                );
+              }),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

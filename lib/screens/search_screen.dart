@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import '../providers/search_provider.dart';
+import '../providers/theme_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/banner_ad_widget.dart';
 import '../services/cloudinary_service.dart';
@@ -181,34 +182,44 @@ class _SearchScreenState extends State<SearchScreen>
     super.build(context);
     
     return Scaffold(
-      backgroundColor: const Color(0xFF87CEEB),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('search_appbar_title')),
         centerTitle: true,
-        elevation: 2,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Banner Ad ở đầu màn hình
-          const BannerAdWidget(),
-          // Main content - scrollable
-          Expanded(
-            child: Stack(
+          Positioned.fill(
+            child: Image.asset(
+              Provider.of<ThemeProvider>(context).mainBackground,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SafeArea(
+            child: Column(
               children: [
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 16.0,
-                      top: 16.0,
-                      right: 16.0,
-                      bottom: 100, // Space for fixed button at bottom
-                    ),
-                    child: Column(
-                      children: [
-                        TextField(
-                          controller: _urlController,
-                          focusNode: _focusNode,
-                          decoration: InputDecoration(
+                // Banner Ad ở đầu màn hình
+                const BannerAdWidget(),
+                // Main content - scrollable
+                Expanded(
+                  child: Stack(
+                    children: [
+                      SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            left: 16.0,
+                            top: 16.0,
+                            right: 16.0,
+                            bottom: 100, // Space for fixed button at bottom
+                          ),
+                          child: Column(
+                            children: [
+                              TextField(
+                                controller: _urlController,
+                                focusNode: _focusNode,
+                                decoration: InputDecoration(
                       hintText: AppLocalizations.of(context).translate('enter_image_url_hint'),
                       labelText: AppLocalizations.of(context).translate('url_label'),
                       prefixIcon: const Icon(Icons.link),
@@ -554,6 +565,9 @@ class _SearchScreenState extends State<SearchScreen>
               );
             },
           ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

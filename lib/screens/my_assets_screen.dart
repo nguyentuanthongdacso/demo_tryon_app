@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../models/tryon_image.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/image_with_context_menu.dart';
+import '../providers/theme_provider.dart';
 
 /// Màn hình hiển thị 10 ảnh tryon gần nhất của user
 class MyAssetsScreen extends StatefulWidget {
@@ -70,10 +72,10 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
     final loc = AppLocalizations.of(context);
     
     return Scaffold(
-      backgroundColor: const Color(0xFF87CEEB),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(loc.translate('my_assets')),
-        backgroundColor: const Color(0xFF87CEEB),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
@@ -82,7 +84,19 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
           ),
         ],
       ),
-      body: _buildBody(loc),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              Provider.of<ThemeProvider>(context).mainBackground,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SafeArea(
+            child: _buildBody(loc),
+          ),
+        ],
+      ),
     );
   }
 

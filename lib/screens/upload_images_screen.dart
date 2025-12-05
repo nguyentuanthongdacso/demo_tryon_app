@@ -7,6 +7,7 @@ import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
 import '../providers/upload_tryon_provider.dart';
+import '../providers/theme_provider.dart';
 import '../services/cloudinary_service.dart';
 import '../services/auth_service.dart';
 import 'tryon_result_screen.dart';
@@ -340,135 +341,177 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
     super.build(context);
     
     return Scaffold(
-      backgroundColor: const Color(0xFF87CEEB),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('upload_appbar_title')),
         centerTitle: true,
-        elevation: 2,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
       ),
-      body: SafeArea(
-        child: Consumer<UploadTryonProvider>(
-          builder: (context, provider, _) {
-            return Column(
-              children: [
-                // Banner Ad ở đầu màn hình
-                const BannerAdWidget(),
-                // Main content - scrollable
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(AppLocalizations.of(context).translate('upload_model_image_label'), style: const TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: () => _pickImage(true),
-                child: _buildImagePreview(
-                  localPath: _initLocalPath,
-                  publicUrl: _initPublicUrl,
-                  uploading: _initUploading,
-                  placeholderText: AppLocalizations.of(context).translate('select_model_image'),
-                ),
-              ),
-              const SizedBox(height: 16),
-                Text(AppLocalizations.of(context).translate('upload_cloth_image_label'), style: const TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: () => _pickImage(false),
-                child: _buildImagePreview(
-                  localPath: _clothLocalPath,
-                  publicUrl: _clothPublicUrl,
-                  uploading: _clothUploading,
-                  placeholderText: AppLocalizations.of(context).translate('select_cloth_image'),
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: _clothType,
-                items: _clothTypes
-                  .map((type) => DropdownMenuItem(
-                      value: type,
-                      child: Center(
-                        child: Text(
-                          type == 'upper_body'
-                              ? AppLocalizations.of(context).translate('cloth_upper')
-                              : type == 'lower_body'
-                                  ? AppLocalizations.of(context).translate('cloth_lower')
-                                  : AppLocalizations.of(context).translate('cloth_full'),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              Provider.of<ThemeProvider>(context).mainBackground,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SafeArea(
+            child: Consumer<UploadTryonProvider>(
+              builder: (context, provider, _) {
+                return Column(
+                  children: [
+                    // Banner Ad ở đầu màn hình
+                    const BannerAdWidget(),
+                    // Main content - không cần scroll
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Row hiển thị 2 ảnh cạnh nhau
+                            Expanded(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Ảnh người mẫu (bên trái)
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(context).translate('upload_model_image_label'),
+                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () => _pickImage(true),
+                                            child: _buildImagePreview(
+                                              localPath: _initLocalPath,
+                                              publicUrl: _initPublicUrl,
+                                              uploading: _initUploading,
+                                              placeholderText: AppLocalizations.of(context).translate('select_model_image'),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  // Ảnh quần áo (bên phải)
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(context).translate('upload_cloth_image_label'),
+                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () => _pickImage(false),
+                                            child: _buildImagePreview(
+                                              localPath: _clothLocalPath,
+                                              publicUrl: _clothPublicUrl,
+                                              uploading: _clothUploading,
+                                              placeholderText: AppLocalizations.of(context).translate('select_cloth_image'),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            // Cloth type selector
+                            DropdownButtonFormField<String>(
+                              value: _clothType,
+                              items: _clothTypes
+                                .map((type) => DropdownMenuItem(
+                                    value: type,
+                                    child: Center(
+                                      child: Text(
+                                        type == 'upper_body'
+                                            ? AppLocalizations.of(context).translate('cloth_upper')
+                                            : type == 'lower_body'
+                                                ? AppLocalizations.of(context).translate('cloth_lower')
+                                                : AppLocalizations.of(context).translate('cloth_full'),
+                                      ),
+                                    ),
+                                  ))
+                                .toList(),
+                              onChanged: (val) {
+                                if (val != null) setState(() => _clothType = val);
+                              },
+                              decoration: InputDecoration(
+                                labelText: AppLocalizations.of(context).translate('type_of_cloth'),
+                                border: const OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            // Try-on button
+                            ElevatedButton(
+                              onPressed: provider.isLoading ? null : _sendTryon,
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                backgroundColor: Colors.green,
+                                disabledBackgroundColor: Colors.grey[400],
+                              ),
+                              child: provider.isLoading
+                                  ? const Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                        ),
+                                        SizedBox(width: 12),
+                                        Text('Processing...', style: TextStyle(color: Colors.white)),
+                                      ],
+                                    )
+                                  : Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(AppLocalizations.of(context).translate('try_on'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                        const SizedBox(width: 8),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                            const SizedBox(width: 4),
+                                            Image.asset('assets/icons/coin_free.png', width: 16, height: 16),
+                                            const Text(' / ', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                            Image.asset('assets/icons/coin_vip.png', width: 16, height: 16),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                            ),
+                            if (provider.isLoading)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  AppLocalizations.of(context).translate('sending_to_ai'),
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                    ))
-                  .toList(),
-                onChanged: (val) {
-                  if (val != null) setState(() => _clothType = val);
-                },
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).translate('type_of_cloth'),
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: provider.isLoading ? null : _sendTryon,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.green,
-                  disabledBackgroundColor: Colors.grey[400],
-                ),
-                child: provider.isLoading
-                    ? const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          ),
-                          SizedBox(width: 12),
-                          Text('Processing...', style: TextStyle(color: Colors.white)),
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(AppLocalizations.of(context).translate('try_on'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.toll, size: 16, color: Colors.amber),
-                                SizedBox(width: 4),
-                                Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-              ),
-              if (provider.isLoading)
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Text(
-                    AppLocalizations.of(context).translate('sending_to_ai'),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ),
-                      ],
                     ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -481,7 +524,6 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
   }) {
     if (localPath == null && publicUrl == null) {
       return Container(
-        height: 150,
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(8),
@@ -491,11 +533,9 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.add_photo_alternate, size: 48, color: Colors.grey[400]),
+              Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey[400]),
               const SizedBox(height: 8),
-              Text(placeholderText, style: TextStyle(color: Colors.grey[600])),
-              const SizedBox(height: 6),
-              // Removed 'Coming soon' text
+              Text(placeholderText, style: TextStyle(color: Colors.grey[600], fontSize: 12), textAlign: TextAlign.center),
             ],
           ),
         ),
@@ -503,68 +543,77 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
     }
 
     if (publicUrl != null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(publicUrl, height: 150, fit: BoxFit.cover),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Icon(Icons.check_circle, size: 16, color: Colors.green),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.green[300]!),
+        ),
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(publicUrl, width: double.infinity, height: double.infinity, fit: BoxFit.contain),
+            ),
+            Positioned(
+              bottom: 4,
+              left: 4,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(AppLocalizations.of(context).translate('uploaded'), style: const TextStyle(fontSize: 14, color: Colors.green)),
-                    // Removed 'Coming soon' text from upload success notification
+                    const Icon(Icons.check_circle, size: 12, color: Colors.white),
+                    const SizedBox(width: 4),
+                    Text(AppLocalizations.of(context).translate('uploaded'), style: const TextStyle(fontSize: 10, color: Colors.white)),
                   ],
                 ),
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       );
     }
 
     // localPath != null - chưa upload
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.file(File(localPath!), height: 150, fit: BoxFit.cover),
-            ),
-            if (uploading)
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(128),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const CircularProgressIndicator(color: Colors.white),
-                        const SizedBox(height: 8),
-                        Text(
-                          AppLocalizations.of(context).translate('uploading'),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue[300]!),
+      ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.file(File(localPath!), width: double.infinity, height: double.infinity, fit: BoxFit.contain),
+          ),
+          if (uploading)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withAlpha(128),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CircularProgressIndicator(color: Colors.white),
+                      const SizedBox(height: 8),
+                      Text(
+                        AppLocalizations.of(context).translate('uploading'),
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ],
                   ),
                 ),
               ),
-          ],
-        ),
-      ],
+            ),
+        ],
+      ),
     );
   }
 }

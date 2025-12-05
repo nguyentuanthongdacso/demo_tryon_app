@@ -37,3 +37,6 @@ flutter:
 
   assets:
     - assets/icons/
+    - assets/backgrounds/
+    - assets/backgrounds/pink_pastel/
+    - assets/backgrounds/blue_sky/

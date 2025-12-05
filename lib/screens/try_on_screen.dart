@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/search_tryon_provider.dart';
+import '../providers/theme_provider.dart';
 import '../services/auth_service.dart';
 import 'tryon_result_screen.dart';
 import '../l10n/app_localizations.dart';
@@ -131,58 +132,87 @@ class _TryOnScreenState extends State<TryOnScreen> {
     final initImageUrl = _userInitImage;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF87CEEB),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('app_title')),
         centerTitle: true,
-        elevation: 2,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppLocalizations.of(context).translate('current_model_image'),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _buildInitImageSection(initImageUrl),
-              const SizedBox(height: 24),
-              Text(
-                AppLocalizations.of(context).translate('selected_cloth_image'),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _buildClothImageSection(clothImageUrl),
-              const SizedBox(height: 24),
-              Text(
-                AppLocalizations.of(context).translate('type_of_cloth'),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _buildClothTypeSelector(),
-              const SizedBox(height: 32),
-              _buildTryOnButton(clothImageUrl, initImageUrl),
-              const SizedBox(height: 24),
-              _buildErrorSection(),
-            ],
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              Provider.of<ThemeProvider>(context).mainBackground,
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Row hiển thị 2 ảnh cạnh nhau
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Ảnh người mẫu (bên trái)
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context).translate('current_model_image'),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Expanded(child: _buildInitImageSection(initImageUrl)),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Ảnh quần áo (bên phải)
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context).translate('selected_cloth_image'),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Expanded(child: _buildClothImageSection(clothImageUrl)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Cloth type selector
+                  _buildClothTypeSelector(),
+                  const SizedBox(height: 12),
+                  // Try-on button
+                  _buildTryOnButton(clothImageUrl, initImageUrl),
+                  // Error section
+                  _buildErrorSection(),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -192,7 +222,6 @@ class _TryOnScreenState extends State<TryOnScreen> {
     
     if (initImageUrl != null && initImageUrl.isNotEmpty) {
       return Container(
-        height: 200,
         width: double.infinity,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.blue[300]!),
@@ -203,12 +232,11 @@ class _TryOnScreenState extends State<TryOnScreen> {
           child: Image.network(
             initImageUrl,
             fit: BoxFit.contain,
-            cacheWidth: 400, // Giảm memory footprint, tránh bị clear cache
+            cacheWidth: 400,
             errorBuilder: (context, error, stackTrace) {
               debugPrint('❌ Image load error: $error');
               return GestureDetector(
                 onTap: () {
-                  // Tap để retry load ảnh
                   setState(() {});
                 },
                 child: Container(
@@ -216,11 +244,9 @@ class _TryOnScreenState extends State<TryOnScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                      const SizedBox(height: 8),
-                      Text(AppLocalizations.of(context).translate('cannot_load_image'), style: const TextStyle(color: Colors.grey)),
+                      const Icon(Icons.broken_image, size: 40, color: Colors.grey),
                       const SizedBox(height: 4),
-                      Text('Chạm để thử lại', style: TextStyle(color: Colors.blue[400], fontSize: 12)),
+                      Text(AppLocalizations.of(context).translate('cannot_load_image'), style: const TextStyle(color: Colors.grey, fontSize: 12)),
                     ],
                   ),
                 ),
@@ -242,7 +268,6 @@ class _TryOnScreenState extends State<TryOnScreen> {
       );
     }
     return Container(
-      height: 200,
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.orange[50],
@@ -252,20 +277,22 @@ class _TryOnScreenState extends State<TryOnScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.warning_amber, size: 48, color: Colors.orange[700]),
-          const SizedBox(height: 12),
+          Icon(Icons.warning_amber, size: 40, color: Colors.orange[700]),
+          const SizedBox(height: 8),
           Text(
             'Chưa có ảnh người mẫu',
             style: TextStyle(
               color: Colors.orange[700],
-              fontSize: 16,
+              fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
-            'Vui lòng cập nhật ảnh người mẫu trong Profile',
-            style: TextStyle(color: Colors.orange[600], fontSize: 14),
+            'Cập nhật trong Profile',
+            style: TextStyle(color: Colors.orange[600], fontSize: 11),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -275,7 +302,6 @@ class _TryOnScreenState extends State<TryOnScreen> {
   Widget _buildClothImageSection(String? clothImageUrl) {
     if (clothImageUrl != null) {
       return Container(
-        height: 250,
         width: double.infinity,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.green[300]!),
@@ -299,10 +325,10 @@ class _TryOnScreenState extends State<TryOnScreen> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.broken_image, size: 64, color: Colors.grey),
-                      const SizedBox(height: 12),
+                      const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                      const SizedBox(height: 8),
                       Text(AppLocalizations.of(context).translate('cannot_load_image'),
-                          style: const TextStyle(color: Colors.grey, fontSize: 16)),
+                          style: const TextStyle(color: Colors.grey, fontSize: 12)),
                     ],
                   ),
               );
@@ -323,7 +349,6 @@ class _TryOnScreenState extends State<TryOnScreen> {
       );
     }
     return Container(
-      height: 250,
       decoration: BoxDecoration(
         color: Colors.grey[100],
         border: Border.all(color: Colors.grey[300]!),
@@ -332,7 +357,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
       child: Center(
         child: Text(
           AppLocalizations.of(context).translate('no_image_selected'),
-          style: const TextStyle(color: Colors.grey, fontSize: 16),
+          style: const TextStyle(color: Colors.grey, fontSize: 14),
         ),
       ),
     );
@@ -420,20 +445,15 @@ class _TryOnScreenState extends State<TryOnScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.toll, size: 16, color: Colors.amber),
-                            SizedBox(width: 4),
-                            Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-                          ],
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                          const SizedBox(width: 4),
+                          Image.asset('assets/icons/coin_free.png', width: 16, height: 16),
+                          const Text(' / ', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                          Image.asset('assets/icons/coin_vip.png', width: 16, height: 16),
+                        ],
                       ),
                     ],
                   ),

@@ -5,6 +5,7 @@ import 'providers/search_provider.dart';
 import 'providers/search_tryon_provider.dart';
 import 'providers/upload_tryon_provider.dart';
 import 'providers/language_provider.dart';
+import 'providers/theme_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/search_screen.dart';
 import 'screens/upload_images_screen.dart';
@@ -152,13 +153,20 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (_) => SearchTryonProvider()),
         ChangeNotifierProvider(create: (_) => UploadTryonProvider()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: Consumer<LanguageProvider>(
-        builder: (context, languageProvider, child) {
+      child: Consumer2<LanguageProvider, ThemeProvider>(
+        builder: (context, languageProvider, themeProvider, child) {
           // Ensure language is loaded once we have a valid provider/context
           if (!languageProvider.isLoaded) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               languageProvider.loadLanguage();
+            });
+          }
+          // Ensure theme is loaded
+          if (!themeProvider.isLoaded) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              themeProvider.loadTheme();
             });
           }
 
@@ -306,14 +314,24 @@ class MainTabBarState extends State<MainTabBar> {
               BottomNavigationBarItem(icon: const Icon(Icons.person), label: loc.translate('bottom_profile')),
             ];
 
-            return BottomNavigationBar(
-              items: items,
-              currentIndex: _selectedIndex,
-              onTap: _onItemTapped,
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: Colors.blue,
-              unselectedItemColor: Colors.grey,
-              showUnselectedLabels: true,
+            return Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(Provider.of<ThemeProvider>(context).bottomNavBackground),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: BottomNavigationBar(
+                items: items,
+                currentIndex: _selectedIndex,
+                onTap: _onItemTapped,
+                type: BottomNavigationBarType.fixed,
+                selectedItemColor: const Color.fromARGB(255, 10, 6, 236),
+                unselectedItemColor: const Color.fromARGB(255, 164, 166, 167),
+                showUnselectedLabels: true,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+              ),
             );
           },
         ),
