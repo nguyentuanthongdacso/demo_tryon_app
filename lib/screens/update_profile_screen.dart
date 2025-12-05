@@ -7,6 +7,7 @@ import '../providers/search_provider.dart';
 import '../providers/search_tryon_provider.dart';
 import '../providers/upload_tryon_provider.dart';
 import '../providers/theme_provider.dart';
+import '../utils/app_styles.dart';
 import 'edit_model_image_screen.dart';
 import 'language_screen.dart';
 import 'theme_screen.dart';
@@ -54,7 +55,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  padding: AppStyles.paddingAll16,
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
                       minHeight: constraints.maxHeight - 32, // Trừ padding
@@ -63,7 +64,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       children: [
                         // Header với avatar và tên
                         _buildHeader(userName, userImage),
-                        const SizedBox(height: 24),
+                        SizedBox(height: AppStyles.spacingXXL),
 
                         // Settings & Privacy Section (expandable)
                         _buildExpandableSection(
@@ -113,7 +114,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: AppStyles.spacingMD),
 
                         // Chinh sua anh mau
                         _buildMenuItem(
@@ -121,7 +122,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           title: loc.translate('edit_model_image'),
                           onTap: () => _navigateToEditModelImage(),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: AppStyles.spacingMD),
 
                         // My Assets - Ảnh của tôi
                         _buildMenuItem(
@@ -129,7 +130,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           title: loc.translate('my_assets'),
                           onTap: () => _navigateToMyAssets(),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: AppStyles.spacingMD),
 
                         // Trung tâm hỗ trợ
                         _buildMenuItem(
@@ -137,7 +138,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           title: loc.translate('support_center'),
                           onTap: () => _showComingSoon(loc.translate('support_center')),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: AppStyles.spacingMD),
 
                         // Báo cáo lỗi
                         _buildMenuItem(
@@ -152,7 +153,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             );
                           },
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: AppStyles.spacingMD),
 
                         // Nâng cấp tài khoản
                         _buildMenuItem(
@@ -160,11 +161,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           title: loc.translate('upgrade_account'),
                           onTap: () => _showComingSoon(loc.translate('upgrade_account')),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: AppStyles.spacingMD),
 
                         // Click để nhận token - Rewarded Video Ad
                         _buildRewardedAdButton(loc),
-                        const SizedBox(height: 12),
+                        SizedBox(height: AppStyles.spacingMD),
 
                         // Log out
                         _buildMenuItem(
@@ -206,11 +207,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         Expanded(
           child: Text(
             userName,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+            style: AppStyles.headerName,
           ),
         ),
         // Token display
@@ -223,42 +220,34 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               children: [
                 Text(
                   '$tokenFree',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
+                  style: AppStyles.tokenCountText,
                 ),
                 Image.asset(
                   'assets/icons/coin_free.png',
-                  width: 24,
-                  height: 24,
+                  width: AppStyles.coinIconSizeLG,
+                  height: AppStyles.coinIconSizeLG,
                 ),
               ],
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: AppStyles.spacingSM),
             // Token VIP
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   '$tokenVip',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
+                  style: AppStyles.tokenCountText,
                 ),
                 Image.asset(
                   'assets/icons/coin_vip.png',
-                  width: 24,
-                  height: 24,
+                  width: AppStyles.coinIconSizeLG,
+                  height: AppStyles.coinIconSizeLG,
                 ),
               ],
             ),
           ],
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: AppStyles.spacingSM),
         // Notification bell
         IconButton(
           icon: const Icon(Icons.notifications_outlined, color: Colors.black87),
@@ -276,36 +265,30 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     required List<Widget> children,
   }) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: AppStyles.cardDecorationSolid,
       child: Column(
         children: [
           // Header
           InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: AppStyles.borderRadiusXL,
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: AppStyles.paddingAll16,
               child: Row(
                 children: [
-                  Icon(icon, color: Colors.black54),
-                  const SizedBox(width: 12),
+                  Icon(icon, color: AppStyles.textSecondary),
+                  SizedBox(width: AppStyles.spacingMD),
                   Expanded(
                     child: Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppStyles.titleMedium,
                     ),
                   ),
                   Icon(
                     isExpanded
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
-                    color: Colors.black54,
+                    color: AppStyles.textSecondary,
                   ),
                 ],
               ),
@@ -316,7 +299,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
             Column(
               children: children
                   .map((child) => Padding(
-                        padding: const EdgeInsets.only(left: 16),
+                        padding: EdgeInsets.only(left: AppStyles.spacingLG),
                         child: child,
                       ))
                   .toList(),
@@ -333,23 +316,17 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     required VoidCallback onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 2),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      margin: EdgeInsets.only(bottom: AppStyles.spacingXS - 2),
+      decoration: AppStyles.cardDecorationSolid,
       child: ListTile(
-        leading: Icon(icon, color: Colors.black54),
+        leading: Icon(icon, color: AppStyles.textSecondary),
         title: Text(
           title,
-          style: TextStyle(
-            fontSize: 16,
-            color: titleColor ?? Colors.black87,
-          ),
+          style: AppStyles.menuItemText.copyWith(color: titleColor),
         ),
         onTap: onTap,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppStyles.borderRadiusXL,
         ),
       ),
     );
@@ -362,23 +339,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     return GestureDetector(
       onTap: _handleWatchRewardedAd,
       child: Container(
-        height: 70,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          image: const DecorationImage(
-            image: AssetImage('assets/backgrounds/bg_get_token.jpg'),
-            fit: BoxFit.cover,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+        height: AppStyles.buttonHeight,
+        decoration: AppStyles.getTokenButtonDecoration,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppStyles.borderRadiusXL,
           child: Stack(
             children: [
               // Overlay gradient nhẹ để text dễ đọc
@@ -398,24 +362,21 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               ),
               // Nội dung
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
+                padding: AppStyles.paddingSymmetric14,
                 child: Row(
                   children: [
                     // Icon play
                     Container(
                       width: 42,
                       height: 42,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.95),
-                        shape: BoxShape.circle,
-                      ),
+                      decoration: AppStyles.circleIconDecorationSolid,
                       child: Icon(
                         Icons.play_arrow_rounded,
-                        color: Colors.orange.shade600,
-                        size: 28,
+                        color: AppStyles.iconOrange,
+                        size: AppStyles.iconSizeXL,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: AppStyles.spacingMD),
                     // Text
                     Expanded(
                       child: Column(
@@ -424,30 +385,20 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         children: [
                           Text(
                             loc.translate('click_to_get_token'),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black45,
-                                  blurRadius: 4,
-                                ),
-                              ],
+                              shadows: AppStyles.textShadow,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: AppStyles.spacingXS - 2),
                           Text(
                             loc.translate('watch_ad_reward'),
                             style: TextStyle(
                               fontSize: 11,
-                              color: Colors.black.withOpacity(0.9),
-                              shadows: const [
-                                Shadow(
-                                  color: Colors.black45,
-                                  blurRadius: 4,
-                                ),
-                              ],
+                              color: Colors.black.withValues(alpha: 0.9),
+                              shadows: AppStyles.textShadow,
                             ),
                           ),
                         ],
@@ -455,10 +406,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     ),
                     // Badge +25
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: AppStyles.paddingSymmetric12x6,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
+                        color: AppStyles.textWhite,
+                        borderRadius: AppStyles.borderRadiusXXL,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -466,13 +417,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           Text(
                             '+25',
                             style: TextStyle(
-                              color: Colors.orange.shade700,
+                              color: AppStyles.warningText,
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          Image.asset('assets/icons/coin_free.png', width: 20, height: 20),
+                          SizedBox(width: AppStyles.spacingXS),
+                          Image.asset('assets/icons/coin_free.png', width: AppStyles.coinIconSize, height: AppStyles.coinIconSize),
                         ],
                       ),
                     ),

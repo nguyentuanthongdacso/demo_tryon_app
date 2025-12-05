@@ -10,6 +10,7 @@ import '../providers/theme_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/banner_ad_widget.dart';
 import '../services/cloudinary_service.dart';
+import '../utils/app_styles.dart';
 import 'try_on_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -91,7 +92,7 @@ class _SearchScreenState extends State<SearchScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).translate('error_downloading_image')),
-              backgroundColor: Colors.red,
+              backgroundColor: AppStyles.primaryRed,
             ),
           );
         }
@@ -148,7 +149,7 @@ class _SearchScreenState extends State<SearchScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).translate('crop_success')),
-              backgroundColor: Colors.green,
+              backgroundColor: AppStyles.primaryGreen,
             ),
           );
         }
@@ -164,7 +165,7 @@ class _SearchScreenState extends State<SearchScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${AppLocalizations.of(context).translate('error_prefix')}: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppStyles.primaryRed,
           ),
         );
       }
@@ -220,21 +221,16 @@ class _SearchScreenState extends State<SearchScreen>
                               TextField(
                                 controller: _urlController,
                                 focusNode: _focusNode,
-                                decoration: InputDecoration(
+                                decoration: AppStyles.textFieldDecoration(
                       hintText: AppLocalizations.of(context).translate('enter_image_url_hint'),
                       labelText: AppLocalizations.of(context).translate('url_label'),
-                      prefixIcon: const Icon(Icons.link),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[100],
+                      prefixIcon: Icons.link,
                     ),
                     keyboardType: TextInputType.url,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) => _handleSearch(),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: AppStyles.spacingLG),
                   SizedBox(
                     width: double.infinity,
                     child: Consumer<SearchProvider>(
@@ -242,24 +238,19 @@ class _SearchScreenState extends State<SearchScreen>
                         return ElevatedButton.icon(
                           onPressed: provider.isLoading ? null : _handleSearch,
                           icon: provider.isLoading 
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              ? SizedBox(
+                                  width: AppStyles.progressSizeSM,
+                                  height: AppStyles.progressSizeSM,
+                                  child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                 )
                               : const Icon(Icons.search),
                           label: Text(AppLocalizations.of(context).translate('search_button')),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
+                          style: AppStyles.searchButtonStyle,
                         );
                       },
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppStyles.spacingXXL),
                   Consumer<SearchProvider>(
                     builder: (context, provider, _) {
                       if (provider.isLoading) {
@@ -271,25 +262,18 @@ class _SearchScreenState extends State<SearchScreen>
 
                       if (provider.error != null) {
                         return Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.red[100],
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.red[300]!),
-                          ),
+                          padding: AppStyles.paddingAll16,
+                          decoration: AppStyles.errorContainerDecoration,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.error_outline,
-                                  color: Colors.red[700], size: 32),
-                              const SizedBox(height: 8),
+                                  color: AppStyles.errorText, size: AppStyles.iconSizeXXL),
+                              SizedBox(height: AppStyles.spacingSM),
                               Text(
                                 provider.error ?? 'Có lỗi xảy ra',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.red[700],
-                                  fontSize: 14,
-                                ),
+                                style: AppStyles.errorTextStyle,
                               ),
                             ],
                           ),
@@ -305,20 +289,17 @@ class _SearchScreenState extends State<SearchScreen>
                         children: [
                           Text(
                             '${AppLocalizations.of(context).translate('results_label')} (${provider.images.length} ${AppLocalizations.of(context).translate('photos')})',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: AppStyles.titleMedium,
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: AppStyles.spacingMD),
                           GridView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
+                              crossAxisSpacing: AppStyles.spacingMD,
+                              mainAxisSpacing: AppStyles.spacingMD,
                               childAspectRatio: 1,
                             ),
                             itemCount: provider.images.length,
@@ -332,18 +313,9 @@ class _SearchScreenState extends State<SearchScreen>
                                   provider.selectImage(image);
                                 },
                                 child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? Colors.blue
-                                          : Colors.grey[300]!,
-                                      width: isSelected ? 3 : 1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: isSelected
-                                        ? Colors.blue[50]
-                                        : Colors.transparent,
-                                  ),
+                                  decoration: isSelected
+                                      ? AppStyles.selectedItemDecoration
+                                      : AppStyles.unselectedItemDecoration,
                                   child: Stack(
                                     children: [
                                       ClipRRect(
@@ -354,11 +326,11 @@ class _SearchScreenState extends State<SearchScreen>
                                           errorBuilder:
                                               (context, error, stackTrace) {
                                             return Container(
-                                              color: Colors.grey[300],
-                                              child: const Icon(
+                                              color: AppStyles.backgroundGreyMedium,
+                                              child: Icon(
                                                 Icons.broken_image,
-                                                size: 48,
-                                                color: Colors.grey,
+                                                size: AppStyles.iconSizeHuge,
+                                                color: AppStyles.iconGrey,
                                               ),
                                             );
                                           },
@@ -384,19 +356,15 @@ class _SearchScreenState extends State<SearchScreen>
                                       ),
                                       if (isSelected)
                                         Positioned(
-                                          top: 4,
-                                          right: 4,
+                                          top: AppStyles.spacingXS,
+                                          right: AppStyles.spacingXS,
                                           child: Container(
-                                            decoration: const BoxDecoration(
-                                              color: Colors.blue,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            padding:
-                                                const EdgeInsets.all(4),
-                                            child: const Icon(
+                                            decoration: AppStyles.checkBadgeDecoration,
+                                            padding: AppStyles.paddingAll4,
+                                            child: Icon(
                                               Icons.check,
-                                              color: Colors.white,
-                                              size: 16,
+                                              color: AppStyles.textWhite,
+                                              size: AppStyles.iconSizeSM,
                                             ),
                                           ),
                                         ),
@@ -426,36 +394,20 @@ class _SearchScreenState extends State<SearchScreen>
                 left: 0,
                 right: 0,
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      top: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, -2),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(16),
+                  decoration: AppStyles.bottomSheetDecoration,
+                  padding: AppStyles.paddingAllLG,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Hiển thị ảnh đã crop (nếu có)
                       if (_croppedImageUrl != null) ...[
                         Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.green[50],
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.green[300]!),
-                          ),
+                          padding: AppStyles.paddingAllSM,
+                          decoration: AppStyles.successContainerDecoration,
                           child: Row(
                             children: [
                               ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: BorderRadius.circular(AppStyles.radiusSM),
                                 child: Image.network(
                                   _croppedImageUrl!,
                                   width: 60,
@@ -463,25 +415,19 @@ class _SearchScreenState extends State<SearchScreen>
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: AppStyles.spacingMD),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       AppLocalizations.of(context).translate('cropped_image'),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.green[700],
-                                      ),
+                                      style: AppStyles.successTitleStyle,
                                     ),
-                                    const SizedBox(height: 4),
+                                    SizedBox(height: AppStyles.spacingXS),
                                     Text(
                                       AppLocalizations.of(context).translate('will_use_cropped'),
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.green[600],
-                                      ),
+                                      style: AppStyles.successSubtitleStyle,
                                     ),
                                   ],
                                 ),
@@ -492,12 +438,12 @@ class _SearchScreenState extends State<SearchScreen>
                                     _croppedImageUrl = null;
                                   });
                                 },
-                                icon: Icon(Icons.close, color: Colors.green[700]),
+                                icon: Icon(Icons.close, color: AppStyles.successDark),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: AppStyles.spacingMD),
                       ],
                       // Các nút action
                       Row(
@@ -507,29 +453,23 @@ class _SearchScreenState extends State<SearchScreen>
                             child: ElevatedButton.icon(
                               onPressed: _isCropping ? null : _cropSelectedImage,
                               icon: _isCropping
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
+                                  ? SizedBox(
+                                      width: AppStyles.iconSizeMD,
+                                      height: AppStyles.iconSizeMD,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        color: Colors.white,
+                                        color: AppStyles.textWhite,
                                       ),
                                     )
-                                  : const Icon(Icons.crop, color: Colors.white),
+                                  : Icon(Icons.crop, color: AppStyles.textWhite),
                               label: Text(
                                 AppLocalizations.of(context).translate('crop_image'),
-                                style: const TextStyle(color: Colors.white),
+                                style: AppStyles.buttonTextStyleWhite,
                               ),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                backgroundColor: Colors.orange,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
+                              style: AppStyles.submitButtonStyleOrange,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: AppStyles.spacingMD),
                           // Nút Try-On
                           Expanded(
                             child: ElevatedButton.icon(
@@ -544,18 +484,12 @@ class _SearchScreenState extends State<SearchScreen>
                                   ),
                                 );
                               },
-                              icon: const Icon(Icons.checkroom, color: Colors.white),
+                              icon: Icon(Icons.checkroom, color: AppStyles.textWhite),
                               label: Text(
                                 AppLocalizations.of(context).translate('try_on'),
-                                style: const TextStyle(color: Colors.white),
+                                style: AppStyles.buttonTextStyleWhite,
                               ),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                backgroundColor: Colors.green,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
+                              style: AppStyles.submitButtonStyleGreen,
                             ),
                           ),
                         ],

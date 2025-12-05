@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/search_tryon_provider.dart';
 import '../providers/theme_provider.dart';
 import '../services/auth_service.dart';
+import '../utils/app_styles.dart';
 import 'tryon_result_screen.dart';
 import '../l10n/app_localizations.dart';
 
@@ -36,8 +37,8 @@ class _TryOnScreenState extends State<TryOnScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).translate('no_model_image_set')),
-          backgroundColor: Colors.orange,
-          duration: const Duration(seconds: 3),
+          backgroundColor: AppStyles.primaryOrange,
+          duration: AppStyles.snackBarDurationMedium,
         ),
       );
       return;
@@ -55,7 +56,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).translate('token_check_failed')),
-            backgroundColor: Colors.red,
+            backgroundColor: AppStyles.primaryRed,
           ),
         );
         return;
@@ -69,8 +70,8 @@ class _TryOnScreenState extends State<TryOnScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).translate('not_enough_tokens')),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
+            backgroundColor: AppStyles.primaryRed,
+            duration: AppStyles.snackBarDurationLong,
           ),
         );
         return;
@@ -83,7 +84,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${AppLocalizations.of(context).translate('token_check_failed')}: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppStyles.primaryRed,
         ),
       );
       return;
@@ -103,8 +104,8 @@ class _TryOnScreenState extends State<TryOnScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${AppLocalizations.of(context).translate('error_prefix')}: ${tryonProvider.error}'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
+          backgroundColor: AppStyles.primaryRed,
+          duration: AppStyles.snackBarDurationMedium,
         ),
       );
       return;
@@ -153,7 +154,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: AppStyles.paddingAll12,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -169,20 +170,17 @@ class _TryOnScreenState extends State<TryOnScreen> {
                             children: [
                               Text(
                                 AppLocalizations.of(context).translate('current_model_image'),
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: AppStyles.titleSmall,
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: AppStyles.spacingSM),
                               AspectRatio(
-                                aspectRatio: 9 / 21,
+                                aspectRatio: AppStyles.aspectRatioModel,
                                 child: _buildInitImageSection(initImageUrl),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: AppStyles.spacingMD),
                         // Ảnh quần áo (bên phải)
                         Expanded(
                           child: Column(
@@ -190,14 +188,11 @@ class _TryOnScreenState extends State<TryOnScreen> {
                             children: [
                               Text(
                                 AppLocalizations.of(context).translate('selected_cloth_image'),
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: AppStyles.titleSmall,
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: AppStyles.spacingSM),
                               AspectRatio(
-                                aspectRatio: 9 / 21,
+                                aspectRatio: AppStyles.aspectRatioModel,
                                 child: _buildClothImageSection(clothImageUrl),
                               ),
                             ],
@@ -206,10 +201,10 @@ class _TryOnScreenState extends State<TryOnScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: AppStyles.spacingMD),
                   // Cloth type selector
                   _buildClothTypeSelector(),
-                  const SizedBox(height: 12),
+                  SizedBox(height: AppStyles.spacingMD),
                   // Try-on button
                   _buildTryOnButton(clothImageUrl, initImageUrl),
                   // Error section
@@ -230,10 +225,10 @@ class _TryOnScreenState extends State<TryOnScreen> {
       return Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppStyles.borderRadiusLG,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppStyles.borderRadiusLG,
           child: Image.network(
             initImageUrl,
             fit: BoxFit.contain,
@@ -245,13 +240,13 @@ class _TryOnScreenState extends State<TryOnScreen> {
                   setState(() {});
                 },
                 child: Container(
-                  color: Colors.grey[300],
+                  color: AppStyles.backgroundGreyMedium,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.broken_image, size: 40, color: Colors.grey),
-                      const SizedBox(height: 4),
-                      Text(AppLocalizations.of(context).translate('cannot_load_image'), style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                      Icon(Icons.broken_image, size: AppStyles.iconSizeXXXL, color: AppStyles.iconGrey),
+                      SizedBox(height: AppStyles.spacingXS),
+                      Text(AppLocalizations.of(context).translate('cannot_load_image'), style: AppStyles.bodySmallWithColor(AppStyles.textGrey)),
                     ],
                   ),
                 ),
@@ -274,28 +269,25 @@ class _TryOnScreenState extends State<TryOnScreen> {
     }
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.orange[50],
-        borderRadius: BorderRadius.circular(12),
-      ),
+      decoration: AppStyles.warningContainerDecoration,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.warning_amber, size: 40, color: Colors.orange[700]),
-          const SizedBox(height: 8),
+          Icon(Icons.warning_amber, size: AppStyles.iconSizeXXXL, color: AppStyles.warningText),
+          SizedBox(height: AppStyles.spacingSM),
           Text(
             'Chưa có ảnh người mẫu',
             style: TextStyle(
-              color: Colors.orange[700],
+              color: AppStyles.warningText,
               fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: AppStyles.spacingXS),
           Text(
             'Cập nhật trong Profile',
-            style: TextStyle(color: Colors.orange[600], fontSize: 11),
+            style: TextStyle(color: AppStyles.iconOrange, fontSize: 11),
             textAlign: TextAlign.center,
           ),
         ],
@@ -308,30 +300,23 @@ class _TryOnScreenState extends State<TryOnScreen> {
       return Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(26),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          borderRadius: AppStyles.borderRadiusLG,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppStyles.borderRadiusLG,
           child: Image.network(
             clothImageUrl,
             fit: BoxFit.contain,
             errorBuilder: (context, error, stackTrace) {
               return Container(
-                color: Colors.grey[300],
+                color: AppStyles.backgroundGreyMedium,
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.broken_image, size: 40, color: Colors.grey),
-                      const SizedBox(height: 8),
+                      Icon(Icons.broken_image, size: AppStyles.iconSizeXXXL, color: AppStyles.iconGrey),
+                      SizedBox(height: AppStyles.spacingSM),
                       Text(AppLocalizations.of(context).translate('cannot_load_image'),
-                          style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                          style: AppStyles.bodySmallWithColor(AppStyles.textGrey)),
                     ],
                   ),
               );
@@ -353,13 +338,13 @@ class _TryOnScreenState extends State<TryOnScreen> {
     }
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        color: AppStyles.backgroundGrey,
+        borderRadius: AppStyles.borderRadiusLG,
       ),
       child: Center(
         child: Text(
           AppLocalizations.of(context).translate('no_image_selected'),
-          style: const TextStyle(color: Colors.grey, fontSize: 14),
+          style: AppStyles.bodyMediumWithColor(AppStyles.textGrey),
         ),
       ),
     );
@@ -405,33 +390,23 @@ class _TryOnScreenState extends State<TryOnScreen> {
             onPressed: (canTryOn && !provider.isLoading)
                 ? () => _handleTryOn(clothImageUrl)
                 : null,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: Colors.blue,
-              disabledBackgroundColor: Colors.grey[300],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
+            style: AppStyles.primaryButtonStyle,
             child: provider.isLoading
-                ? const Row(
+                ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
+                        width: AppStyles.progressSizeMD,
+                        height: AppStyles.progressSizeMD,
+                        child: const CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      SizedBox(width: AppStyles.spacingMD),
                       Text(
                         'Processing...',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
+                        style: AppStyles.buttonText,
                       ),
                     ],
                   )
@@ -440,21 +415,17 @@ class _TryOnScreenState extends State<TryOnScreen> {
                     children: [
                       Text(
                         AppLocalizations.of(context).translate('try_on'),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                        style: AppStyles.buttonTextLarge,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: AppStyles.spacingSM),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-                          const SizedBox(width: 4),
-                          Image.asset('assets/icons/coin_free.png', width: 20, height: 20),
+                          SizedBox(width: AppStyles.spacingXS),
+                          Image.asset('assets/icons/coin_free.png', width: AppStyles.coinIconSize, height: AppStyles.coinIconSize),
                           const Text(' / ', style: TextStyle(color: Colors.white70, fontSize: 18)),
-                          Image.asset('assets/icons/coin_vip.png', width: 20, height: 20),
+                          Image.asset('assets/icons/coin_vip.png', width: AppStyles.coinIconSize, height: AppStyles.coinIconSize),
                         ],
                       ),
                     ],
@@ -470,20 +441,16 @@ class _TryOnScreenState extends State<TryOnScreen> {
       builder: (context, provider, _) {
         if (provider.error != null) {
           return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.red[100],
-              border: Border.all(color: Colors.red[300]!),
-              borderRadius: BorderRadius.circular(8),
-            ),
+            padding: AppStyles.paddingAll16,
+            decoration: AppStyles.errorContainerDecoration,
             child: Row(
               children: [
-                Icon(Icons.error_outline, color: Colors.red[700]),
-                const SizedBox(width: 12),
+                Icon(Icons.error_outline, color: AppStyles.errorText),
+                SizedBox(width: AppStyles.spacingMD),
                 Expanded(
                   child: Text(
                     provider.error!,
-                    style: TextStyle(color: Colors.red[700]),
+                    style: AppStyles.errorTextStyle,
                   ),
                 ),
               ],

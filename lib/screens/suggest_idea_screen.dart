@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../widgets/banner_ad_widget.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/theme_provider.dart';
+import '../utils/app_styles.dart';
 
 class SuggestIdeaScreen extends StatelessWidget {
   const SuggestIdeaScreen({super.key});
@@ -33,7 +34,10 @@ class SuggestIdeaScreen extends StatelessWidget {
                 // Main content
                 Expanded(
                   child: Center(
-                    child: Text(AppLocalizations.of(context).translate('coming_soon')),
+                    child: Text(
+                      AppLocalizations.of(context).translate('coming_soon'),
+                      style: AppStyles.titleLarge,
+                    ),
                   ),
                 ),
               ],

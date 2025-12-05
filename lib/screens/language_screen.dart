@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/theme_provider.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/app_styles.dart';
 
 class LanguageScreen extends StatefulWidget {
   const LanguageScreen({super.key});
@@ -41,7 +42,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: AppStyles.paddingAll16,
               child: Column(
                 children: [
                   Expanded(
@@ -80,7 +81,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                     },
                     child: Text(AppLocalizations.of(context).translate('save_language')),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: AppStyles.spacingMD),
                 ],
               ),
             ),

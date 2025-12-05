@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/theme_provider.dart';
+import '../utils/app_styles.dart';
 import '../widgets/image_with_context_menu.dart';
 
 class TryonResultScreen extends StatefulWidget {
@@ -56,8 +57,8 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).translate('timeout_try_again')),
-              backgroundColor: Colors.orange,
-              duration: const Duration(seconds: 3),
+              backgroundColor: AppStyles.primaryOrange,
+              duration: AppStyles.snackBarDurationMedium,
             ),
           );
         }
@@ -87,8 +88,8 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).translate('all_images_ready')),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
+              backgroundColor: AppStyles.primaryGreen,
+              duration: AppStyles.snackBarDurationShort,
             ),
           );
         }
@@ -122,13 +123,13 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
         actions: [
           if (!allReady)
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: AppStyles.paddingAll8,
               child: Center(
                 child: Row(
                   children: [
                     SizedBox(
-                      width: 20,
-                      height: 20,
+                      width: AppStyles.progressSizeSM,
+                      height: AppStyles.progressSizeSM,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(
@@ -136,10 +137,10 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: AppStyles.spacingSM),
                     Text(
                       '${AppLocalizations.of(context).translate('processing_short')} ($readyCount/$totalCount)',
-                      style: const TextStyle(fontSize: 14),
+                      style: AppStyles.bodyMedium,
                     ),
                   ],
                 ),
@@ -157,14 +158,14 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
           ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: AppStyles.paddingAll16,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Hiển thị thông tin
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: AppStyles.paddingAll16,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -175,46 +176,46 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: allReady ? Colors.green : Colors.orange,
+                              color: allReady ? AppStyles.primaryGreen : AppStyles.primaryOrange,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: AppStyles.spacingSM),
                           Text(
                             'Thời gian chờ: $_attemptCount giây',
-                            style: const TextStyle(fontSize: 14, color: Colors.grey),
+                            style: AppStyles.bodyMediumWithColor(AppStyles.textGrey),
                           ),
                           if (!allReady) ...[
-                            const SizedBox(height: 8),
+                            SizedBox(height: AppStyles.spacingSM),
                             const LinearProgressIndicator(),
                           ],
                         ],
                       ),
                     ),
                   ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppStyles.spacingLG),
 
             // Hiển thị ảnh gốc
             Text(
               AppLocalizations.of(context).translate('original_image'),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: AppStyles.titleMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppStyles.spacingSM),
             Row(
               children: [
                 Expanded(
                   child: Column(
                     children: [
-                      Text(AppLocalizations.of(context).translate('model_label'), style: const TextStyle(fontSize: 12)),
-                      const SizedBox(height: 4),
+                      Text(AppLocalizations.of(context).translate('model_label'), style: AppStyles.bodySmall),
+                      SizedBox(height: AppStyles.spacingXS),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppStyles.borderRadiusMD,
                         child: Image.network(
                           widget.initImageUrl,
                           height: 200,
                           fit: BoxFit.cover,
                           errorBuilder: (_, _, _) => Container(
                             height: 200,
-                            color: Colors.grey[300],
+                            color: AppStyles.backgroundGreyMedium,
                             child: const Icon(Icons.error),
                           ),
                         ),
@@ -222,21 +223,21 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: AppStyles.spacingLG),
                 Expanded(
                   child: Column(
                     children: [
-                      Text(AppLocalizations.of(context).translate('cloth_label'), style: const TextStyle(fontSize: 12)),
-                      const SizedBox(height: 4),
+                      Text(AppLocalizations.of(context).translate('cloth_label'), style: AppStyles.bodySmall),
+                      SizedBox(height: AppStyles.spacingXS),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppStyles.borderRadiusMD,
                         child: Image.network(
                           widget.clothImageUrl,
                           height: 200,
                           fit: BoxFit.cover,
                           errorBuilder: (_, _, _) => Container(
                             height: 200,
-                            color: Colors.grey[300],
+                            color: AppStyles.backgroundGreyMedium,
                             child: const Icon(Icons.error),
                           ),
                         ),
@@ -246,14 +247,14 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: AppStyles.spacingXXL),
 
             // Hiển thị kết quả
             Text(
               AppLocalizations.of(context).translate('tryon_results_title'),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: AppStyles.titleMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppStyles.spacingSM),
 
             ...widget.futureLinks.asMap().entries.map((entry) {
               final index = entry.key;
@@ -261,62 +262,56 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
               final isReady = _imageStatus[link] ?? false;
 
               return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: EdgeInsets.only(bottom: AppStyles.spacingLG),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       '${AppLocalizations.of(context).translate('results_label')} ${index + 1}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppStyles.bodyMedium.copyWith(fontWeight: FontWeight.w500),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: AppStyles.spacingSM),
                     isReady
                         ? ImageWithContextMenu(
                             imageUrl: link,
                             fit: BoxFit.cover,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppStyles.borderRadiusMD,
                             placeholder: Container(
                               height: 300,
-                              color: Colors.grey[200],
+                              color: AppStyles.backgroundGreyLight,
                               child: const Center(
                                 child: CircularProgressIndicator(),
                               ),
                             ),
                             errorWidget: Container(
                               height: 300,
-                              color: Colors.grey[300],
-                              child: const Column(
+                              color: AppStyles.backgroundGreyMedium,
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.error, size: 48),
-                                  SizedBox(height: 8),
-                                  Text('Lỗi tải ảnh'),
+                                  Icon(Icons.error, size: AppStyles.iconSizeHuge),
+                                  SizedBox(height: AppStyles.spacingSM),
+                                  const Text('Lỗi tải ảnh'),
                                 ],
                               ),
                             ),
                           )
                         : ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppStyles.borderRadiusMD,
                             child: Container(
                               height: 300,
                               decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8),
+                                color: AppStyles.backgroundGreyLight,
+                                borderRadius: AppStyles.borderRadiusMD,
                               ),
-                              child: const Column(
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  CircularProgressIndicator(),
-                                  SizedBox(height: 16),
+                                  const CircularProgressIndicator(),
+                                  SizedBox(height: AppStyles.spacingLG),
                                   Text(
                                     '⏳ Đang xử lý...',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                    ),
+                                    style: AppStyles.processingText,
                                   ),
                                 ],
                               ),

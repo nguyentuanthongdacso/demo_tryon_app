@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/app_styles.dart';
 
 /// Màn hình chọn giao diện / Theme
 class ThemeScreen extends StatefulWidget {
@@ -42,8 +43,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).translate('theme_saved')),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
+            backgroundColor: AppStyles.primaryGreen,
+            duration: AppStyles.snackBarDurationShort,
           ),
         );
       }
@@ -53,7 +54,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppStyles.primaryRed,
           ),
         );
       }
@@ -99,25 +100,18 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: AppStyles.paddingAll24,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
                           loc.translate('select_theme'),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: AppStyles.titleLarge,
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: AppStyles.spacingLG),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey.shade300),
-                          ),
+                          padding: AppStyles.paddingHorizontal16,
+                          decoration: AppStyles.containerWithBorder,
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<AppThemeType>(
                               value: _selectedTheme,
@@ -129,9 +123,9 @@ class _ThemeScreenState extends State<ThemeScreen> {
                                   child: Row(
                                     children: [
                                       Container(
-                                        width: 24,
-                                        height: 24,
-                                        margin: const EdgeInsets.only(right: 12),
+                                        width: AppStyles.iconSizeLG,
+                                        height: AppStyles.iconSizeLG,
+                                        margin: EdgeInsets.only(right: AppStyles.spacingMD),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(6),
                                           gradient: LinearGradient(
@@ -154,16 +148,13 @@ class _ThemeScreenState extends State<ThemeScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        SizedBox(height: AppStyles.spacingXXXL),
                         if (_selectedTheme != null) ...[
                           Text(
                             loc.translate('theme_preview'),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: AppStyles.titleMedium,
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: AppStyles.spacingMD),
                           Row(
                             children: [
                               Expanded(
@@ -172,7 +163,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                                   ThemeProvider.themes[_selectedTheme]!.mainBackground,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: AppStyles.spacingMD),
                               Expanded(
                                 child: _buildPreviewCard(
                                   loc.translate('bottom_nav_background'),
@@ -187,29 +178,19 @@ class _ThemeScreenState extends State<ThemeScreen> {
                           onPressed: _selectedTheme != null && !_isSaving
                               ? _saveTheme
                               : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
+                          style: AppStyles.primaryButtonStyleLarge,
                           child: _isSaving
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
+                              ? SizedBox(
+                                  width: AppStyles.progressSizeMD,
+                                  height: AppStyles.progressSizeMD,
                                   child: CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: AppStyles.textWhite,
                                     strokeWidth: 2,
                                   ),
                                 )
                               : Text(
                                   loc.translate('save'),
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: AppStyles.buttonText,
                                 ),
                         ),
                       ],
@@ -230,24 +211,13 @@ class _ThemeScreenState extends State<ThemeScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey.shade700,
-          ),
+          style: AppStyles.bodySmallWithColor(AppStyles.textGreyDark),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: AppStyles.spacingSM),
         Container(
           height: 120,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade300),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+          decoration: AppStyles.imageContainerWithShadow.copyWith(
+            border: Border.all(color: AppStyles.backgroundGreyMedium),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(11),

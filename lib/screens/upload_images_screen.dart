@@ -10,6 +10,7 @@ import '../providers/upload_tryon_provider.dart';
 import '../providers/theme_provider.dart';
 import '../services/cloudinary_service.dart';
 import '../services/auth_service.dart';
+import '../utils/app_styles.dart';
 import 'tryon_result_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/banner_ad_widget.dart';
@@ -194,7 +195,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).translate('must_select_two_images')),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppStyles.primaryOrange,
         ),
       );
       return;
@@ -205,7 +206,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).translate('wait_for_upload_complete')),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppStyles.primaryOrange,
         ),
       );
       return;
@@ -225,7 +226,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).translate('token_check_failed')),
-            backgroundColor: Colors.red,
+            backgroundColor: AppStyles.primaryRed,
           ),
         );
         return;
@@ -239,8 +240,8 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).translate('not_enough_tokens')),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
+            backgroundColor: AppStyles.primaryRed,
+            duration: AppStyles.snackBarDurationLong,
           ),
         );
         return;
@@ -253,7 +254,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${AppLocalizations.of(context).translate('token_check_failed')}: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppStyles.primaryRed,
         ),
       );
       return;
@@ -280,7 +281,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).translate('upload_failed_try_again')),
-            backgroundColor: Colors.red,
+            backgroundColor: AppStyles.primaryRed,
           ),
         );
         return;
@@ -291,7 +292,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${AppLocalizations.of(context).translate('upload_failed')}: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppStyles.primaryRed,
         ),
       );
       return;
@@ -312,8 +313,8 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${AppLocalizations.of(context).translate('error_prefix')}: ${tryonProvider.error}'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
+          backgroundColor: AppStyles.primaryRed,
+          duration: AppStyles.snackBarDurationMedium,
         ),
       );
       return;
@@ -386,7 +387,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                                         ),
                                         const SizedBox(height: 8),
                                         AspectRatio(
-                                          aspectRatio: 9 / 21,
+                                          aspectRatio: AppStyles.aspectRatioModel,
                                           child: GestureDetector(
                                             onTap: () => _pickImage(true),
                                             child: _buildImagePreview(
@@ -400,7 +401,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  SizedBox(width: AppStyles.spacingMD),
                                   // Ảnh quần áo (bên phải)
                                   Expanded(
                                     child: Column(
@@ -408,11 +409,11 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                                       children: [
                                         Text(
                                           AppLocalizations.of(context).translate('upload_cloth_image_label'),
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                          style: AppStyles.labelText,
                                         ),
-                                        const SizedBox(height: 8),
+                                        SizedBox(height: AppStyles.spacingSM),
                                         AspectRatio(
-                                          aspectRatio: 9 / 21,
+                                          aspectRatio: AppStyles.aspectRatioModel,
                                           child: GestureDetector(
                                             onTap: () => _pickImage(false),
                                             child: _buildImagePreview(
@@ -429,7 +430,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: AppStyles.spacingMD),
                             // Cloth type selector
                             DropdownButtonFormField<String>(
                               initialValue: _clothType,
@@ -455,37 +456,27 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                                 border: const OutlineInputBorder(),
                               ),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: AppStyles.spacingMD),
                             // Try-on button
                             ElevatedButton(
                               onPressed: provider.isLoading ? null : _sendTryon,
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                backgroundColor: Colors.blue,
-                                disabledBackgroundColor: Colors.grey[300],
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
+                              style: AppStyles.primaryButtonStyle,
                               child: provider.isLoading
-                                  ? const Row(
+                                  ? Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         SizedBox(
-                                          width: 24,
-                                          height: 24,
-                                          child: CircularProgressIndicator(
+                                          width: AppStyles.progressSizeMD,
+                                          height: AppStyles.progressSizeMD,
+                                          child: const CircularProgressIndicator(
                                             strokeWidth: 2,
                                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                           ),
                                         ),
-                                        SizedBox(width: 12),
+                                        SizedBox(width: AppStyles.spacingMD),
                                         Text(
                                           'Processing...',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                          ),
+                                          style: AppStyles.buttonText,
                                         ),
                                       ],
                                     )
@@ -494,21 +485,17 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                                       children: [
                                         Text(
                                           AppLocalizations.of(context).translate('try_on'),
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
+                                          style: AppStyles.buttonTextLarge,
                                         ),
-                                        const SizedBox(width: 8),
+                                        SizedBox(width: AppStyles.spacingSM),
                                         Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             const Text('50', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-                                            const SizedBox(width: 4),
-                                            Image.asset('assets/icons/coin_free.png', width: 20, height: 20),
+                                            SizedBox(width: AppStyles.spacingXS),
+                                            Image.asset('assets/icons/coin_free.png', width: AppStyles.coinIconSize, height: AppStyles.coinIconSize),
                                             const Text(' / ', style: TextStyle(color: Colors.white70, fontSize: 18)),
-                                            Image.asset('assets/icons/coin_vip.png', width: 20, height: 20),
+                                            Image.asset('assets/icons/coin_vip.png', width: AppStyles.coinIconSize, height: AppStyles.coinIconSize),
                                           ],
                                         ),
                                       ],
@@ -516,11 +503,11 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                             ),
                             if (provider.isLoading)
                               Padding(
-                                padding: const EdgeInsets.only(top: 8),
+                                padding: EdgeInsets.only(top: AppStyles.spacingSM),
                                 child: Text(
                                   AppLocalizations.of(context).translate('sending_to_ai'),
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                  style: AppStyles.processingText,
                                 ),
                               ),
                           ],
@@ -545,17 +532,14 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
   }) {
     if (localPath == null && publicUrl == null) {
       return Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(8),
-        ),
+        decoration: AppStyles.placeholderDecoration,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey[400]),
-              const SizedBox(height: 8),
-              Text(placeholderText, style: TextStyle(color: Colors.grey[600], fontSize: 12), textAlign: TextAlign.center),
+              Icon(Icons.add_photo_alternate, size: AppStyles.iconSizeXXXL, color: AppStyles.textGreyLight),
+              SizedBox(height: AppStyles.spacingSM),
+              Text(placeholderText, style: AppStyles.bodySmallWithColor(AppStyles.textGreyDark), textAlign: TextAlign.center),
             ],
           ),
         ),
@@ -564,30 +548,25 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
 
     if (publicUrl != null) {
       return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        decoration: AppStyles.imageContainerDecoration,
         child: Stack(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppStyles.borderRadiusMD,
               child: Image.network(publicUrl, width: double.infinity, height: double.infinity, fit: BoxFit.contain),
             ),
             Positioned(
-              bottom: 4,
-              left: 4,
+              bottom: AppStyles.spacingXS,
+              left: AppStyles.spacingXS,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(4),
-                ),
+                padding: AppStyles.paddingSymmetric6x2,
+                decoration: AppStyles.uploadedBadgeDecoration,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.check_circle, size: 12, color: Colors.white),
-                    const SizedBox(width: 4),
-                    Text(AppLocalizations.of(context).translate('uploaded'), style: const TextStyle(fontSize: 10, color: Colors.white)),
+                    Icon(Icons.check_circle, size: AppStyles.iconSizeXS, color: AppStyles.textWhite),
+                    SizedBox(width: AppStyles.spacingXS),
+                    Text(AppLocalizations.of(context).translate('uploaded'), style: AppStyles.uploadedBadgeText),
                   ],
                 ),
               ),
@@ -599,31 +578,26 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
 
     // localPath != null - chưa upload
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      decoration: AppStyles.imageContainerDecoration,
       child: Stack(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppStyles.borderRadiusMD,
             child: Image.file(File(localPath!), width: double.infinity, height: double.infinity, fit: BoxFit.contain),
           ),
           if (uploading)
             Positioned.fill(
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(128),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                decoration: AppStyles.uploadOverlayDecoration,
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const CircularProgressIndicator(color: Colors.white),
-                      const SizedBox(height: 8),
+                      SizedBox(height: AppStyles.spacingSM),
                       Text(
                         AppLocalizations.of(context).translate('uploading'),
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                        style: AppStyles.bodySmallWithColor(AppStyles.textWhite),
                       ),
                     ],
                   ),

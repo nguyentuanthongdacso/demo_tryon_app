@@ -59,7 +59,7 @@ class AppLocalizations {
       'bottom_idea': 'Gợi ý',
       'bottom_profile': 'Hồ sơ',
       'coming_soon': 'Sắp ra mắt',
-      'slogan': 'Thử đồ ảo dễ dàng',
+      'slogan': 'Thử đồ dễ dàng',
       'terms_prefix': 'Bằng cách tiếp tục, bạn đồng ý với ',
       'terms_of_service': 'Điều khoản dịch vụ',
       'privacy_policy': 'Chính sách bảo mật',

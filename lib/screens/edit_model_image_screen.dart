@@ -10,6 +10,7 @@ import '../services/cloudinary_service.dart';
 import '../services/session_upload_manager.dart';
 import '../constants/cloudinary_constants.dart';
 import '../providers/theme_provider.dart';
+import '../utils/app_styles.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -60,11 +61,11 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: AppLocalizations.of(context).translate('crop_image'),
-            toolbarColor: Colors.blue,
-            toolbarWidgetColor: Colors.white,
-            statusBarColor: Colors.blue,
+            toolbarColor: AppStyles.primaryBlue,
+            toolbarWidgetColor: AppStyles.textWhite,
+            statusBarColor: AppStyles.primaryBlue,
             backgroundColor: Colors.black,
-            activeControlsWidgetColor: Colors.blue,
+            activeControlsWidgetColor: AppStyles.primaryBlue,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false,
             hideBottomControls: false,
@@ -227,7 +228,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).translate('update_image_success')),
-              backgroundColor: Colors.green,
+              backgroundColor: AppStyles.primaryGreen,
             ),
           );
           Navigator.pop(context, true); // Return true để báo hiệu đã cập nhật
@@ -270,60 +271,50 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
           ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: AppStyles.paddingAll16,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Hiển thị ảnh hiện tại
                   Text(
                     AppLocalizations.of(context).translate('current_model_image'),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppStyles.titleLarge,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: AppStyles.spacingMD),
                   _buildCurrentImage(),
                   
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppStyles.spacingXXL),
                   
                   // Chọn ảnh mới
                   Text(
                     AppLocalizations.of(context).translate('select_new_image'),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppStyles.titleLarge,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: AppStyles.spacingMD),
                   _buildNewImageSection(),
                   
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppStyles.spacingXXL),
                   
                   // Error message
                   if (_errorMessage != null)
                     Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red[100],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red[300]!),
-                      ),
+                      padding: AppStyles.paddingAll12,
+                      decoration: AppStyles.errorContainerDecoration,
                       child: Row(
                         children: [
-                    Icon(Icons.error_outline, color: Colors.red[700]),
-                    const SizedBox(width: 8),
+                    Icon(Icons.error_outline, color: AppStyles.errorText),
+                    SizedBox(width: AppStyles.spacingSM),
                     Expanded(
                       child: Text(
                         _errorMessage!,
-                        style: TextStyle(color: Colors.red[700]),
+                        style: TextStyle(color: AppStyles.errorText),
                       ),
                     ),
                   ],
                 ),
               ),
             
-            const SizedBox(height: 24),
+            SizedBox(height: AppStyles.spacingXXL),
             
             // Nút cập nhật
             SizedBox(
@@ -332,30 +323,19 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
                 onPressed: _isUploading || _selectedImagePath == null
                     ? null
                     : _updateImage,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.blue,
-                  disabledBackgroundColor: Colors.grey[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
+                style: AppStyles.primaryButtonStyle,
                 child: _isUploading
-                    ? const SizedBox(
-                        height: 24,
-                        width: 24,
+                    ? SizedBox(
+                        height: AppStyles.progressSizeMD,
+                        width: AppStyles.progressSizeMD,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(AppStyles.textWhite),
                         ),
                       )
                     : Text(
                         AppLocalizations.of(context).translate('update_image'),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                        style: AppStyles.buttonTextLarge,
                       ),
               ),
             ),
@@ -374,23 +354,23 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
         height: 250,
         width: double.infinity,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue[300]!),
-          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.blue.shade300),
+          borderRadius: AppStyles.borderRadiusLG,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppStyles.borderRadiusLG,
           child: Image.network(
             _currentImage!,
             fit: BoxFit.contain,
             errorBuilder: (context, error, stackTrace) {
               return Container(
-                color: Colors.grey[300],
+                color: AppStyles.backgroundGreyMedium,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                    const SizedBox(height: 8),
-                    Text(AppLocalizations.of(context).translate('cannot_load_image'), style: const TextStyle(color: Colors.grey)),
+                    Icon(Icons.broken_image, size: AppStyles.iconSizeHuge, color: AppStyles.textGrey),
+                    SizedBox(height: AppStyles.spacingSM),
+                    Text(AppLocalizations.of(context).translate('cannot_load_image'), style: TextStyle(color: AppStyles.textGrey)),
                   ],
                 ),
               );
@@ -414,28 +394,22 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
     return Container(
       height: 200,
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.orange[50],
-        border: Border.all(color: Colors.orange[300]!),
-        borderRadius: BorderRadius.circular(12),
+      decoration: AppStyles.warningContainerDecoration.copyWith(
+        border: Border.all(color: AppStyles.warningBorder),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.image_not_supported, size: 48, color: Colors.orange[700]),
-          const SizedBox(height: 12),
+          Icon(Icons.image_not_supported, size: AppStyles.iconSizeHuge, color: AppStyles.warningText),
+          SizedBox(height: AppStyles.spacingMD),
           Text(
             AppLocalizations.of(context).translate('no_model_image_yet'),
-            style: TextStyle(
-              color: Colors.orange[700],
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppStyles.titleMedium.copyWith(color: AppStyles.warningText),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: AppStyles.spacingSM),
           Text(
             AppLocalizations.of(context).translate('please_set_model_image'),
-            style: TextStyle(color: Colors.orange[600], fontSize: 14),
+            style: AppStyles.bodyMediumWithColor(Colors.orange.shade600),
           ),
         ],
       ),
@@ -450,13 +424,13 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
           Container(
             height: 250,
             width: double.infinity,
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: EdgeInsets.only(bottom: AppStyles.spacingMD),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.green[300]!),
-              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppStyles.successBorder),
+              borderRadius: AppStyles.borderRadiusLG,
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppStyles.borderRadiusLG,
               child: Image.file(
                 File(_selectedImagePath!),
                 fit: BoxFit.contain,
@@ -474,9 +448,9 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
                 ? AppLocalizations.of(context).translate('pick_from_gallery') 
                 : AppLocalizations.of(context).translate('pick_another_image')),
             style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: AppStyles.paddingVertical12.copyWith(top: 14, bottom: 14),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppStyles.borderRadiusMD,
               ),
             ),
           ),

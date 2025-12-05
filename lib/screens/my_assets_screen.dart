@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../models/tryon_image.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/app_styles.dart';
 import '../widgets/image_with_context_menu.dart';
 import '../providers/theme_provider.dart';
 
@@ -112,14 +113,14 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
+            Icon(Icons.error_outline, size: AppStyles.iconSizeGiant, color: AppStyles.primaryRed),
+            SizedBox(height: AppStyles.spacingLG),
             Text(
               _errorMessage!,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.red),
+              style: TextStyle(color: AppStyles.primaryRed),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppStyles.spacingLG),
             ElevatedButton(
               onPressed: _loadTryonImages,
               child: const Text('Retry'),
@@ -136,24 +137,18 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
           children: [
             Icon(
               Icons.photo_library_outlined,
-              size: 80,
-              color: Colors.white.withValues(alpha: 0.7),
+              size: AppStyles.iconSizeMassive,
+              color: AppStyles.backgroundWhiteTranslucent,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppStyles.spacingLG),
             Text(
               loc.translate('my_assets_empty'),
-              style: const TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-              ),
+              style: AppStyles.titleLarge.copyWith(color: AppStyles.textWhite),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppStyles.spacingSM),
             Text(
               loc.translate('my_assets_description'),
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withValues(alpha: 0.7),
-              ),
+              style: AppStyles.bodyMedium.copyWith(color: AppStyles.backgroundWhiteTranslucent),
             ),
           ],
         ),
@@ -163,38 +158,29 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
     return RefreshIndicator(
       onRefresh: _loadTryonImages,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: AppStyles.paddingAll12,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header info
             Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(12),
-              ),
+              padding: AppStyles.paddingAll16,
+              decoration: AppStyles.cardDecoration,
               child: Row(
                 children: [
-                  const Icon(Icons.photo_library, color: Colors.blue),
-                  const SizedBox(width: 12),
+                  Icon(Icons.photo_library, color: AppStyles.primaryBlue),
+                  SizedBox(width: AppStyles.spacingMD),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           loc.translate('my_assets'),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: AppStyles.titleMedium,
                         ),
                         Text(
                           '${_tryonImages.length} ${loc.translate('photos')}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
+                          style: AppStyles.bodyMediumWithColor(AppStyles.textGrey),
                         ),
                       ],
                     ),
@@ -202,16 +188,16 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppStyles.spacingMD),
             
             // Grid of images
             Expanded(
               child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.75,
+                  crossAxisSpacing: AppStyles.spacingMD,
+                  mainAxisSpacing: AppStyles.spacingMD,
+                  childAspectRatio: AppStyles.aspectRatioCard,
                 ),
                 itemCount: _tryonImages.length,
                 itemBuilder: (context, index) {
@@ -227,19 +213,9 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
 
   Widget _buildImageCard(TryonImage tryonImage) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: AppStyles.cardWithShadow,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppStyles.borderRadiusLG,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -252,8 +228,8 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
               onDelete: () => _confirmDeleteImage(tryonImage),
               placeholder: const Center(child: CircularProgressIndicator()),
               errorWidget: Container(
-                color: Colors.grey[200],
-                child: const Icon(Icons.broken_image, size: 48),
+                color: AppStyles.backgroundGreyLight,
+                child: Icon(Icons.broken_image, size: AppStyles.iconSizeHuge),
               ),
             ),
             
@@ -264,23 +240,11 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
               right: 0,
               child: IgnorePointer(
                 child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.7),
-                      ],
-                    ),
-                  ),
+                  padding: AppStyles.paddingAll8,
+                  decoration: AppStyles.gradientOverlayDecoration,
                   child: Text(
                     _formatDate(tryonImage.createdAt),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
+                    style: AppStyles.bodySmall.copyWith(color: AppStyles.textWhite),
                   ),
                 ),
               ),
@@ -326,7 +290,7 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
             },
             child: Text(
               loc.translate('delete'),
-              style: const TextStyle(color: Colors.red),
+              style: TextStyle(color: AppStyles.primaryRed),
             ),
           ),
         ],
@@ -348,12 +312,12 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => const AlertDialog(
+      builder: (ctx) => AlertDialog(
         content: Row(
           children: [
-            CircularProgressIndicator(),
-            SizedBox(width: 16),
-            Text('Deleting...'),
+            const CircularProgressIndicator(),
+            SizedBox(width: AppStyles.spacingLG),
+            const Text('Deleting...'),
           ],
         ),
       ),
@@ -378,7 +342,7 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(loc.translate('image_deleted')),
-              backgroundColor: Colors.green,
+              backgroundColor: AppStyles.primaryGreen,
             ),
           );
         }
@@ -387,7 +351,7 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(response.message.isNotEmpty ? response.message : loc.translate('delete_failed')),
-              backgroundColor: Colors.red,
+              backgroundColor: AppStyles.primaryRed,
             ),
           );
         }
@@ -400,7 +364,7 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppStyles.primaryRed,
           ),
         );
       }
@@ -412,37 +376,34 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
       context: context,
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.all(16),
+        insetPadding: AppStyles.paddingAll16,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            color: AppStyles.textWhite,
+            borderRadius: AppStyles.borderRadiusXL,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Header
               Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF87CEEB),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                padding: AppStyles.paddingAll16,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF87CEEB),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(AppStyles.radiusXL)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.photo, color: Colors.white),
-                    const SizedBox(width: 8),
+                    Icon(Icons.photo, color: AppStyles.textWhite),
+                    SizedBox(width: AppStyles.spacingSM),
                     Expanded(
                       child: Text(
                         _formatDate(tryonImage.createdAt),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: AppStyles.titleSmall.copyWith(color: AppStyles.textWhite),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
+                      icon: Icon(Icons.close, color: AppStyles.textWhite),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -471,8 +432,8 @@ class _MyAssetsScreenState extends State<MyAssetsScreen> {
                     },
                     errorBuilder: (_, __, ___) => Container(
                       height: 300,
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.broken_image, size: 64),
+                      color: AppStyles.backgroundGreyLight,
+                      child: Icon(Icons.broken_image, size: AppStyles.iconSizeGiant),
                     ),
                   ),
                 ),

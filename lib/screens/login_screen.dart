@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../utils/app_styles.dart';
 import '../services/google_auth_service.dart';
 import '../services/auth_service.dart';
 import '../services/session_upload_manager.dart';
@@ -98,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: AppStyles.primaryRed,
       ),
     );
   }
@@ -118,63 +119,48 @@ class _LoginScreenState extends State<LoginScreen> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            padding: AppStyles.paddingHorizontal32,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Logo
                 Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
+                  padding: AppStyles.paddingAll20,
+                  decoration: AppStyles.circleIconDecoration,
+                  child: Icon(
                     Icons.checkroom_outlined,
-                    size: 60,
-                    color: Colors.black87,
+                    size: AppStyles.iconSizeGiant,
+                    color: AppStyles.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: AppStyles.spacingLG),
 
                 // Title
                 Text(
                   AppLocalizations.of(context).translate('app_title'),
-                  style: const TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    letterSpacing: 1.2,
-                  ),
+                  style: AppStyles.appTitle,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: AppStyles.spacingSM),
 
                 // Slogan
                 Text(
                   AppLocalizations.of(context).translate('slogan'),
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black.withValues(alpha: 0.7),
-                    fontStyle: FontStyle.italic,
-                  ),
+                  style: AppStyles.sloganText,
                 ),
-                const SizedBox(height: 50),
+                SizedBox(height: AppStyles.spacingXXXL + AppStyles.spacingLG),
 
                 // Google Login Button
                 GoogleLoginButton(
                   onPressed: _handleGoogleSignIn,
                   isLoading: _isLoading,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: AppStyles.spacingXXL),
 
                 // Terms
                 Text.rich(
                   TextSpan(
                     text: AppLocalizations.of(context).translate('terms_prefix'),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.black.withValues(alpha: 0.7),
-                    ),
+                    style: AppStyles.termsText,
                     children: [
                       TextSpan(
                         text: AppLocalizations.of(context).translate('terms_of_service'),
@@ -195,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: AppStyles.spacingXL),
               ],
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/theme_provider.dart';
+import '../utils/app_styles.dart';
 import 'package:provider/provider.dart';
 
 class ReportBugScreen extends StatefulWidget {
@@ -36,7 +37,7 @@ class _ReportBugScreenState extends State<ReportBugScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(loc.translate('please_select_bug_type')),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppStyles.primaryOrange,
         ),
       );
       return;
@@ -46,7 +47,7 @@ class _ReportBugScreenState extends State<ReportBugScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(loc.translate('please_enter_description')),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppStyles.primaryOrange,
         ),
       );
       return;
@@ -58,23 +59,23 @@ class _ReportBugScreenState extends State<ReportBugScreen> {
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppStyles.borderRadiusXL,
         ),
         title: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 28),
-            const SizedBox(width: 8),
+            Icon(Icons.check_circle, color: AppStyles.iconGreen, size: AppStyles.iconSizeXL),
+            SizedBox(width: AppStyles.spacingSM),
             Expanded(
               child: Text(
                 loc.translate('thank_you'),
-                style: const TextStyle(fontSize: 18),
+                style: AppStyles.dialogTitle,
               ),
             ),
           ],
         ),
         content: Text(
           loc.translate('report_bug_thanks'),
-          style: const TextStyle(fontSize: 14),
+          style: AppStyles.dialogContent,
         ),
         actions: [
           TextButton(
@@ -114,39 +115,30 @@ class _ReportBugScreenState extends State<ReportBugScreen> {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: AppStyles.paddingAll16,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
                 Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  padding: AppStyles.paddingAll16,
+                  decoration: AppStyles.cardDecoration,
                   child: Row(
                     children: [
-                      Icon(Icons.bug_report, size: 40, color: Colors.red.shade400),
-                      const SizedBox(width: 12),
+                      Icon(Icons.bug_report, size: AppStyles.iconSizeXXXL, color: AppStyles.iconRed),
+                      SizedBox(width: AppStyles.spacingMD),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               loc.translate('report_bug'),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: AppStyles.titleLarge,
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: AppStyles.spacingXS),
                             Text(
                               loc.translate('report_bug_subtitle'),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
+                              style: AppStyles.subtitleText,
                             ),
                           ],
                         ),
@@ -154,39 +146,25 @@ class _ReportBugScreenState extends State<ReportBugScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: AppStyles.spacingXL),
 
                 // Bug type dropdown
                 Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  padding: AppStyles.paddingAll16,
+                  decoration: AppStyles.cardDecoration,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         loc.translate('bug_type'),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppStyles.titleMedium,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: AppStyles.spacingMD),
                       DropdownButtonFormField<String>(
                         value: _selectedBugType,
                         hint: Text(loc.translate('select_bug_type')),
                         isExpanded: true,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 12,
-                          ),
-                        ),
+                        decoration: AppStyles.dropdownFormFieldDecoration,
                         items: _bugTypes.map((type) {
                           return DropdownMenuItem(
                             value: type,
@@ -202,66 +180,46 @@ class _ReportBugScreenState extends State<ReportBugScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: AppStyles.spacingLG),
 
                 // Bug description
                 Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  padding: AppStyles.paddingAll16,
+                  decoration: AppStyles.cardDecoration,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         loc.translate('bug_description'),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppStyles.titleMedium,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: AppStyles.spacingMD),
                       TextField(
                         controller: _descriptionController,
                         maxLines: 5,
-                        decoration: InputDecoration(
+                        decoration: AppStyles.multilineTextFieldDecoration(
                           hintText: loc.translate('bug_description_hint'),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.all(12),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: AppStyles.spacingXXL),
 
                 // Submit button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _submitReport,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: Colors.red.shade400,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    style: AppStyles.dangerButtonStyle,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.send, color: Colors.white),
-                        const SizedBox(width: 8),
+                        Icon(Icons.send, color: AppStyles.textWhite),
+                        SizedBox(width: AppStyles.spacingSM),
                         Text(
                           loc.translate('submit_report'),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                          style: AppStyles.buttonText,
                         ),
                       ],
                     ),
