@@ -1,5 +1,5 @@
-name: test1
-description: "A new Flutter project."
+name: tryon_stylist
+description: "Virtual try-on and stylist app."
 publish_to: 'none'
 version: 0.1.0
 
@@ -25,6 +25,7 @@ dependencies:
   share_plus: ^12.0.1
   gal: ^2.3.0
   image_cropper: ^8.0.2
+  flutter_svg: ^2.2.3
 
 dev_dependencies:
   flutter_test:

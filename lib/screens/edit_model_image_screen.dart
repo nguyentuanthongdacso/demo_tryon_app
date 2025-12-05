@@ -251,6 +251,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF87CEEB),
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('edit_model_image')),
         centerTitle: true,
@@ -261,9 +262,9 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Hiển thị ảnh hiện tại
-            const Text(
-              'Ảnh mẫu hiện tại:',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context).translate('current_model_image'),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -274,9 +275,9 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
             const SizedBox(height: 24),
             
             // Chọn ảnh mới
-            const Text(
-              'Chọn ảnh mới:',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context).translate('select_new_image'),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -368,12 +369,12 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
             errorBuilder: (context, error, stackTrace) {
               return Container(
                 color: Colors.grey[300],
-                child: const Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                    SizedBox(height: 8),
-                    Text('Không thể tải ảnh', style: TextStyle(color: Colors.grey)),
+                    const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                    const SizedBox(height: 8),
+                    Text(AppLocalizations.of(context).translate('cannot_load_image'), style: const TextStyle(color: Colors.grey)),
                   ],
                 ),
               );
@@ -408,7 +409,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
           Icon(Icons.image_not_supported, size: 48, color: Colors.orange[700]),
           const SizedBox(height: 12),
           Text(
-            'Bạn chưa cập nhật ảnh mẫu',
+            AppLocalizations.of(context).translate('no_model_image_yet'),
             style: TextStyle(
               color: Colors.orange[700],
               fontSize: 16,
@@ -417,7 +418,7 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Xin vui lòng cài đặt ảnh người mẫu trước khi thử đồ',
+            AppLocalizations.of(context).translate('please_set_model_image'),
             style: TextStyle(color: Colors.orange[600], fontSize: 14),
           ),
         ],
@@ -453,7 +454,9 @@ class _EditModelImageScreenState extends State<EditModelImageScreen> {
           child: OutlinedButton.icon(
             onPressed: _isUploading ? null : _pickImage,
             icon: const Icon(Icons.photo_library),
-            label: Text(_selectedImagePath == null ? 'Chọn ảnh từ thư viện' : 'Chọn ảnh khác'),
+            label: Text(_selectedImagePath == null 
+                ? AppLocalizations.of(context).translate('pick_from_gallery') 
+                : AppLocalizations.of(context).translate('pick_another_image')),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(

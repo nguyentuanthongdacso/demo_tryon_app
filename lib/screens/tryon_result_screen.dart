@@ -112,6 +112,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
     final totalCount = _imageStatus.length;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF87CEEB),
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('tryon_results_title')),
         actions: [

@@ -7,17 +7,28 @@ class SuggestIdeaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Banner Ad ở đầu màn hình
-        const BannerAdWidget(),
-        // Main content
-        Expanded(
-          child: Center(
-            child: Text(AppLocalizations.of(context).translate('coming_soon')),
-          ),
+    return Scaffold(
+      backgroundColor: const Color(0xFF87CEEB),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).translate('style_suggestion')),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Banner Ad ở đầu màn hình
+            const BannerAdWidget(),
+            // Main content
+            Expanded(
+              child: Center(
+                child: Text(AppLocalizations.of(context).translate('coming_soon')),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

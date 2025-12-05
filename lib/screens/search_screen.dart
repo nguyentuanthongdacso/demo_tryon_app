@@ -181,8 +181,9 @@ class _SearchScreenState extends State<SearchScreen>
     super.build(context);
     
     return Scaffold(
+      backgroundColor: const Color(0xFF87CEEB),
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).translate('app_title')), // generic title
+        title: Text(AppLocalizations.of(context).translate('search_appbar_title')),
         centerTitle: true,
         elevation: 2,
       ),

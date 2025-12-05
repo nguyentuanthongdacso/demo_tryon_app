@@ -16,7 +16,8 @@ class TryOnScreen extends StatefulWidget {
 
 class _TryOnScreenState extends State<TryOnScreen> {
   final AuthService _authService = AuthService();
-  String _clothType = 'upper';
+  String _clothType = 'upper_body';
+  final _clothTypes = ['upper_body', 'lower_body', 'dress'];
 
   // Getter trực tiếp từ AuthService singleton - luôn có data mới nhất
   String? get _userInitImage => _authService.currentUser?['image'];
@@ -130,6 +131,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
     final initImageUrl = _userInitImage;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF87CEEB),
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('app_title')),
         centerTitle: true,
@@ -146,7 +148,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppLocalizations.of(context).translate('app_title'),
+                AppLocalizations.of(context).translate('current_model_image'),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -156,7 +158,7 @@ class _TryOnScreenState extends State<TryOnScreen> {
               _buildInitImageSection(initImageUrl),
               const SizedBox(height: 24),
               Text(
-                AppLocalizations.of(context).translate('edit_model_image'),
+                AppLocalizations.of(context).translate('selected_cloth_image'),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -337,58 +339,28 @@ class _TryOnScreenState extends State<TryOnScreen> {
   }
 
   Widget _buildClothTypeSelector() {
-    return Row(
-        children: [
-        Expanded(
-          child: _buildClothTypeButton('upper', AppLocalizations.of(context).translate('cloth_upper'), Icons.checkroom),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildClothTypeButton('lower', AppLocalizations.of(context).translate('cloth_lower'), Icons.straighten),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildClothTypeButton('full', AppLocalizations.of(context).translate('cloth_full'), Icons.accessibility),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildClothTypeButton(String type, String label, IconData icon) {
-    final isSelected = _clothType == type;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _clothType = type;
-        });
+    return DropdownButtonFormField<String>(
+      value: _clothType,
+      items: _clothTypes
+          .map((type) => DropdownMenuItem(
+                value: type,
+                child: Center(
+                  child: Text(
+                    type == 'upper_body'
+                        ? AppLocalizations.of(context).translate('cloth_upper')
+                        : type == 'lower_body'
+                            ? AppLocalizations.of(context).translate('cloth_lower')
+                            : AppLocalizations.of(context).translate('cloth_full'),
+                  ),
+                ),
+              ))
+          .toList(),
+      onChanged: (val) {
+        if (val != null) setState(() => _clothType = val);
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.blue : Colors.grey[100],
-          border: Border.all(
-            color: isSelected ? Colors.blue : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : Colors.grey[600],
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.grey[600],
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context).translate('type_of_cloth'),
+        border: const OutlineInputBorder(),
       ),
     );
   }

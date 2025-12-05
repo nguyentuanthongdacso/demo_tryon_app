@@ -127,6 +127,22 @@ class AppLocalizations {
       'delete': 'Xóa',
       'image_deleted': 'Đã xóa ảnh thành công',
       'delete_failed': 'Không thể xóa ảnh',
+      // AppBar titles
+      'search_appbar_title': 'Thử đồ bằng liên kết URL của bạn',
+      'upload_appbar_title': 'Thử đồ bằng hình ảnh của bạn',
+      'style_suggestion': 'Trang phục cho bạn',
+      // Edit model image screen
+      'current_model_image': 'Ảnh mẫu hiện tại:',
+      'select_new_image': 'Chọn ảnh mới:',
+      'no_model_image_yet': 'Bạn chưa cập nhật ảnh mẫu',
+      'please_set_model_image': 'Xin vui lòng cài đặt ảnh người mẫu trước khi thử đồ',
+      'pick_from_gallery': 'Chọn ảnh từ thư viện',
+      'pick_another_image': 'Chọn ảnh khác',
+      'selected_cloth_image': 'Ảnh bạn đã chọn:',
+      'upload_model_image_label': 'Tải ảnh người mẫu của bạn',
+      'upload_cloth_image_label': 'Tải ảnh quần áo của bạn',
+      'select_model_image': 'Chọn ảnh người mẫu',
+      'select_cloth_image': 'Chọn ảnh quần áo',
     },
     // English (fallback for non-Vietnamese selections)
     'en': {
@@ -245,6 +261,22 @@ class AppLocalizations {
       'delete': 'Delete',
       'image_deleted': 'Image deleted successfully',
       'delete_failed': 'Failed to delete image',
+      // AppBar titles
+      'search_appbar_title': 'Try-on by your URL link',
+      'upload_appbar_title': 'Try-on by your Images',
+      'style_suggestion': 'Style suggestions for you',
+      // Edit model image screen
+      'current_model_image': 'Current model image:',
+      'select_new_image': 'Select new image:',
+      'no_model_image_yet': 'You have not set a model image yet',
+      'please_set_model_image': 'Please set a model image before trying on clothes',
+      'pick_from_gallery': 'Pick from gallery',
+      'pick_another_image': 'Pick another image',
+      'selected_cloth_image': 'Your selected image:',
+      'upload_model_image_label': 'Upload your model image',
+      'upload_cloth_image_label': 'Upload your cloth image',
+      'select_model_image': 'Select model image',
+      'select_cloth_image': 'Select cloth image',
     },
     // Chinese (Simplified)
     'zh': {
@@ -363,6 +395,22 @@ class AppLocalizations {
       'delete': '删除',
       'image_deleted': '图片删除成功',
       'delete_failed': '删除图片失败',
+      // AppBar titles
+      'search_appbar_title': '通过您的URL链接试穿',
+      'upload_appbar_title': '通过您的图片试穿',
+      'style_suggestion': '为你推荐的穿搭',
+      // Edit model image screen
+      'current_model_image': '当前模特图片：',
+      'select_new_image': '选择新图片：',
+      'no_model_image_yet': '您尚未设置模特图片',
+      'please_set_model_image': '请先设置模特图片再试穿',
+      'pick_from_gallery': '从相册选择',
+      'pick_another_image': '选择其他图片',
+      'selected_cloth_image': '您选择的图片：',
+      'upload_model_image_label': '上传您的模特图片',
+      'upload_cloth_image_label': '上传您的服装图片',
+      'select_model_image': '选择模特图片',
+      'select_cloth_image': '选择服装图片',
     },
     // Spanish
     'es': {
@@ -481,6 +529,22 @@ class AppLocalizations {
       'delete': 'Eliminar',
       'image_deleted': 'Imagen eliminada correctamente',
       'delete_failed': 'Error al eliminar imagen',
+      // AppBar titles
+      'search_appbar_title': 'Probar con tu enlace URL',
+      'upload_appbar_title': 'Probar con tus imágenes',
+      'style_suggestion': 'Sugerencias de estilo para ti',
+      // Edit model image screen
+      'current_model_image': 'Imagen de modelo actual:',
+      'select_new_image': 'Seleccionar nueva imagen:',
+      'no_model_image_yet': 'Aún no has configurado una imagen de modelo',
+      'please_set_model_image': 'Por favor configura una imagen de modelo antes de probar',
+      'pick_from_gallery': 'Elegir de la galería',
+      'pick_another_image': 'Elegir otra imagen',
+      'selected_cloth_image': 'Imagen seleccionada:',
+      'upload_model_image_label': 'Sube tu imagen de modelo',
+      'upload_cloth_image_label': 'Sube tu imagen de prenda',
+      'select_model_image': 'Seleccionar imagen de modelo',
+      'select_cloth_image': 'Seleccionar imagen de prenda',
     },
     // Hindi
     'hi': {
@@ -599,6 +663,22 @@ class AppLocalizations {
       'delete': 'हटाएं',
       'image_deleted': 'छवि सफलतापूर्वक हटा दी गई',
       'delete_failed': 'छवि हटाने में विफल',
+      // AppBar titles
+      'search_appbar_title': 'अपने URL लिंक से ट्राय-ऑन करें',
+      'upload_appbar_title': 'अपनी छवियों से ट्राय-ऑन करें',
+      'style_suggestion': 'आपके लिए स्टाइल सुझाव',
+      // Edit model image screen
+      'current_model_image': 'वर्तमान मॉडल छवि:',
+      'select_new_image': 'नई छवि चुनें:',
+      'no_model_image_yet': 'आपने अभी तक मॉडल छवि सेट नहीं की है',
+      'please_set_model_image': 'कृपया कपड़े आजमाने से पहले मॉडल छवि सेट करें',
+      'pick_from_gallery': 'गैलरी से चुनें',
+      'pick_another_image': 'अन्य छवि चुनें',
+      'selected_cloth_image': 'आपकी चुनी हुई छवि:',
+      'upload_model_image_label': 'अपनी मॉडल छवि अपलोड करें',
+      'upload_cloth_image_label': 'अपनी कपड़े की छवि अपलोड करें',
+      'select_model_image': 'मॉडल छवि चुनें',
+      'select_cloth_image': 'कपड़े की छवि चुनें',
     },
     // Arabic
     'ar': {
@@ -717,6 +797,22 @@ class AppLocalizations {
       'delete': 'حذف',
       'image_deleted': 'تم حذف الصورة بنجاح',
       'delete_failed': 'فشل حذف الصورة',
+      // AppBar titles
+      'search_appbar_title': 'جرب عبر رابط URL الخاص بك',
+      'upload_appbar_title': 'جرب عبر صورك',
+      'style_suggestion': 'اقتراحات أزياء لك',
+      // Edit model image screen
+      'current_model_image': 'صورة النموذج الحالية:',
+      'select_new_image': 'اختر صورة جديدة:',
+      'no_model_image_yet': 'لم تقم بتعيين صورة نموذج بعد',
+      'please_set_model_image': 'يرجى تعيين صورة نموذج قبل تجربة الملابس',
+      'pick_from_gallery': 'اختر من المعرض',
+      'pick_another_image': 'اختر صورة أخرى',
+      'selected_cloth_image': 'الصورة التي اخترتها:',
+      'upload_model_image_label': 'ارفع صورة العارض الخاصة بك',
+      'upload_cloth_image_label': 'ارفع صورة الملابس الخاصة بك',
+      'select_model_image': 'اختر صورة العارض',
+      'select_cloth_image': 'اختر صورة الملابس',
     },
     // Bengali
     'bn': {
@@ -835,6 +931,22 @@ class AppLocalizations {
       'delete': 'মুছুন',
       'image_deleted': 'ছবি সফলভাবে মুছে ফেলা হয়েছে',
       'delete_failed': 'ছবি মুছতে ব্যর্থ',
+      // AppBar titles
+      'search_appbar_title': 'আপনার URL লিঙ্ক দিয়ে ট্রাই-অন করুন',
+      'upload_appbar_title': 'আপনার ছবি দিয়ে ট্রাই-অন করুন',
+      'style_suggestion': 'আপনার জন্য স্টাইল সাজেশন',
+      // Edit model image screen
+      'current_model_image': 'বর্তমান মডেল ছবি:',
+      'select_new_image': 'নতুন ছবি নির্বাচন করুন:',
+      'no_model_image_yet': 'আপনি এখনও মডেল ছবি সেট করেননি',
+      'please_set_model_image': 'দয়া করে পোশাক পরীক্ষা করার আগে মডেল ছবি সেট করুন',
+      'pick_from_gallery': 'গ্যালারি থেকে নির্বাচন করুন',
+      'pick_another_image': 'অন্য ছবি নির্বাচন করুন',
+      'selected_cloth_image': 'আপনার নির্বাচিত ছবি:',
+      'upload_model_image_label': 'আপনার মডেল ছবি আপলোড করুন',
+      'upload_cloth_image_label': 'আপনার পোশাকের ছবি আপলোড করুন',
+      'select_model_image': 'মডেল ছবি নির্বাচন করুন',
+      'select_cloth_image': 'পোশাকের ছবি নির্বাচন করুন',
     },
     // French
     'fr': {
@@ -953,6 +1065,22 @@ class AppLocalizations {
       'delete': 'Supprimer',
       'image_deleted': 'Image supprimée avec succès',
       'delete_failed': 'Échec de la suppression de l\'image',
+      // AppBar titles
+      'search_appbar_title': 'Essayer via votre lien URL',
+      'upload_appbar_title': 'Essayer via vos images',
+      'style_suggestion': 'Suggestions de style pour vous',
+      // Edit model image screen
+      'current_model_image': 'Image du modèle actuel :',
+      'select_new_image': 'Sélectionner une nouvelle image :',
+      'no_model_image_yet': 'Vous n\'avez pas encore défini d\'image de modèle',
+      'please_set_model_image': 'Veuillez définir une image de modèle avant d\'essayer des vêtements',
+      'pick_from_gallery': 'Choisir dans la galerie',
+      'pick_another_image': 'Choisir une autre image',
+      'selected_cloth_image': 'Image sélectionnée :',
+      'upload_model_image_label': 'Téléchargez votre image de modèle',
+      'upload_cloth_image_label': 'Téléchargez votre image de vêtement',
+      'select_model_image': 'Sélectionner l\'image du modèle',
+      'select_cloth_image': 'Sélectionner l\'image du vêtement',
     },
     // Russian
     'ru': {
@@ -1071,6 +1199,22 @@ class AppLocalizations {
       'delete': 'Удалить',
       'image_deleted': 'Изображение успешно удалено',
       'delete_failed': 'Не удалось удалить изображение',
+      // AppBar titles
+      'search_appbar_title': 'Примерка по вашей URL-ссылке',
+      'upload_appbar_title': 'Примерка по вашим изображениям',
+      'style_suggestion': 'Стилевые рекомендации для вас',
+      // Edit model image screen
+      'current_model_image': 'Текущее фото модели:',
+      'select_new_image': 'Выберите новое изображение:',
+      'no_model_image_yet': 'Вы еще не установили фото модели',
+      'please_set_model_image': 'Пожалуйста, установите фото модели перед примеркой одежды',
+      'pick_from_gallery': 'Выбрать из галереи',
+      'pick_another_image': 'Выбрать другое изображение',
+      'selected_cloth_image': 'Выбранное изображение:',
+      'upload_model_image_label': 'Загрузите фото модели',
+      'upload_cloth_image_label': 'Загрузите фото одежды',
+      'select_model_image': 'Выберите изображение модели',
+      'select_cloth_image': 'Выберите изображение одежды',
     },
     // Portuguese
     'pt': {
@@ -1189,6 +1333,22 @@ class AppLocalizations {
       'delete': 'Excluir',
       'image_deleted': 'Imagem excluída com sucesso',
       'delete_failed': 'Falha ao excluir imagem',
+      // AppBar titles
+      'search_appbar_title': 'Experimentar pelo seu link URL',
+      'upload_appbar_title': 'Experimentar pelas suas imagens',
+      'style_suggestion': 'Sugestões de estilo para você',
+      // Edit model image screen
+      'current_model_image': 'Imagem do modelo atual:',
+      'select_new_image': 'Selecionar nova imagem:',
+      'no_model_image_yet': 'Você ainda não definiu uma imagem de modelo',
+      'please_set_model_image': 'Por favor, defina uma imagem de modelo antes de experimentar roupas',
+      'pick_from_gallery': 'Escolher da galeria',
+      'pick_another_image': 'Escolher outra imagem',
+      'selected_cloth_image': 'Imagem selecionada:',
+      'upload_model_image_label': 'Envie sua imagem de modelo',
+      'upload_cloth_image_label': 'Envie sua imagem de roupa',
+      'select_model_image': 'Selecionar imagem de modelo',
+      'select_cloth_image': 'Selecionar imagem de roupa',
     },
   };
 

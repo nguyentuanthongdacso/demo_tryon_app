@@ -339,20 +339,28 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
     // Required for AutomaticKeepAliveClientMixin
     super.build(context);
     
-    return Consumer<UploadTryonProvider>(
-      builder: (context, provider, _) {
-        return Column(
-          children: [
-            // Banner Ad ở đầu màn hình
-            const BannerAdWidget(),
-            // Main content - scrollable
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                      Text(AppLocalizations.of(context).translate('bottom_upload'), style: const TextStyle(fontWeight: FontWeight.bold)),
+    return Scaffold(
+      backgroundColor: const Color(0xFF87CEEB),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).translate('upload_appbar_title')),
+        centerTitle: true,
+        elevation: 2,
+      ),
+      body: SafeArea(
+        child: Consumer<UploadTryonProvider>(
+          builder: (context, provider, _) {
+            return Column(
+              children: [
+                // Banner Ad ở đầu màn hình
+                const BannerAdWidget(),
+                // Main content - scrollable
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(AppLocalizations.of(context).translate('upload_model_image_label'), style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: () => _pickImage(true),
@@ -364,7 +372,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                 ),
               ),
               const SizedBox(height: 16),
-                Text(AppLocalizations.of(context).translate('bottom_upload'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context).translate('upload_cloth_image_label'), style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: () => _pickImage(false),
@@ -379,11 +387,19 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
               DropdownButtonFormField<String>(
                 initialValue: _clothType,
                 items: _clothTypes
-                    .map((type) => DropdownMenuItem(
-                          value: type,
-                          child: Text(type),
-                        ))
-                    .toList(),
+                  .map((type) => DropdownMenuItem(
+                      value: type,
+                      child: Center(
+                        child: Text(
+                          type == 'upper_body'
+                              ? AppLocalizations.of(context).translate('cloth_upper')
+                              : type == 'lower_body'
+                                  ? AppLocalizations.of(context).translate('cloth_lower')
+                                  : AppLocalizations.of(context).translate('cloth_full'),
+                        ),
+                      ),
+                    ))
+                  .toList(),
                 onChanged: (val) {
                   if (val != null) setState(() => _clothType = val);
                 },
@@ -445,13 +461,15 @@ class _UploadImagesScreenState extends State<UploadImagesScreen>
                     style: const TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ),
-                  ],
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ],
-        );
-      },
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 

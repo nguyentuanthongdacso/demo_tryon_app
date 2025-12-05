@@ -24,6 +24,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
     _selected ??= provider.currentLocale;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF87CEEB),
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('language_screen_title')),
       ),

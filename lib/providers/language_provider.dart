@@ -12,7 +12,7 @@ class LanguageProvider extends ChangeNotifier {
 
   // Supported languages (display order)
   static const List<LanguageOption> supportedLanguages = [
-    LanguageOption(locale: Locale('vi', 'VN'), name: 'Tiếng Việt', nativeName: 'Tiếng Việt'),
+
     LanguageOption(locale: Locale('en', 'US'), name: 'English', nativeName: 'English'),
     LanguageOption(locale: Locale('zh', 'CN'), name: '中文 (简体)', nativeName: '中文 (简体)'),
     LanguageOption(locale: Locale('es', 'ES'), name: 'Español', nativeName: 'Español'),
@@ -22,6 +22,7 @@ class LanguageProvider extends ChangeNotifier {
     LanguageOption(locale: Locale('fr', 'FR'), name: 'Français', nativeName: 'Français'),
     LanguageOption(locale: Locale('ru', 'RU'), name: 'Русский', nativeName: 'Русский'),
     LanguageOption(locale: Locale('pt', 'BR'), name: 'Português', nativeName: 'Português'),
+    LanguageOption(locale: Locale('vi', 'VN'), name: 'Tiếng Việt', nativeName: 'Tiếng Việt'),
   ];
 
   LanguageProvider();
