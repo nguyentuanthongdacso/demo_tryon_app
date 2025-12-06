@@ -27,7 +27,7 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
   Timer? _reloadTimer;
   final Map<String, bool> _imageStatus = {};
   int _attemptCount = 0;
-  final int _maxAttempts = 360; // Thử trong 360 giây
+  final int _maxAttempts = 180; // Timeout 3 phút (180 giây)
 
   @override
   void initState() {
@@ -46,21 +46,55 @@ class _TryonResultScreenState extends State<TryonResultScreen> {
     super.dispose();
   }
 
+  /// Hiển thị dialog timeout và quay lại màn hình upload
+  void _showTimeoutDialog() {
+    final loc = AppLocalizations.of(context);
+    showDialog(
+      context: context,
+      barrierDismissible: true, // Cho phép bấm ra ngoài để đóng
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text(
+            loc.translate('processing_timeout_title'),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Text(
+            loc.translate('processing_timeout_message'),
+            style: const TextStyle(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Đóng dialog
+              },
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  color: AppStyles.primaryOrange,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    ).then((_) {
+      // Khi dialog đóng (bấm OK hoặc bấm ra ngoài), quay lại màn hình upload
+      if (mounted) {
+        Navigator.of(context).pop(); // Quay lại màn hình trước (upload_images_screen)
+      }
+    });
+  }
+
   void _startChecking() {
     _reloadTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       _attemptCount++;
       
-      // Kiểm tra timeout
+      // Kiểm tra timeout 3 phút
       if (_attemptCount > _maxAttempts) {
         timer.cancel();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).translate('timeout_try_again')),
-              backgroundColor: AppStyles.primaryOrange,
-              duration: AppStyles.snackBarDurationMedium,
-            ),
-          );
+          _showTimeoutDialog();
         }
         return;
       }
