@@ -13,6 +13,7 @@ import 'language_screen.dart';
 import 'theme_screen.dart';
 import 'my_assets_screen.dart';
 import 'report_bug_screen.dart';
+import 'payment_screen.dart';
 import '../l10n/app_localizations.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
@@ -65,6 +66,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         // Header với avatar và tên
                         _buildHeader(userName, userImage),
                         SizedBox(height: AppStyles.spacingXXL),
+
+                        // Get Token button (Rewarded Video Ad)
+                        _buildRewardedAdButton(loc),
+                        SizedBox(height: AppStyles.spacingMD),
 
                         // Settings & Privacy Section (expandable)
                         _buildExpandableSection(
@@ -159,13 +164,20 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         _buildMenuItem(
                           icon: Icons.attach_money,
                           title: loc.translate('upgrade_account'),
-                          onTap: () => _showComingSoon(loc.translate('upgrade_account')),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const PaymentScreen(),
+                              ),
+                            );
+                          },
                         ),
                         SizedBox(height: AppStyles.spacingMD),
 
-                        // Click để nhận token - Rewarded Video Ad
-                        _buildRewardedAdButton(loc),
-                        SizedBox(height: AppStyles.spacingMD),
+                        // // Click để nhận token - Rewarded Video Ad
+                        // _buildRewardedAdButton(loc),
+                        // SizedBox(height: AppStyles.spacingMD),
 
                         // Log out
                         _buildMenuItem(

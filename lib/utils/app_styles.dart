@@ -113,6 +113,12 @@ class AppStyles {
     fontSize: 16,
   );
   
+  /// Display Small - 24px bold (for numbers, headers)
+  static const TextStyle displaySmall = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+  );
+  
   /// Body Medium - 14px normal
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,

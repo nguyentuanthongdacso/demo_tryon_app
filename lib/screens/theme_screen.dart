@@ -154,23 +154,17 @@ class _ThemeScreenState extends State<ThemeScreen> {
                             loc.translate('theme_preview'),
                             style: AppStyles.titleMedium,
                           ),
-                          SizedBox(height: AppStyles.spacingMD),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildPreviewCard(
-                                  loc.translate('main_background'),
-                                  ThemeProvider.themes[_selectedTheme]!.mainBackground,
-                                ),
-                              ),
-                              SizedBox(width: AppStyles.spacingMD),
-                              Expanded(
-                                child: _buildPreviewCard(
-                                  loc.translate('bottom_nav_background'),
-                                  ThemeProvider.themes[_selectedTheme]!.bottomNavBackground,
-                                ),
-                              ),
-                            ],
+                          SizedBox(height: AppStyles.spacingSM),
+                          // Main background preview - chiếm nhiều không gian hơn
+                          _buildMainBackgroundPreview(
+                            loc.translate('main_background'),
+                            ThemeProvider.themes[_selectedTheme]!.mainBackground,
+                          ),
+                          SizedBox(height: AppStyles.spacingSM),
+                          // Bottom nav preview - nhỏ hơn, nằm dưới
+                          _buildBottomNavPreview(
+                            loc.translate('bottom_nav_background'),
+                            ThemeProvider.themes[_selectedTheme]!.bottomNavBackground,
                           ),
                         ],
                         const Spacer(),
@@ -205,7 +199,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
     );
   }
 
-  Widget _buildPreviewCard(String label, String imagePath) {
+  /// Preview hình nền chính - chiếm không gian lớn
+  Widget _buildMainBackgroundPreview(String label, String imagePath) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -213,11 +208,55 @@ class _ThemeScreenState extends State<ThemeScreen> {
           label,
           style: AppStyles.bodySmallWithColor(AppStyles.textGreyDark),
         ),
-        SizedBox(height: AppStyles.spacingSM),
+        SizedBox(height: AppStyles.spacingXS),
         Container(
-          height: 120,
-          decoration: AppStyles.imageContainerWithShadow.copyWith(
+          height: 325,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppStyles.backgroundGreyMedium),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(11),
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Preview thanh điều hướng - nhỏ gọn hơn
+  Widget _buildBottomNavPreview(String label, String imagePath) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: AppStyles.bodySmallWithColor(AppStyles.textGreyDark),
+        ),
+        SizedBox(height: AppStyles.spacingXS),
+        Container(
+          height: 70,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppStyles.backgroundGreyMedium),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(11),
