@@ -386,20 +386,22 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           Text(
                             loc.translate('click_to_get_token'),
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 16,
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                               shadows: AppStyles.textShadow,
                             ),
                           ),
-                          SizedBox(height: AppStyles.spacingXS - 2),
+                          SizedBox(height: AppStyles.spacingSM),
                           Text(
                             loc.translate('watch_ad_reward'),
                             style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.black.withValues(alpha: 0.9),
+                              fontSize: 10,
+                              color: Colors.black.withValues(alpha: 0.85),
                               shadows: AppStyles.textShadow,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),

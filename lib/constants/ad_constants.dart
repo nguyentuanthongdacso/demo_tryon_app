@@ -17,7 +17,7 @@ class AdConstants {
   // ===== APP ID =====
   /// Test App ID từ Google - dùng cho testing
   static const String testAppId = 'ca-app-pub-3940256099942544~3347511713';
-  static const String prodAppId = 'ca-app-pub-7370568836524098~7661775273';
+  static const String prodAppId = 'ca-app-pub-7370568836524098~6292853283';
   static String get appId => isTestMode ? testAppId : prodAppId;
   
   // ===== AD UNIT IDs =====

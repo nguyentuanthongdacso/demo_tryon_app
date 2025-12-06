@@ -25,6 +25,16 @@ class CloudinaryService {
   // Session upload manager de track cac anh da upload
   final SessionUploadManager _sessionManager = SessionUploadManager();
 
+  /// Loai bo version number tu Cloudinary URL
+  /// Input:  https://res.cloudinary.com/cloud/image/upload/v123456/public_id.jpg
+  /// Output: https://res.cloudinary.com/cloud/image/upload/public_id.jpg
+  /// ModelsLab API khong the access URL co version number
+  String _removeVersionFromUrl(String url) {
+    // Pattern: /v followed by digits then /
+    final versionPattern = RegExp(r'/v\d+/');
+    return url.replaceFirst(versionPattern, '/');
+  }
+
   /// Tao hash MD5 tu noi dung file de lam unique ID
   /// Public method de co the dung tu ben ngoai
   Future<String> getFileHash(File file) async {
@@ -109,7 +119,12 @@ class CloudinaryService {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        final secureUrl = jsonResponse['secure_url'] as String;
+        final rawSecureUrl = jsonResponse['secure_url'] as String;
+        // Loai bo version number de ModelsLab co the access
+        final secureUrl = _removeVersionFromUrl(rawSecureUrl);
+        
+        print('🔗 Raw URL: $rawSecureUrl');
+        print('🔗 Clean URL (no version): $secureUrl');
         
         final result = CloudinaryUploadResult(
           url: secureUrl,
@@ -180,7 +195,9 @@ class CloudinaryService {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        final secureUrl = jsonResponse['secure_url'] as String;
+        final rawSecureUrl = jsonResponse['secure_url'] as String;
+        // Loai bo version number de ModelsLab co the access
+        final secureUrl = _removeVersionFromUrl(rawSecureUrl);
         print('✅ Upload successful: $secureUrl');
         return secureUrl;
       } else {
