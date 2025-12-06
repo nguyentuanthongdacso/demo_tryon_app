@@ -459,7 +459,7 @@ class PaymentService {
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
       (Match m) => '${m[1]}.',
     );
-    return '${formatted}đ';
+    return '$formattedđ';
   }
 
   /// Format giá tiền USD

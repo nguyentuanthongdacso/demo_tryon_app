@@ -21,8 +21,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   String? _selectedPackageId;
   String? _selectedPaymentMethodId;
   bool _isProcessing = false;
-  bool _isInitialized = false;
-
+  
   @override
   void initState() {
     super.initState();
@@ -50,13 +49,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         _showErrorSnackBar(result.message);
       }
     };
-    
-    if (mounted) {
-      setState(() {
-        _isInitialized = true;
-      });
-    }
-  }
+  } 
 
   @override
   void dispose() {
